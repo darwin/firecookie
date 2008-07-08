@@ -1,0 +1,283 @@
+/* See license.txt for terms of usage */
+
+.panelNode-cookies {
+    overflow-x: hidden;
+}
+
+.cookieTable {
+    width: 100%;
+}
+
+/************************************************************************************************/
+
+/* Support for console */
+.cookieEvent .cookieDomainLabel {
+    font-family: Lucida Grande, sans-serif;
+    font-weight: bold;
+    color: #0000FF;
+}
+
+.logRow-cookie,
+.logRow-cookiesCleared,
+.logRow-cookiesRejected,
+.logRow-cookie:hover {
+    padding: 2px 0px 1px 22px !important;
+    background-image: url(chrome://firecookie/skin/cookie14.png) !important;
+    background-repeat: no-repeat !important;
+    background-position: 4px 2px !important;
+}
+
+.logRow-cookiesRejected .cookieRejectedList {
+    font-weight: bold;
+}
+
+.logRow-cookiesRejected .cookieList {
+    color: rgb(128, 128, 128);
+}
+
+.logRow-cookiesRejected {
+    border-bottom: 1px solid #D7D7D7;    
+}
+
+.logRow-cookiesRejected .cookieCol,
+.logRow-cookiesRejected > .logRow {
+    border-bottom: 0;
+    font-weight: normal;
+    padding-top: 0px;
+}
+
+.logRow-cookiesRejected > .logRow:hover {
+    text-decoration: none;
+}
+
+.logRow-cookiesRejected > .logGroupBody {
+	margin-top: 3px;
+}
+
+.logRow-cookiesRejected > .cookieEvent {
+    text-decoration: none;
+}
+
+.logRow-cookiesCleared > DIV {
+	padding: 1px 0 2px 0 !important;
+}
+
+/************************************************************************************************/
+
+.cookieHeaderRow {
+    height: 16px;
+}
+
+.cookieHeaderCell {
+    cursor: pointer;
+    -moz-user-select: none;
+    border-bottom: 1px solid #9C9C9C;
+    padding: 0 !important;
+    font-weight: bold;
+    background: #BBBBBB url(chrome://firecookie/skin/tableHeader.gif) repeat-x;
+}
+
+.cookieHeaderRow > .cookieHeaderCell:first-child > .cookieHeaderCellBox {
+    padding: 2px 14px 2px 18px;
+}
+
+.cookieHeaderCellBox {
+    padding: 2px 14px 2px 10px;
+    border-left: 1px solid #D9D9D9;
+    border-right: 1px solid #9C9C9C;
+}
+
+.cookieHeaderCell:hover:active {
+    background: #959595 url(chrome://firecookie/skin/tableHeaderActive.gif) repeat-x;
+}
+
+.cookieHeaderSorted {
+    background: #7D93B2 url(chrome://firecookie/skin/tableHeaderSorted.gif) repeat-x;
+}
+
+.cookieHeaderSorted > .cookieHeaderCellBox {
+    border-right-color: #6B7C93;
+    background: url(chrome://firecookie/skin/arrowDown.png) no-repeat right;    
+}
+
+.cookieHeaderSorted.sortedAscending > .cookieHeaderCellBox {
+    background-image: url(chrome://firecookie/skin/arrowUp.png);
+}
+
+.cookieHeaderSorted:hover:active {
+    background: #536B90 url(chrome://firecookie/skin/tableHeaderSortedActive.gif) repeat-x;
+}
+
+/************************************************************************************************/
+
+.cookieRow .cookieNameLabel {
+    background-image: url(chrome://firebug/skin/win/twistyClosed.png);
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+}
+
+.cookieNameLabel:hover {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+/*.cookieRow */.opened > .cookieCol > .cookieNameLabel {
+    background-image: url(chrome://firebug/skin/win/twistyOpen.png);
+}
+
+/* Session cookies */
+.sessionCookie > .cookieExpiresCol {
+    color: green;
+}
+
+/* Rejected cookies are red in the Cookies tab */
+.panelNode-cookies .rejectedCookie .cookieLabel {
+    color: red !important;
+}
+
+/************************************************************************************************/
+
+.cookieRow {
+    background: white;
+}
+
+.cookieRow:hover {
+    background: #EFEFEF;
+}
+
+.cookieCol {
+    padding: 0;
+    vertical-align: top;
+    border-bottom: 1px solid #EFEFEF;  
+    white-space: nowrap;
+}
+
+.cookieLabel {
+}
+
+/* Support for search box */
+.panelNode.searching .cookieRow {
+    display: none;
+}
+
+.cookieRow.matched {
+    display: table-row !important;
+}
+
+/************************************************************************************************/
+
+.cookieNameLabel {
+    -moz-box-sizing: padding-box;
+    overflow: hidden;
+    padding-top: 1px;
+    font-weight: bold;
+    min-width: 70px;
+}
+
+.cookieNameCol > .cookieNameLabel {
+    padding-left: 18px;
+}
+
+.cookieDomainLabel,
+.cookieSizeLabel,
+.cookiePathLabel,
+.cookieExpiresLabel,
+.cookieValueLabel {
+    padding: 1px 0 2px 0 !important;
+}
+
+.cookieDomainLabel {
+    color: rgb(0, 0, 255);
+}
+
+.cookieDomainLabel:hover {
+    text-decoration:underline;
+    cursor:pointer;
+}
+
+.cookieValueLabel {
+    color: rgb(128, 128, 128);
+}
+
+/* This style makes sure that only portion of text is visible
+ depending on current size (width) of the parent column */
+.cookieValueLabel {
+    overflow: hidden;
+    display: -moz-box;
+}
+
+/* This style is to avoid warning: XUL box for div element contained 
+ an inline span child, forcing all its children to be wrapped in a block, 
+ which is caused by the previous style */
+.cookieValueLabel span {
+    display: inline-block;
+}
+
+.cookieDomainCol,
+.cookieSizeCol,
+.cookiePathCol,
+.cookieExpiresCol,
+.cookieValueCol,
+.cookieSecurityCol,
+.cookieStatusCol {
+    padding-left: 10px;
+}
+
+.cookieSizeCol {
+    text-align :right;
+    padding-right: 10px;
+}
+
+/************************************************************************************************/
+
+.cookieInfoCol {
+    border-top: 1px solid #EEEEEE;
+    background: url(chrome://firebug/skin/group.gif) repeat-x #FFFFFF;
+}
+
+.cookieInfoBody {
+    margin: 10px 0 4px 10px;
+}
+
+.cookieInfoTabs {
+    position: relative;
+    padding-left: 14px;
+}
+
+.cookieInfoTab {
+    position: relative;
+    top: -3px;
+    margin-top: 10px;
+    padding: 4px 6px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    font-weight: bold;
+    color: #565656;
+}
+
+.cookieInfoTab:hover {
+    cursor: pointer;
+}
+
+.cookieInfoTab[selected="true"] {
+    cursor: default !important;
+    border-color: #D7D7D7;
+    -moz-border-radius: 4px 4px 0 0;
+    background-color: #FFFFFF;
+}
+
+.cookieInfoText {
+    display: none;
+    margin: 0;
+    border: 1px solid #D7D7D7;
+    border-right: none;
+    padding: 8px;
+    background-color: #FFFFFF;
+    font-family: Monaco, monospace;
+    overflow-x: auto;
+}
+
+.cookieInfoText[selected="true"] {
+    display: block;
+}

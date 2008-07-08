@@ -1,0 +1,87 @@
+<?xml version="1.0"?> 
+<!-- See license.txt for terms of usage -->
+
+<?xml-stylesheet href="chrome://firecookie/skin/firecookie.css"?>
+
+<!DOCTYPE window [
+<!ENTITY % firecookieDTD SYSTEM "chrome://firecookie/locale/firecookie.dtd">
+%firecookieDTD;
+]>
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"> 
+    <script src="chrome://firecookie/content/fireCookie.js" type="application/x-javascript"/> 
+
+    <stringbundleset id="stringbundleset">
+        <stringbundle id="strings_firecookie" src="chrome://firecookie/locale/firecookie.properties"/>
+    </stringbundleset>
+
+    <commandset id="mainCommandSet"> 
+        <command id="cmd_cookieRemoveAll" oncommand="Firebug.FireCookieModel.onRemoveAll(FirebugContext)"/>
+        <command id="cmd_cookieCreate" oncommand="Firebug.FireCookieModel.onCreateCookie(FirebugContext)"/>
+        <command id="cmd_cookieViewAll" oncommand="Firebug.FireCookieModel.onViewAll(FirebugContext)"/>
+        <command id="cmd_cookieViewExceptions" oncommand="Firebug.FireCookieModel.onViewExceptions(FirebugContext)"/>
+        <command id="cmd_cookieHelp" oncommand="Firebug.FireCookieModel.onHelp(FirebugContext)"/>
+        <command id="cmd_cookieAbout" oncommand="Firebug.FireCookieModel.onAbout(FirebugContext)"/>
+        <command id="cmd_cookieFilterByPath" oncommand="Firebug.FireCookieModel.onFilter(FirebugContext, 'firecookie.filterByPath')"/>
+        <command id="cmd_cookieShowRejectedCookies" oncommand="Firebug.FireCookieModel.onFilter(FirebugContext, 'firecookie.showRejectedCookies')"/>
+    </commandset> 
+    
+    <toolbar id="fbToolbar" align="center"> 
+        <hbox id="fbToolbarInner" insertbefore="fbDetachButton" flex="1" align="center"> 
+            <hbox id="fbCookieButtons" insertafter="fbNetButtons" collapsed="true">
+                <toolbarseparator/>
+                <tooltip id="fcCreateCookieTooltip"
+                    onpopupshowing="return Firebug.FireCookieModel.onCreateCookieShowTooltip(this, FirebugContext)"/>
+                <toolbarbutton id="fcCreate"
+                    label="&firecookie.Create;" class="toolbar-text-button"
+                    tooltip="fcCreateCookieTooltip" command="cmd_cookieCreate"/>
+                <tooltip id="fcRemoveAllTooltip"
+                    onpopupshowing="return Firebug.FireCookieModel.onRemoveAllShowTooltip(this, FirebugContext)"/>
+                <toolbarbutton id="fcRemoveAll"
+                    label="&firecookie.RemoveAll;" class="toolbar-text-button"
+                    tooltip="fcRemoveAllTooltip" command="cmd_cookieRemoveAll"/>
+                <toolbarbutton label="&firecookie.Filter;" type="menu" tooltiptext="&firecookie.FilterTooltip;">
+                  <menupopup onpopupshowing="return Firebug.FireCookieModel.onFilterPopupShowing(this)">
+                    <menuitem id="fcFilterByPath" type="checkbox" value="firecookie.filterByPath" 
+                        label="&firecookie.filter.byPath;" 
+                        tooltiptext="&firecookie.filter.byPathTooltip;" 
+                        command="cmd_cookieFilterByPath"/>
+                    <menuitem id="fcShowRejectedCookies25" type="checkbox" value="firecookie.showRejectedCookies" 
+                        label="&firecookie.filter.showRejectedCookies;" 
+                        tooltiptext="&firecookie.filter.showRejectedCookiesTooltip;" 
+                        command="cmd_cookieShowRejectedCookies"/>
+                  </menupopup>
+                </toolbarbutton>
+                <toolbarseparator/>
+                <tooltip id="fcPermTooltip"
+                    onpopupshowing="return Firebug.FireCookieModel.Perm.onTooltipShowing(this, FirebugContext)"/>
+		            <toolbarbutton id="fcPerm" type="menu" tooltip="fcPermTooltip">
+			            <menupopup
+				            oncommand="return Firebug.FireCookieModel.Perm.onCommand(event, FirebugContext)"
+				            onpopupshowing="return Firebug.FireCookieModel.Perm.onPopupShowing(this, FirebugContext)"
+				            onpopuphiding="return Firebug.FireCookieModel.Perm.onPopupHiding(this, FirebugContext)">
+				            <menuitem type="radio" name="fcPerm" value="default"/>
+				            <menuitem type="radio" name="fcPerm" value="host-deny"/>
+				            <menuitem type="radio" name="fcPerm" value="host-allow"/>
+				            <menuitem type="radio" name="fcPerm" value="host-allow-session"/>
+			            </menupopup>
+		            </toolbarbutton>
+                <toolbarseparator/>
+                <toolbarbutton label="&firecookie.Tools;" type="menu" tooltiptext="&firecookie.ToolsTooltip;">
+                    <menupopup>
+                        <menuitem label="&firecookie.ViewAll;" command="cmd_cookieViewAll"
+                            tooltiptext="&firecookie.ViewAllTooltip;"/>
+                        <menuitem label="&firecookie.ViewExceptions;" command="cmd_cookieViewExceptions"
+                            tooltiptext="&firecookie.ViewExceptionsTooltip;"/>
+                        <menuseparator/>
+                        <menuitem label="&firecookie.Help;" command="cmd_cookieHelp"
+                            tooltiptext="&firecookie.HelpTooltip;"/>
+                        <menuseparator/>
+                        <menuitem label="&firecookie.About;" command="cmd_cookieAbout"
+                            tooltiptext="&firecookie.AboutTooltip;"/>
+                    </menupopup>
+                </toolbarbutton>
+            </hbox> 
+        </hbox> 
+    </toolbar> 
+</overlay>
