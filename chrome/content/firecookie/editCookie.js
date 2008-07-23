@@ -74,8 +74,12 @@ var EditCookie =
         var httpProtocol = isSecure ? "https://" : "http://";
         var uri = ioService.newURI(httpProtocol + domain + path, null, null);
         		
-        // Create/modify cookie.            		
-        cookieService.setCookieString(uri, null, cookieString, null);        
+        // Create/modify cookie.
+        // Fix Issue #2 - contribution by arantius
+        // cookieService.setCookieString(uri, null, cookieString, null);
+        cookieManager.add(
+            domain, path, name, value, isSecure, false, // false httpOnly ??
+            isSession, Math.floor(expires.valueOf()/1000));
 
         // Close dialog.                
         window.close();
