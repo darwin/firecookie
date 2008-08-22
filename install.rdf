@@ -13,6 +13,9 @@
     <em:contributor>Aleksandar Gajic (cookie icon)</em:contributor>
     <em:iconURL>chrome://firecookie/skin/cookie32.png</em:iconURL>
     <em:homepageURL>http://www.janodvarko.cz/firecookie</em:homepageURL>
+    <em:translator>Leszek(teo)Życzkowski</em:translator>
+    <em:translator>CosmicForce</em:translator>
+    <em:translator>Alberto Eidh</em:translator>
 
     <!-- Firefox -->
     <em:targetApplication>
