@@ -3,5 +3,6 @@ skin	firecookie	classic/1.0	chrome/skin/classic/
 
 locale	firecookie	en-US		chrome/locale/en-US/
 locale	firecookie	pl-PL		chrome/locale/pl-PL/
+locale	firecookie	de-DE		chrome/locale/de-DE/
 
 overlay chrome://firebug/content/firebugOverlay.xul         chrome://firecookie/content/fireCookie.xul

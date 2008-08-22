@@ -1,0 +1,27 @@
+<!ENTITY firecookie.RemoveAll "Für diese Website entfernen">
+<!ENTITY firecookie.Create "Cookie erstellen">
+<!ENTITY firecookie.ViewAll "Alle Cookies anzeigen...">
+<!ENTITY firecookie.ViewAllTooltip "Cookie-Manager öffnen">
+<!ENTITY firecookie.ViewExceptions "Website-Berechtigungen...">
+<!ENTITY firecookie.ViewExceptionsTooltip "Liste aller berechtigten und blockierten Websites anzeigen">
+<!ENTITY firecookie.Tools "Tools">
+<!ENTITY firecookie.ToolsTooltip "Tools">
+<!ENTITY firecookie.Help "Hilfe">
+<!ENTITY firecookie.HelpTooltip "Hilfe für Firecookie">
+<!ENTITY firecookie.About "Über...">
+<!ENTITY firecookie.AboutTooltip "Über Firecookie">
+<!ENTITY firecookie.edit.title "Cookie bearbeiten">
+<!ENTITY firecookie.edit.group.title "Cookie-Details">
+<!ENTITY firecookie.edit.name.label "Name:">
+<!ENTITY firecookie.edit.value.label "Wert:">
+<!ENTITY firecookie.edit.domain.label "Host:">
+<!ENTITY firecookie.edit.path.label "Pfad:">
+<!ENTITY firecookie.edit.expire.label "Verfalldatum:">
+<!ENTITY firecookie.edit.session.label "Sitzung">
+<!ENTITY firecookie.edit.secure.label "Cookie schützen">
+<!ENTITY firecookie.Filter "Filter">
+<!ENTITY firecookie.FilterTooltip "Einstellungen als Filter übernehmen.">
+<!ENTITY firecookie.filter.byPath "Cookies nach Pfad filtern">
+<!ENTITY firecookie.filter.byPathTooltip "Nur Cookies anzeigen, die mit dem aktuellen Pfad übereinstimmen.">
+<!ENTITY firecookie.filter.showRejectedCookies "Blockierte Cookies anzeigen">
+<!ENTITY firecookie.filter.showRejectedCookiesTooltip "Auch blockierte Cookies werden in der Liste angezeigt.">
