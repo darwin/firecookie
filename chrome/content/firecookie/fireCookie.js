@@ -49,9 +49,10 @@ const observerService = CCSV("@mozilla.org/observer-service;1", "nsIObserverServ
 const extensionManager = CCSV("@mozilla.org/extensions/manager;1", "nsIExtensionManager");
 const permissionManager = CCSV("@mozilla.org/permissionmanager;1", "nsIPermissionManager");
 const clipboard = CCSV("@mozilla.org/widget/clipboard;1", "nsIClipboard");
-const appInfo = CCSV("@mozilla.org/xre/app-info;1", nsIXULAppInfo);
-const versionChecker = CCSV("@mozilla.org/xpcom/version-comparator;1", nsIVersionComparator);
+const appInfo = CCSV("@mozilla.org/xre/app-info;1", "nsIXULAppInfo");
+const versionChecker = CCSV("@mozilla.org/xpcom/version-comparator;1", "nsIVersionComparator");
 const ioService = CCSV("@mozilla.org/network/io-service;1", "nsIIOService");
+const dateFormat = CCSV("@mozilla.org/intl/scriptabledateformat;1", "nsIScriptableDateFormat");
 
 // Preferences
 const PrefService = Cc["@mozilla.org/preferences-service;1"];
@@ -1139,8 +1140,16 @@ Templates.CookieRow = domplate(Templates.Rep,
         if (cookie.cookie.expires == 0)
             return " " + $FC_STR("firecookie.Session");
             
+        // Format the expires date using the current locale.
         var date = new Date(cookie.cookie.expires * 1000);
-        return date.toGMTString();
+        return dateFormat.FormatDateTime("", dateFormat.dateFormatLong,
+            dateFormat.timeFormatSeconds,
+            date.getFullYear(),
+            date.getMonth() + 1,
+            date.getDate(),
+            date.getHours(),
+            date.getMinutes(),
+            date.getSeconds());
     },
     
     isSessionCookie: function(cookie) {
