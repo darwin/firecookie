@@ -336,13 +336,21 @@ Firebug.FireCookieModel = extend(Firebug.Module,
 
         var cookies = [];
 
+        // Remove all cookies in the list. Notice that the list can be further 
+        // filtered by the search-box (the right side of Firebug's tab bar)
+        // So, make sure in case of searching-on, only visible (matched) 
+        // cookies are removed.
+        var searching = hasClass(panel.panelNode, "searching");
         var row = getElementByClass(panel.panelNode, "cookieRow");
         while (row) 
         {
-            var cookie = row.repObject;
-            if (cookie)
-                cookies.push(cookie);
-            
+            if (!searching || hasClass(row, "matched"))
+            {
+                var cookie = row.repObject;
+                if (cookie)
+                    cookies.push(cookie);
+            }
+
             row = row.nextSibling;
         }        
 

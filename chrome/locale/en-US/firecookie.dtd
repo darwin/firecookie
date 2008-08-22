@@ -1,4 +1,4 @@
-<!ENTITY  firecookie.RemoveAll               "Remove for Site">
+<!ENTITY  firecookie.RemoveAll               "Remove Cookies">
 <!ENTITY  firecookie.Create                  "Create Cookie">
 <!ENTITY  firecookie.ViewAll                 "Show All Cookies...">
 <!ENTITY  firecookie.ViewAllTooltip          "Open Cookie Manager">
