@@ -607,7 +607,18 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
         if (getPref(FirebugPrefDomain, showRejectedCookies))
         {
             // xxxHonza the this.context.cookies is sometimes null, but 
-            // perhaps it was becouse FB wasn't correctly initialized.
+            // this must be because FB isn't correctly initialized.
+            if (!this.context.cookies)
+            {
+                if (FBTrace.DBG_COOKIES) 
+                {
+                    FBTrace.dumpProperties(
+                        "---------> Cookie context isn't properly initialized - ERROR.\n",
+                        this.context);
+                }
+                return;
+            }
+
             var activeHosts = this.context.cookies.activeHosts;
             for (var hostName in activeHosts)
             {
