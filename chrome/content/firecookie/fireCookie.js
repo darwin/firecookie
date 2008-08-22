@@ -364,7 +364,7 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         // Name and domain.
         cookie.name = this.getDefaultCookieName(context);
         cookie.host = context.window.location.host;
-        cookie.value = "Value";        
+        cookie.value = $FC_STR("firecookie.createcookie.defaultvalue");
 
         // Default path
         var path = context.window.location.pathname || "/";
@@ -526,12 +526,38 @@ Firebug.FireCookieModel = extend(Firebug.Module,
 
 function $FC_STR(name)
 {
-    return document.getElementById("strings_firecookie").getString(name);
+    try
+    {
+        return document.getElementById("strings_firecookie").getString(name);
+    }
+    catch (err)
+    {
+        if (FBTrace.DBG_COOKIES)
+        {
+            FBTrace.sysout("---------> Missing translation for: " + name + "\n");
+            FBTrace.dumpProperties("---------> getString FAILS ", err);
+        }
+    }
+
+    return name;
 }
 
 function $FC_STRF(name, args)
 {
-    return document.getElementById("strings_firecookie").getFormattedString(name, args);
+    try
+    {
+        return document.getElementById("strings_firecookie").getFormattedString(name, args);
+    }
+    catch (err)
+    {
+        if (FBTrace.DBG_COOKIES)
+        {
+            FBTrace.sysout("---------> Missing translation for: " + name + "\n");
+            FBTrace.dumpProperties("---------> getString FAILS ", err);
+        }
+    }
+
+    return name;
 }
 
 function $FC_STR_BRAND(name)
