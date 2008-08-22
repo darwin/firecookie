@@ -7,6 +7,12 @@
     <em:id>firecookie@janodvarko.cz</em:id>
     <em:version>0.7</em:version>
     <em:type>2</em:type>
+    <em:name>Firecookie</em:name>
+    <em:description>Cookie manager for Firebug. Firebug has to be installed in order to use this extension.</em:description>
+    <em:creator>Jan Odvarko</em:creator>
+    <em:contributor>Aleksandar Gajic (cookie icon)</em:contributor>
+    <em:iconURL>chrome://firecookie/skin/cookie32.png</em:iconURL>
+    <em:homepageURL>http://www.janodvarko.cz/firecookie</em:homepageURL>
 
     <!-- Firefox -->
     <em:targetApplication>
@@ -17,11 +23,14 @@
       </Description>
     </em:targetApplication>
 
-    <em:name>Firecookie</em:name>
-    <em:description>Cookie manager for Firebug. Firebug has to be installed in order to use this extension.</em:description>
-    <em:creator>Jan Odvarko</em:creator>
-    <em:contributor>Aleksandar Gajic (cookie icon)</em:contributor>
-    <em:iconURL>chrome://firecookie/skin/cookie32.png</em:iconURL>
-    <em:homepageURL>http://www.janodvarko.cz/firecookie</em:homepageURL>
+    <!-- Firebug -->
+    <em:requires>
+      <Description>
+        <em:id>firebug@software.joehewitt.com</em:id>
+        <em:minVersion>1.0</em:minVersion>
+        <em:maxVersion>1.2.*</em:maxVersion>
+      </Description>
+    </em:requires>
+      
   </Description>      
 </RDF>

@@ -1,3 +1,4 @@
+pref("extensions.firecookie@janodvarko.cz.description", "chrome://firecookie/locale/firecookie.properties");
 
 // Global
 pref("extensions.firebug.firecookie.logEvents", true);

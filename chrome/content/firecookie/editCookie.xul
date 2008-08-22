@@ -9,80 +9,64 @@
 %firecookieDTD;
 ]>
 
-<window id="fcEditCookieDlg"
-    class="windowDialog"
-    windowtype="Browser:CookieEditor"
-    title="&firecookie.edit.title;"
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    persist="width height screenX screenY"
-    onload="EditCookie.onLoad()">
+<dialog id="fcEditCookieDlg" 
+        windowtype="Browser:CookieEditor"
+	    title="&firecookie.edit.title;"
+	    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	    ondialogaccept="EditCookie.onOK()"
+	    onload="EditCookie.onLoad()"
+	    minwidth="360px"
+	    persist="width height screenX screenY">
 
-    <script type="application/x-javascript" src="chrome://firebug/content/xpcom.js"/>
-    <script type="application/x-javascript" src="chrome://firebug/content/lib.js"/>
-    <script type="application/x-javascript" src="chrome://firecookie/content/editCookie.js"/>
+	<script type="application/x-javascript" src="chrome://firebug/content/xpcom.js"/>
+	<script type="application/x-javascript" src="chrome://firebug/content/lib.js"/>
+	<script type="application/x-javascript" src="chrome://firecookie/content/editCookie.js"/>
 
-  	<stringbundle id="cookieBundle" src="chrome://firecookie/locale/fireCookie.properties"/>
-           
-<box id="clientBox">
-	<grid flex="1">  
+	<stringbundleset id="stringbundleset">
+		<stringbundle id="cookieBundle" src="chrome://firecookie/locale/fireCookie.properties"/>
+	</stringbundleset>
+
+	<grid flex="1">
 		<columns>
 			<column/>
 			<column flex="1"/>
 		</columns>
-
 		<rows>
 			<row align="center">
-				<hbox align="center" pack="end">
-                    <label value="&firecookie.edit.name.label;"/>
-				</hbox>
+				<vbox align="end">
+					<label value="&firecookie.edit.name.label;"/>
+				</vbox>
 				<textbox id="fcName"/>
 			</row>
-
 			<row align="center">
-				<hbox align="center" pack="end">
-                    <label id="fcIsDomain" value="&firecookie.edit.domain.label;"/>
-				</hbox>
+				<vbox align="end">
+					<label id="fcIsDomain" value="&firecookie.edit.domain.label;"/>
+				</vbox>
 				<textbox id="fcDomain" />
 			</row>
-
 			<row align="center">
-				<hbox align="center" pack="end">
-                    <label value="&firecookie.edit.path.label;"/>
-				</hbox>
+				<vbox align="end">
+					<label value="&firecookie.edit.path.label;"/>
+				</vbox>
 				<textbox id="fcPath" />
 			</row>
-      	
 			<row align="center">
-				<hbox align="center" pack="end">
-                    <label value="&firecookie.edit.expire.label;"/>
-				</hbox>
+				<vbox align="end">
+					<label value="&firecookie.edit.expire.label;"/>
+				</vbox>
 				<hbox>
-				    <textbox id="fcExpire" cols="12" flex="1"/>
-				    <checkbox id="fcSession" label="&firecookie.edit.session.label;"
-				        oncommand="EditCookie.onSession()"/>
+					<textbox id="fcExpire" cols="12" flex="1"/>
+					<checkbox id="fcSession" label="&firecookie.edit.session.label;" oncommand="EditCookie.onSession()"/>
 				</hbox>
 			</row>
-      	
-			<row align="center">
-				<hbox align="center" pack="end">
-                    <label value="&firecookie.edit.value.label;"/>
-				</hbox>
+			<row>
+				<vbox align="end">
+					<label value="&firecookie.edit.value.label;"/>
+				</vbox>
 				<textbox id="fcValue" flex="1" multiline="true" rows="3"/>
 			</row>
-			
-            <checkbox id="fcSecure" label="&firecookie.edit.secure.label;"/>
+			<checkbox id="fcSecure" label="&firecookie.edit.secure.label;"/>
 		</rows>
 	</grid>
-</box>
-
-<separator id="groove" class="groove"/>
- 
-<hbox align="center">
-    <spacer flex="1"/>
-    <button label="&firecookie.edit.ok.label;" oncommand="EditCookie.onOK()"/>
-    <button label="&firecookie.edit.cancel.label;" oncommand="EditCookie.onCancel()"/>
-    <spacer flex="1"/>
-</hbox>
-
-</window>
-
+	<separator class="groove"/>
+</dialog>

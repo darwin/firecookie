@@ -17,8 +17,6 @@
 <!ENTITY  firecookie.edit.domain.label       "Host:">
 <!ENTITY  firecookie.edit.path.label         "Path:">
 <!ENTITY  firecookie.edit.expire.label       "Expires:">
-<!ENTITY  firecookie.edit.ok.label           "OK">
-<!ENTITY  firecookie.edit.cancel.label       "Cancel">
 <!ENTITY  firecookie.edit.session.label      "Session">
 <!ENTITY  firecookie.edit.secure.label       "Secure Cookie">
 <!ENTITY  firecookie.Filter                  "Filter">
