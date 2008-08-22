@@ -1,0 +1,27 @@
+<!ENTITY firecookie.RemoveAll "Usuń dla witryny">
+<!ENTITY firecookie.Create "Utwórz ciasteczko">
+<!ENTITY firecookie.ViewAll "Wyświetl ciasteczka...">
+<!ENTITY firecookie.ViewAllTooltip "Otwiera menedżera ciasteczek">
+<!ENTITY firecookie.ViewExceptions "Wyjątki...">
+<!ENTITY firecookie.ViewExceptionsTooltip "Wyświetla listę dozwolonych i zablokowanych witryn">
+<!ENTITY firecookie.Tools "Narzędzia">
+<!ENTITY firecookie.ToolsTooltip "Narzędzia">
+<!ENTITY firecookie.Help "Pomoc">
+<!ENTITY firecookie.HelpTooltip "Pomoc dla Firecookie">
+<!ENTITY firecookie.About "Informacje...">
+<!ENTITY firecookie.AboutTooltip "Wyświetla informacje o Firecookie">
+<!ENTITY firecookie.edit.title "Edycja ciasteczka">
+<!ENTITY firecookie.edit.group.title "Szczegóły ciasteczka">
+<!ENTITY firecookie.edit.name.label "Nazwa:">
+<!ENTITY firecookie.edit.value.label "Zawartość:">
+<!ENTITY firecookie.edit.domain.label "Host:">
+<!ENTITY firecookie.edit.path.label "Ścieżka:">
+<!ENTITY firecookie.edit.expire.label "Wygasa:">
+<!ENTITY firecookie.edit.session.label "Sesja">
+<!ENTITY firecookie.edit.secure.label "Bezpieczne ciasteczko">
+<!ENTITY firecookie.Filter "Filtr">
+<!ENTITY firecookie.FilterTooltip "Użyj odpowiednich opcji do filtrowania listy ciasteczek">
+<!ENTITY firecookie.filter.byPath "Filtruj ciasteczka wg ścieżki">
+<!ENTITY firecookie.filter.byPathTooltip "Wyświetlaj tylko ciasteczka właściwe dla aktywnej strony">
+<!ENTITY firecookie.filter.showRejectedCookies "Wyświetlaj odrzucone ciasteczka">
+<!ENTITY firecookie.filter.showRejectedCookiesTooltip "Wyświetla na liście odrzucone ciasteczka">
