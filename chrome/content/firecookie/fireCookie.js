@@ -661,9 +661,9 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
                 if (!host.rejected)
                     continue;
                     
-                var rejectedCookies = host.rejectedCookies;
-                if (rejectedCookies)
-                    cookies = extendArray(cookies, rejectedCookies);
+                var receivedCookies = host.receivedCookies;
+                if (receivedCookies)
+                    cookies = extendArray(cookies, receivedCookies);
             }
         }
          
@@ -1140,16 +1140,23 @@ Templates.CookieRow = domplate(Templates.Rep,
         if (cookie.cookie.expires == 0)
             return " " + $FC_STR("firecookie.Session");
             
-        // Format the expires date using the current locale.
-        var date = new Date(cookie.cookie.expires * 1000);
-        return dateFormat.FormatDateTime("", dateFormat.dateFormatLong,
-            dateFormat.timeFormatSeconds,
-            date.getFullYear(),
-            date.getMonth() + 1,
-            date.getDate(),
-            date.getHours(),
-            date.getMinutes(),
-            date.getSeconds());
+        try {
+            // Format the expires date using the current locale.
+            var date = new Date(cookie.cookie.expires * 1000);
+            return dateFormat.FormatDateTime("", dateFormat.dateFormatLong,
+                dateFormat.timeFormatSeconds,
+                date.getFullYear(),
+                date.getMonth() + 1,
+                date.getDate(),
+                date.getHours(),
+                date.getMinutes(),
+                date.getSeconds());
+        }
+        catch (err) {
+            ERROR(err);
+        }
+
+        return "";
     },
     
     isSessionCookie: function(cookie) {
@@ -1635,7 +1642,7 @@ Templates.CookieRejected = domplate(Templates.Rep,
     {
         var context = cookieEvent.context;
         var activeHost = context.cookies.activeHosts[cookieEvent.uri.host];        
-        var cookies = activeHost.rejectedCookies;
+        var cookies = activeHost.receivedCookies;
         if (!cookies)
             return $FC_STR("firecookie.console.nocookiesreceived");
             
@@ -2301,7 +2308,21 @@ function parseFromString(string)
             {
                 var value = option[1];
                 value = value.replace(/-/g, " ");
-                cookie[name] = Date.parse(value);
+                cookie[name] = Date.parse(value) / 1000;
+
+                // Log error if the date isn't correctly parsed.
+                if (FBTrace.DBG_COOKIES)
+                {
+                    var tempDate = new Date(cookie[name] * 1000);
+                    if (value != tempDate.toGMTString())
+                    {
+                        FBTrace.sysout("---------> parseFromString: ERROR, " + 
+                            "from: " + value + 
+                            ", to: " + tempDate.toGMTString() + 
+                            ", cookie: " + string + 
+                            "\n");
+                    }
+                }
             }
             else
             {
@@ -2544,9 +2565,9 @@ var CookieObserver = extend(BaseObserver,
         if (activeHost)
             activeHost.rejected = true;
 
-        var rejectedCookies = activeHost ? activeHost.rejectedCookies : null;
-        for (var i=0; rejectedCookies && i<rejectedCookies.length; i++)
-            rejectedCookies[i].cookie.rejected = true;
+        var receivedCookies = activeHost ? activeHost.receivedCookies : null;
+        for (var i=0; receivedCookies && i<receivedCookies.length; i++)
+            receivedCookies[i].cookie.rejected = true;
 
         // Refresh the panel asynchronously.
         context.invalidatePanels(panelName);
@@ -2557,11 +2578,11 @@ var CookieObserver = extend(BaseObserver,
             
         // The "cookies-rejected" event is send even if no cookies 
         // from the blocked site have been actually received.
-        // So, the rejectedCookies array can be null.
+        // So, the receivedCookies array can be null.
         // Don't display anything in the console in that case,
         // there could be a lot of "Cookie Rejected" events.
         // There would be actually one for each embedded request.
-        if (!rejectedCookies)
+        if (!receivedCookies)
             return;
             
         // Create group log for list of rejected cookies.
@@ -2577,7 +2598,7 @@ var CookieObserver = extend(BaseObserver,
         removeClass(groupRow, "opened");
         Firebug.Console.closeGroup(context, true);
 
-        if (!rejectedCookies)
+        if (!receivedCookies)
         {
             // Never called due to the condition above.
             // Remove the twisty button.
@@ -2592,7 +2613,7 @@ var CookieObserver = extend(BaseObserver,
             // Insert all rejected cookies.
             var header = getElementByClass(table, "cookieHeaderRow");
             var tag = Templates.CookieRow.cookieTag;
-            context.throttle(tag.insertRows, tag, [{cookies: rejectedCookies}, header]);
+            context.throttle(tag.insertRows, tag, [{cookies: receivedCookies}, header]);
         }
     },
     
@@ -2645,16 +2666,16 @@ var CookieObserver = extend(BaseObserver,
         repCookie.rawHost = makeStrippedHost(cookie.host);
             
         var row = repCookie.row;
-        var template = Templates.CookieRow;
+        var rowTemplate = Templates.CookieRow;
         
         if (hasClass(row, "opened"))
         {
             var cookieInfoBody = getElementByClass(row.nextSibling, "cookieInfoBody");
             cookieInfoBody.valuePresented = false;
-            template.updateInfo(cookieInfoBody, repCookie, context);
+            rowTemplate.updateInfo(cookieInfoBody, repCookie, context);
         }
 
-        template.updateRow(repCookie, context);
+        rowTemplate.updateRow(repCookie, context);
         
         if (FBTrace.DBG_COOKIES)
             checkList(panel);
@@ -2858,7 +2879,7 @@ var HttpObserver = extend(BaseObserver,
             return;
             
         // If logging to console is on, remember the set-cookie string, so
-        // these cookies can be displayed together with rejected message.
+        // these cookies can be displayed together e.g. with rejected message.
         var setCookie;            
         request.visitResponseHeaders({
             visitHeader: function(header, value) {
@@ -2881,20 +2902,22 @@ var HttpObserver = extend(BaseObserver,
         context = context ? context : TabWatcher.getContextByWindow(win);
             
         // Associate the setCookie string with proper active host (active
-        // host can be the page itself or embedded iframe).
+        // host can be the page itself or an embedded iframe or a XHR).
+        // Also remember originalURI so, the info where the cookies comes
+        // from can be displayed to the user.
         var activeHosts = context.cookies.activeHosts;
         var host = request.URI.host;
         var activeHost = activeHosts[host];
-        activeHost.rejectedCookies = [];
+        activeHost.receivedCookies = [];
+        activeHost.originalURI = request.originalURI;
 
-        // Parse all rejected cookies and store them into activeHost info.
-        // Rejected cookies are displayed in the Console tab.
+        // Parse all received cookies and store them into activeHost info.
         var cookies = setCookie.split("\n");
         for (var i=0; i<cookies.length; i++)
         {
             var cookie = parseFromString(cookies[i]);
             cookie.host = host;
-            activeHost.rejectedCookies.push(new Cookie(cookie));
+            activeHost.receivedCookies.push(new Cookie(cookie));
         }
     }
 });
