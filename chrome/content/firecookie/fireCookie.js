@@ -683,7 +683,7 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
         }
         
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> Cookie list refreshed.\n");
+            FBTrace.dumpProperties("---------> Cookie list refreshed.\n", cookies);
         
         // xxxHonza the last sorted column should be remembered in preferences.
     },
@@ -2893,7 +2893,7 @@ var HttpObserver = extend(BaseObserver,
             return;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> Set-Cookie: " + setCookie + "\n");
+            FBTrace.dumpProperties("---------> Set-Cookie: " + setCookie + "\n", request);
 
         // Try to get the context from the contexts array first. The TabWatacher
         // could return context for the previous page in this tab.
