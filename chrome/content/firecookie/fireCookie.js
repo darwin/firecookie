@@ -160,6 +160,12 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         // can be more hosts (domains) involved on the page. Cookies must be displayed for
         // all of them.
         context.cookies.activeHosts = cloneMap(tempContext.cookies.activeHosts);
+
+        // Clone all active (received) cookies on the page.
+        // This is probably not necessary, as the first cookie is received
+        // in http-on-examine-response and at that time the real context
+        // is already created.
+        context.cookies.activeCookies = cloneMap(tempContext.cookies.activeCookies);
         
         // Fire all lost cookie events (those from the temp context).
         var events = tempContext.events;
@@ -171,6 +177,7 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         }
         
         delete tempContext.cookies.activeHosts;
+        delete tempContext.cookies.activeCookies;
         delete tempContext.cookies;
         
         // Unregister temporary cookie observer.
@@ -308,9 +315,6 @@ Firebug.FireCookieModel = extend(Firebug.Module,
             
         if (FBTrace.DBG_COOKIES)                
         {
-            for (var i=0; i<5; i++)
-                FBTrace.sysout("\n");
-                
             var tabId = getTabIdForWindow(view);
             FBTrace.sysout("---------> On before unload tab:  " + tabId + "\n");
             
@@ -1530,8 +1534,8 @@ Templates.CookieChanged = domplate(Templates.Rep,
                                 "$object|getValue")
                         ),
                         TD(
-                            SPAN({class: "cookieDomainLabel", onclick: "$onClickDomain"}, 
-                                "$object|getDomain"),
+                            SPAN({class: "cookieDomainLabel", onclick: "$onClickDomain",
+                                title: "$object|getOriginalURI"}, "$object|getDomain"),
                             SPAN("&nbsp;") 
                         )
                     )
@@ -1559,6 +1563,47 @@ Templates.CookieChanged = domplate(Templates.Rep,
 
     onClickDomain: function(event) 
     {
+    },
+
+    getOriginalURI: function(cookieEvent)
+    {
+        var context = cookieEvent.context;
+        var strippedHost = cookieEvent.rawHost;
+
+        if (!context.cookies.activeCookies)
+            return strippedHost;
+
+        var name = cookieEvent.cookie.name;
+        var path = cookieEvent.cookie.path;
+
+        if (FBTrace.DBG_COOKIES)
+        {
+            FBTrace.dumpProperties("---------> activeHosts:", 
+                context.cookies.activeCookies);
+
+            FBTrace.dumpProperties("---------> getOriginalURI: " + 
+                strippedHost + ", " + name + ", " + path +
+                "\n", cookieEvent);
+        }
+
+        var activeCookies = context.cookies.activeCookies[strippedHost];
+        if (!activeCookies)
+            return strippedHost;
+
+        // Iterate list of received cookies for this context and look for the match. 
+        // There is an info about the originalURI where the cookie came from.
+        for (var i=0; i<activeCookies.length; i++) 
+        {
+            var cookie = activeCookies[i].cookie;
+            if (makeStrippedHost(cookie.host) == strippedHost &&
+                cookie.name == name &&
+                cookie.path == path) 
+            {
+                return cookie.originalURI.spec;
+            }
+        }
+
+        return cookieEvent.rawHost;
     },
 
     getAction: function(cookieEvent) {
@@ -2343,8 +2388,9 @@ function parseFromString(string)
  * "changed", "added" and "deleted".
  * Appropriate type is specified by action parameter.
  */
-function CookieChangedEvent(cookie, action)
+function CookieChangedEvent(context, cookie, action)
 {
+    this.context = context;
     this.cookie = cookie;
     this.action = action;     
     this.rawHost = makeStrippedHost(cookie.host);
@@ -2516,8 +2562,9 @@ var CookieObserver = extend(BaseObserver,
             
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.sysout("---------> onCookieChanged: " + (cookie ? cookie.name : "null") + 
-                ", " + action + "\n");
+            FBTrace.dumpProperties("---------> onCookieChanged: " + 
+                (cookie ? cookie.name : "null") + 
+                ", " + action + "\n", cookie);
         }
         
         switch(action)
@@ -2538,7 +2585,7 @@ var CookieObserver = extend(BaseObserver,
     
         // If log into the Console tab is on, print "deleted", "added" and "changed" events.
         if (logEvents())
-            this.logEvent(new CookieChangedEvent(cookie, action), context, "cookie");
+            this.logEvent(new CookieChangedEvent(context, cookie, action), context, "cookie");
     },
    
     onClear: function(context)
@@ -2853,11 +2900,14 @@ var HttpObserver = extend(BaseObserver,
         
             if (FBTrace.DBG_COOKIES) 
             {
-                FBTrace.sysout("---------> New host (on-modify-request): " + request.URI.host + ", tabId: " + tabId + "\n");
-                FBTrace.sysout("---------> Active hosts: ");
+                FBTrace.sysout("---------> New host (on-modify-request): " + 
+                    request.URI.host + ", tabId: " + tabId + "\n");
+
+                var hostList = "";
                 for (var host in activeHosts)
-                    FBTrace.sysout(host + ", ");
-                FBTrace.sysout("\n");
+                    hostList += host + ", ";
+                FBTrace.dumpProperties("---------> Active host list: " + hostList + "\n",
+                    activeHosts);
             }
 
             // Refresh the panel asynchronously.
@@ -2908,16 +2958,50 @@ var HttpObserver = extend(BaseObserver,
         var activeHosts = context.cookies.activeHosts;
         var host = request.URI.host;
         var activeHost = activeHosts[host];
-        activeHost.receivedCookies = [];
-        activeHost.originalURI = request.originalURI;
+        
+        // Map of all received cookies. The key is cookie-host the value is 
+        // an array with all cookies with the same host.
+        if (!context.cookies.activeCookies)
+            context.cookies.activeCookies = [];
+
+        var activeCookies = context.cookies.activeCookies;
+
+        // xxxHonza 
+        // 1)the activeHost.receivedCookies array shouldn't be recreated 
+        // if it's already there.
+        // 2) There can be more responses from the same domain (XHRs) and so,
+        // more received cookies within the page life.
+        // 3) The list should make sure that received cookies aren't duplicated.
+        // (the same cookie can be received multiple time).
+        // 4) Also, rejected cookies, are displayed in the cookie-list too and
+        // these shouldn't be duplicated.
+        // 5) This should be a map (key == the original host)
+        //if (!activeHost.receivedCookies)
+            activeHost.receivedCookies = [];
 
         // Parse all received cookies and store them into activeHost info.
         var cookies = setCookie.split("\n");
         for (var i=0; i<cookies.length; i++)
         {
             var cookie = parseFromString(cookies[i]);
-            cookie.host = host;
-            activeHost.receivedCookies.push(new Cookie(cookie));
+            cookie.originalURI = request.originalURI;
+            if (!cookie.host)
+                cookie.host = host;
+
+            // Push into activeHosts
+            var cookieWrapper = new Cookie(cookie);
+            activeHost.receivedCookies.push(cookieWrapper);
+            
+            // Push into activeCookies
+            if (!activeCookies[cookie.host])
+                activeCookies[cookie.host] = [];
+            activeCookies[cookie.host].push(cookieWrapper);
+
+            if (FBTrace.DBG_COOKIES) 
+            {
+                FBTrace.dumpProperties("---------> Cookie received: " + 
+                    cookie.host + ", cookie: " + cookie.name + "\n", cookie);
+            }
         }
     }
 });
