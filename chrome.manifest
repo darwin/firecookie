@@ -5,5 +5,6 @@ locale	firecookie	en-US		chrome/locale/en-US/
 locale	firecookie	pl-PL		chrome/locale/pl-PL/
 locale	firecookie	de-DE		chrome/locale/de-DE/
 locale	firecookie	pt-BR		chrome/locale/pt-BR/
+locale	firecookie	tr-TR		chrome/locale/tr-TR/
 
 overlay chrome://firebug/content/firebugOverlay.xul         chrome://firecookie/content/fireCookie.xul
