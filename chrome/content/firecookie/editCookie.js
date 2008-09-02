@@ -7,6 +7,8 @@ with (FBL) {
 const cookieManager = CCSV("@mozilla.org/cookiemanager;1", "nsICookieManager2");
 const cookieService = CCSV("@mozilla.org/cookieService;1", "nsICookieService");
 const ioService = CCSV("@mozilla.org/network/io-service;1", "nsIIOService");
+const versionChecker = CCSV("@mozilla.org/xpcom/version-comparator;1", "nsIVersionComparator");
+const appInfo = CCSV("@mozilla.org/xre/app-info;1", "nsIXULAppInfo");
 
 var EditCookie = 
 {
@@ -14,6 +16,10 @@ var EditCookie =
     
     onLoad: function()
     {
+        // Use new <datepicker> and <timepicker> XUL elements (introduced in Firefox 3)
+        if (versionChecker.compare(appInfo.version, "3.0*") >= 0)
+            this.replaceDateTimeField();
+
         var params = window.arguments[0];
         this.params = params;
         this.cookie = params.cookie;
@@ -42,8 +48,18 @@ var EditCookie =
         else
         {
             this.sessionNode.checked = true;
-            this.onSession();
+
+            // Set default value for expire time if the cookie doesn't have it.
+            if (!this.expireNode.value)
+            {
+                var expireTime = Firebug.FireCookieModel.getDefaultCookieExpireTime();
+                var expires = new Date(expireTime * 1000);
+                this.expireNode.value = expires.toGMTString();
+            }
         }
+
+        // Update expire date-time picker.
+        this.onSession();
     },
     
     onOK: function()
@@ -57,9 +73,12 @@ var EditCookie =
         var isSession = this.sessionNode.checked;
         var isDomain = (domain.charAt(0) == ".");
         var expires = null;
-        
+
+        // xxxHonza: Notice that if the user sets the session flag, the cookie
+        // will be immediately removed.
         if (!isSession)
         {
+            // If it isn't a session cookie set the proper expire time.
             expires = new Date();
             expires.setTime(Date.parse(this.expireNode.value));          
             expires = Math.floor(expires.valueOf() / 1000);
@@ -112,13 +131,6 @@ var EditCookie =
     onSession: function()
     {
         this.expireNode.disabled = this.sessionNode.checked;
-        
-        if (!this.expireNode.disabled && !this.expireNode.value)
-        {
-            var now = new Date();
-            now.setTime(now.getTime() + (2*60*60*1000));
-            this.expireNode.value = now.toGMTString();      
-        }
     },
     
     checkUrl: function(host, path)
@@ -140,8 +152,33 @@ var EditCookie =
 		}
 
         return true;    	
+    },
+
+    replaceDateTimeField: function()
+    {
+        // Remove the old text field.
+        var expireBox = document.getElementById("fcExpireBox");
+        while (expireBox.childNodes.length)
+            expireBox.removeChild(expireBox.lastChild);
+
+        // Create new element for date time picking.
+        var dateTimePicker = document.createElement("dateTimePicker");
+        dateTimePicker.id = "fcExpire";
+        expireBox.appendChild(dateTimePicker);
+    },
+
+    getChromeWindow: function()
+    {
+        return window.QueryInterface(Ci.nsIInterfaceRequestor)
+           .getInterface(Ci.nsIWebNavigation).QueryInterface(Ci.nsIDocShellTreeItem)
+           .rootTreeItem.QueryInterface(Ci.nsIInterfaceRequestor)
+           .getInterface(Ci.nsIDOMWindow); 
     }
 }
+
+//-----------------------------------------------------------------------------
+
+const Firebug = EditCookie.getChromeWindow().Firebug;
 
 //-----------------------------------------------------------------------------
 }
