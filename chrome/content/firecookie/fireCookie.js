@@ -28,7 +28,7 @@ const nsIPermission = Ci.nsIPermission;
 const nsIXULAppInfo = Ci.nsIXULAppInfo;
 const nsIVersionComparator = Ci.nsIVersionComparator;
 
-// Preferences
+// Firefox Preferences
 const networkPrefDomain = "network.cookie";
 const cookieBehaviorPref = "cookieBehavior";
 const cookieLifeTimePref = "lifetimePolicy";
@@ -36,10 +36,12 @@ const cookieLifeTimePref = "lifetimePolicy";
 // FirebugPrefDomain is not defined in 1.05.
 const FirebugPrefDomain = "extensions.firebug";
 
+// Firecookie preferences
 const logEventsPref = "firecookie.logEvents";
 const clearWhenDeny = "firecookie.clearWhenDeny";
 const filterByPath = "firecookie.filterByPath";
 const showRejectedCookies = "firecookie.showRejectedCookies";
+const defaultExpireTime = "firecookie.defaultExpireTime";
 
 // Services
 const cookieManager = CCSV("@mozilla.org/cookiemanager;1", "nsICookieManager2");
@@ -439,10 +441,13 @@ Firebug.FireCookieModel = extend(Firebug.Module,
 
     getDefaultCookieExpireTime: function()
     {
-        // Current time plus two hours.
-        // xxxHonza this should be in preferences.
+        // Get default expire time interval (in seconds) and add it to the
+        // current time.
+        var defaultInterval = getPref(FirebugPrefDomain, defaultExpireTime);
         var now = new Date();
-        now.setTime(now.getTime() + (2*60*60*1000));
+        now.setTime(now.getTime() + (defaultInterval * 1000));
+
+        // Return final expiration time.
         return (now.getTime() / 1000);
     },
 
