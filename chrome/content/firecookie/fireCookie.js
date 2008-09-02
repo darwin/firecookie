@@ -12,7 +12,6 @@ const Ci = Components.interfaces;
 const nsISupportsWeakReference = Ci.nsISupportsWeakReference;
 const nsISupports = Ci.nsISupports;
 const nsICookieService = Ci.nsICookieService;
-const nsICookie = Ci.nsICookie;
 const nsICookie2 = Ci.nsICookie2;
 const nsIObserver = Ci.nsIObserver;
 const nsICookiePermission = Ci.nsICookiePermission;
@@ -65,17 +64,17 @@ const prefs = PrefService.getService(nsIPrefBranch2);
 const panelName = "cookies";
 
 // Cookie status & policy
-var STATUS_UNKNOWN = nsICookie.STATUS_UNKNOWN;
-var STATUS_ACCEPTED = nsICookie.STATUS_ACCEPTED;
-var STATUS_DOWNGRADED = nsICookie.STATUS_DOWNGRADED;
-var STATUS_FLAGGED = nsICookie.STATUS_FLAGGED;
-var STATUS_REJECTED = nsICookie.STATUS_REJECTED;
+var STATUS_UNKNOWN = nsICookie2.STATUS_UNKNOWN;
+var STATUS_ACCEPTED = nsICookie2.STATUS_ACCEPTED;
+var STATUS_DOWNGRADED = nsICookie2.STATUS_DOWNGRADED;
+var STATUS_FLAGGED = nsICookie2.STATUS_FLAGGED;
+var STATUS_REJECTED = nsICookie2.STATUS_REJECTED;
 
-var POLICY_UNKNOWN = nsICookie.POLICY_UNKNOWN;
-var POLICY_NONE = nsICookie.POLICY_NONE;
-var POLICY_NO_CONSENT = nsICookie.POLICY_NO_CONSENT;
-var POLICY_IMPLICIT_CONSENT = nsICookie.POLICY_IMPLICIT_CONSENT;
-var POLICY_NO_II = nsICookie.POLICY_NO_II;
+var POLICY_UNKNOWN = nsICookie2.POLICY_UNKNOWN;
+var POLICY_NONE = nsICookie2.POLICY_NONE;
+var POLICY_NO_CONSENT = nsICookie2.POLICY_NO_CONSENT;
+var POLICY_IMPLICIT_CONSENT = nsICookie2.POLICY_IMPLICIT_CONSENT;
+var POLICY_NO_II = nsICookie2.POLICY_NO_II;
 
 const permOptions =
 {
@@ -391,10 +390,8 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         var path = context.window.location.pathname || "/";
         cookie.path = path.substr(0, (path.lastIndexOf("/") || 1));
         
-        // Set defaul expiration time (one hour from now) xxxHonza
-        var now = new Date();
-        now.setTime(now.getTime() + (2*60*60*1000));
-        cookie.expires = (now.getTime() / 1000);
+        // Set defaul expiration time.
+        cookie.expires = this.getDefaultCookieExpireTime();
                 
         var params = {
           cookie: cookie,
@@ -438,6 +435,15 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         } while (exists)
                 
         return cookieName;
+    },
+
+    getDefaultCookieExpireTime: function()
+    {
+        // Current time plus two hours.
+        // xxxHonza this should be in preferences.
+        var now = new Date();
+        now.setTime(now.getTime() + (2*60*60*1000));
+        return (now.getTime() / 1000);
     },
 
     onFilter: function(context, pref)
@@ -642,7 +648,7 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
             if (!cookie)
                 break;
                 
-            cookie = cookie.QueryInterface(nsICookie);
+            cookie = cookie.QueryInterface(nsICookie2);
             if (!CookieObserver.isCookieFromContext(this.context, cookie))
                 continue;
             
@@ -1090,6 +1096,9 @@ Templates.CookieRow = domplate(Templates.Rep,
                 TD({class: "cookieExpiresCol cookieCol"},
                     DIV({class: "cookieExpiresLabel cookieLabel"}, "$cookie|getExpires")
                 ),
+                TD({class: "cookieHttpOnlyCol cookieCol"},
+                    DIV({class: "cookieHttpOnlyLabel cookieLabel"}, "$cookie|isHttpOnly")
+                ),
                 TD({class: "cookieSecurityCol cookieCol"},
                     DIV({class: "cookieLabel"}, "$cookie|isSecure")
                 ),
@@ -1101,7 +1110,7 @@ Templates.CookieRow = domplate(Templates.Rep,
     
     bodyRow:
         TR({class: "cookieInfoRow"},
-            TD({class: "cookieInfoCol", colspan: 8})
+            TD({class: "cookieInfoCol", colspan: 9})
         ),
     
     bodyTag:
@@ -1171,6 +1180,10 @@ Templates.CookieRow = domplate(Templates.Rep,
         return "";
     },
     
+    isHttpOnly: function(cookie) {
+        return cookie.cookie.isHttpOnly ? "HttpOnly" : "";
+    },
+
     isSessionCookie: function(cookie) {
         return !cookie.cookie.expires;
     },
@@ -1338,16 +1351,22 @@ Templates.CookieRow = domplate(Templates.Rep,
         if (!values || !context)
             return;
 
+        // Change name so it's unique and use the current host.
         values.name = Firebug.FireCookieModel.getDefaultCookieName(context, values.name);
         values.host = context.browser.currentURI.host;
 
-        var cookie = new Cookie(makeCookieObject(values));
-        var cookieString = cookie.toString();
-           
-        // Create a new cookie.        		
-        var httpProtocol = values.isSecure ? "https://" : "http://";
-        var uri = ioService.newURI(httpProtocol + values.host + values.path, null, null);
-        cookieService.setCookieString(uri, null, cookieString, null);        
+        // Unescape cookie value (it's escaped in toJSON method).
+        values.value = unescape(values.value);
+
+        // If the expire time isn't set use the default value. Some time must be set as 
+        // the session flag is alwas set to false (see add method below); otherwise the 
+        // cookie wouldn't be created.
+        if (!values.expire)
+            values.expires = Firebug.FireCookieModel.getDefaultCookieExpireTime();
+
+        // Create a new cookie.
+        cookieManager.add(values.host, values.path, values.name, values.value, 
+            values.isSecure, values.isHttpOnly, false, values.expires);
         
         if (FBTrace.DBG_COOKIES)
             checkList(context.getPanel(panelName, true));
@@ -1779,6 +1798,10 @@ Templates.CookieTable = domplate(Templates.Rep,
                     TD({id: "colExpires", class: "cookieHeaderCell alphaValue"},
                         DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.expires.tooltip")}, 
                         $FC_STR("firecookie.header.expires"))
+                    ),
+                    TD({id: "colHttpOnly", class: "cookieHeaderCell alphaValue"},
+                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.httponly.tooltip")}, 
+                        $FC_STR("firecookie.header.httpOnly"))
                     ),
                     TD({id: "colSecurity", class: "cookieHeaderCell alphaValue"},
                         DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.security.tooltip")}, 
@@ -2297,7 +2320,8 @@ Cookie.prototype =
             ((expires) ? "; expires=" + expires.toGMTString() : "") +
             ((this.cookie.path) ? "; path=" + this.cookie.path : "; path=/") +
             ((this.cookie.host) ? "; domain=" + this.cookie.host : "") +
-            ((this.cookie.secure) ? "; secure" : "");        
+            ((this.cookie.secure) ? "; secure" : "") + 
+            ((this.cookie.isHttpOnly) ? "; HttpOnly" : "");
     },
 
     toJSON: function()
@@ -2307,6 +2331,7 @@ Cookie.prototype =
             "expires: '" + this.cookie.expires + "'," +
             "path: '" + (this.cookie.path ? this.cookie.path : "/") + "'," +
             "host: '" + this.cookie.host + "'," +
+            "isHttpOnly: " + (this.cookie.isHttpOnly ? "true" : "false") + "," +
             "isSecure: " + (this.cookie.secure ? "true" : "false") + "})";
     }    
 };
@@ -2329,7 +2354,8 @@ function makeCookieObject(cookie)
         host        : cookie.host,
         path        : cookie.path,
         isSecure    : cookie.isSecure,
-        expires     : cookie.expires
+        expires     : cookie.expires,
+        isHttpOnly  : cookie.isHttpOnly
     };
     
     return c;
@@ -2357,7 +2383,11 @@ function parseFromString(string)
         {
             var name = option[0].toLowerCase();
             name = (name == "domain") ? "host" : name;
-            if (name == "expires")
+            if (name == "httponly")
+            {
+                cookie.isHttpOnly = true;
+            }
+            else if (name == "expires")
             {
                 var value = option[1];
                 value = value.replace(/-/g, " ");

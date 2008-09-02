@@ -220,8 +220,13 @@
 .cookieExpiresCol,
 .cookieValueCol,
 .cookieSecurityCol,
-.cookieStatusCol {
+.cookieStatusCol,
+.cookieHttpOnlyCol {
     padding-left: 10px;
+}
+
+.cookieHttpOnlyCol {
+    color: green;
 }
 
 .cookieSizeCol {

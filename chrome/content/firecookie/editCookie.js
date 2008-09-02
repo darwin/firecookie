@@ -25,12 +25,14 @@ var EditCookie =
         this.expireNode = $("fcExpire");
         this.sessionNode = $("fcSession");
         this.secureNode = $("fcSecure");
+        this.httpOnly = $("fcHttpOnly");
         
         this.nameNode.value = this.cookie.name;
         this.valueNode.value = this.cookie.value;
         this.domainNode.value = this.cookie.host;
         this.pathNode.value = this.cookie.path;
         this.secureNode.checked = this.cookie.isSecure;
+        this.httpOnly.checked = this.cookie.isHttpOnly;
 
         if (this.cookie.expires)
         {
@@ -51,6 +53,7 @@ var EditCookie =
         var path = this.pathNode.value;
         var domain = this.domainNode.value;
         var isSecure = this.secureNode.checked;
+        var isHttpOnly = this.httpOnly.checked;
         var isSession = this.sessionNode.checked;
         var isDomain = (domain.charAt(0) == ".");
         var expires = null;
@@ -58,18 +61,13 @@ var EditCookie =
         if (!isSession)
         {
             expires = new Date();
-            expires.setTime(Date.parse(this.expireNode.value));            
+            expires.setTime(Date.parse(this.expireNode.value));          
+            expires = Math.floor(expires.valueOf() / 1000);
         }
 
         if (!this.checkValues())
             return;
            
-        var cookieString = name + "=" + value +
-            (expires ? ";expires=" + expires.toGMTString() : "") +
-            (path ? ";path=" + path : ";path=/") +
-            ((domain && isDomain) ? ";domain=" + domain : "") +
-            (isSecure ? ";secure" : "");
-
         // Create URI                    
         var httpProtocol = isSecure ? "https://" : "http://";
         var uri = ioService.newURI(httpProtocol + domain + path, null, null);
@@ -77,9 +75,8 @@ var EditCookie =
         // Create/modify cookie.
         // Fix Issue #2 - contribution by arantius
         // cookieService.setCookieString(uri, null, cookieString, null);
-        cookieManager.add(
-            domain, path, name, value, isSecure, false, // false httpOnly ??
-            isSession, Math.floor(expires.valueOf()/1000));
+        cookieManager.add(domain, path, name, value, isSecure, isHttpOnly, 
+            isSession, expires);
 
         // Close dialog.                
         window.close();

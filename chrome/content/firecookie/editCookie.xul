@@ -65,7 +65,10 @@
 				</vbox>
 				<textbox id="fcValue" flex="1" multiline="true" rows="3"/>
 			</row>
-			<checkbox id="fcSecure" label="&firecookie.edit.secure.label;"/>
+            <hbox>
+                <checkbox id="fcSecure" label="&firecookie.edit.secure.label;"/>
+                <checkbox id="fcHttpOnly" label="&firecookie.edit.httponly.label;"/>
+            </hbox>
 		</rows>
 	</grid>
 	<separator class="groove"/>
