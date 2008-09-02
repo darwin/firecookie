@@ -115,7 +115,11 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         observerService.addObserver(HttpObserver, "http-on-examine-response", false);   
         observerService.addObserver(PermissionObserver, "perm-changed", false);
         registerCookieObserver(CookieObserver);        
-        prefs.addObserver(networkPrefDomain, PrefObserver, false);              
+        prefs.addObserver(networkPrefDomain, PrefObserver, false); 
+
+        // Tracing in Firebug 1.3
+        if (Firebug.TraceModule.addListener)
+            Firebug.TraceModule.addListener(this.TraceListener);
     },
 
     shutdown: function() 
@@ -125,6 +129,10 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         observerService.removeObserver(PermissionObserver, "perm-changed");
         unregisterCookieObserver(CookieObserver);
         prefs.removeObserver(networkPrefDomain, PrefObserver);
+
+        // Tracing in Firebug 1.3
+        if (Firebug.TraceModule.removeListener)
+            Firebug.TraceModule.removeListener(this.TraceListener);
     },
 
     // Helper context
@@ -152,8 +160,8 @@ Firebug.FireCookieModel = extend(Firebug.Module,
                 
             FBTrace.sysout("---------> Copy active hosts to real-context: ");
             for (var host in tempContext.cookies.activeHosts)
-                FBTrace.sysout(host + ", ");
-            FBTrace.sysout("in the temp context.\n");
+                FBTrace.sysout("--------->" + host + ", ");
+            FBTrace.sysout("---------> in the temp context.\n");
         }            
 
         // Copy all active hosts on the page. In case of redirects or embedded IFrames, there
@@ -3193,6 +3201,32 @@ function unregisterCookieObserver(observer) {
     observerService.removeObserver(observer, "cookie-changed");
     observerService.removeObserver(observer, "cookie-rejected");
 }
+
+// Support for FBTraceConsole in Firebug 1.3
+//-----------------------------------------------------------------------------
+
+Firebug.FireCookieModel.TraceListener = 
+{
+    onLoadConsole: function(win, rootNode)
+    {
+        var doc = rootNode.ownerDocument;
+        var styleSheet = createStyleSheet(doc, 
+            "chrome://firecookie/skin/firecookieTrace.css");
+        styleSheet.setAttribute("id", "fcCookieLogs");
+	    addStyleSheet(doc, styleSheet);
+    },
+
+    onDump: function(message)
+    {
+        var index = message.text.indexOf("--------->");
+        if (index == 0)
+        {
+            message.text = message.text.substr("--------->".length);
+            message.text = trimLeft(message.text);
+            message.type = "DBG_COOKIES";
+        }
+    }
+};
 
 // Firebug Registration
 //-----------------------------------------------------------------------------
