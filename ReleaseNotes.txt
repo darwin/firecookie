@@ -1,4 +1,4 @@
-Release Notes for Firecookie 0.6.1
+Release Notes for Firecookie 0.6.2
 ----------------------------------
 Author: Jan Odvarko, odvarko@gmail.com, http://www.softwareishard.com/
 Home page: http://www.janodvarko.cz/firecookie

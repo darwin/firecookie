@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>firecookie@janodvarko.cz</em:id>
-    <em:version>0.6.1</em:version>
+    <em:version>0.6.2</em:version>
     <em:type>2</em:type>
     <em:name>Firecookie</em:name>
     <em:description>Cookie manager for Firebug. Firebug has to be installed in order to use this extension.</em:description>
