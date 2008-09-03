@@ -398,6 +398,33 @@ Firebug.FireCookieModel = extend(BaseModule,
     },
 
     /**
+     * Helper for creating a new cookie in Firefox. Used by the editCookie 
+     * dialog and the clipboard (onPaste).
+     */
+    createNewCookie: function(cookie)
+    {
+        // xxxHonza: it't weird, but the cookie-manager works only in 
+        // Firefox 3 and cookie-service only in Firefox 2
+        if (versionChecker.compare(appInfo.version, "3.0*") >= 0)
+        {
+            cookieManager.add(cookie.cookie.host, cookie.cookie.path, 
+                cookie.cookie.name, cookie.cookie.value, cookie.cookie.isSecure, 
+                cookie.cookie.isHttpOnly, (cookie.cookie.expires ? false : true), 
+                cookie.cookie.expires);
+        }
+        else
+        {
+            // Create URI                    
+            var httpProtocol = cookie.cookie.isSecure ? "https://" : "http://";
+            var uri = ioService.newURI(httpProtocol + cookie.cookie.host + 
+                cookie.cookie.path, null, null);
+
+            var cookieString = cookie.toString();
+            cookieService.setCookieString(uri, null, cookieString, null);
+        }
+    },
+
+    /**
      * Support for ActivableModule
      */
     onPanelActivate: function(context, init, activatedPanelName)
@@ -1526,23 +1553,26 @@ Templates.CookieRow = domplate(Templates.Rep,
     },
     
     // Context menu commands
-    onCut: function(cookie)
+    onCut: function(clickedCookie)
     {
-        this.onCopy(cookie);
-        this.onRemove(cookie);
+        this.onCopy(clickedCookie);
+        this.onRemove(clickedCookie);
     },
     
-    onCopy: function(cookie)
+    onCopy: function(clickedCookie)
     {
-        CookieClipboard.copyTo(cookie);
+        CookieClipboard.copyTo(clickedCookie);
     },
 
-    onPaste: function(cookie)
+    onPaste: function(clickedCookie)
     {
         var context = FirebugContext;
         var values = CookieClipboard.getFrom();
         if (!values || !context)
             return;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> Get cookie values from clipboard", values);
 
         // Change name so it's unique and use the current host.
         values.name = Firebug.FireCookieModel.getDefaultCookieName(context, values.name);
@@ -1554,13 +1584,13 @@ Templates.CookieRow = domplate(Templates.Rep,
         // If the expire time isn't set use the default value. Some time must be set as 
         // the session flag is alwas set to false (see add method below); otherwise the 
         // cookie wouldn't be created.
-        if (!values.expire)
+        if (!values.expires)
             values.expires = Firebug.FireCookieModel.getDefaultCookieExpireTime();
 
-        // Create a new cookie.
-        cookieManager.add(values.host, values.path, values.name, values.value, 
-            values.isSecure, values.isHttpOnly, false, values.expires);
-        
+        // Create/modify cookie. 
+        var cookie = new Cookie(values);
+        Firebug.FireCookieModel.createNewCookie(cookie);
+
         if (FBTrace.DBG_COOKIES)
             checkList(context.getPanel(panelName, true));
     },
@@ -2374,6 +2404,10 @@ var CookieClipboard = extend(Object,
         try
         {
             var str = this.getTransferData();
+
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("---------> Get Cookie data from clipboard: " + str + "\n");
+
             return parseFromJSON(str);
         }
         catch (err)
@@ -2426,12 +2460,18 @@ var CookieClipboard = extend(Object,
         trans.addDataFlavor(this.cookieFlavour);
         trans.setTransferData(this.cookieFlavour, wrapper1, json.length * 2);
 
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> Create JSON transfer data : " + json, cookie);
+
         var str = cookie.toString();
         var wrapper2 = CCIN("@mozilla.org/supports-string;1", "nsISupportsString");
         wrapper2.data = str;
         trans.addDataFlavor(this.unicodeFlavour);
         trans.setTransferData(this.unicodeFlavour, wrapper2, str.length * 2);
-        
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> Create string transfer data : " + str, cookie);
+
         return trans;
     },
 
@@ -2528,6 +2568,9 @@ Cookie.prototype =
             "isSecure: " + (this.cookie.secure ? "true" : "false") + "})";
     }    
 };
+
+// So, the object is accessible even from editCookie.js dialog
+Firebug.FireCookieModel.Cookie = Cookie;
 
 // Cookie Helpers
 //-----------------------------------------------------------------------------

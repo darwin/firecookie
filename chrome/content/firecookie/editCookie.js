@@ -7,11 +7,10 @@ with (FBL) {
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const cookieManager = CCSV("@mozilla.org/cookiemanager;1", "nsICookieManager2");
-const cookieService = CCSV("@mozilla.org/cookieService;1", "nsICookieService");
 const ioService = CCSV("@mozilla.org/network/io-service;1", "nsIIOService");
 const versionChecker = CCSV("@mozilla.org/xpcom/version-comparator;1", "nsIVersionComparator");
 const appInfo = CCSV("@mozilla.org/xre/app-info;1", "nsIXULAppInfo");
+const windowMediator = CCSV("@mozilla.org/appshell/window-mediator;1", "nsIWindowMediator");
 
 var EditCookie = 
 {
@@ -19,9 +18,7 @@ var EditCookie =
     
     onLoad: function()
     {
-        // Use new <datepicker> and <timepicker> XUL elements (introduced in Firefox 3)
-        if (versionChecker.compare(appInfo.version, "3.0*") >= 0)
-            this.replaceDateTimeField();
+        this.createDateTimeField();
 
         var params = window.arguments[0];
         this.params = params;
@@ -67,38 +64,37 @@ var EditCookie =
     
     onOK: function()
     {
-        var name = this.nameNode.value;
-        var value = this.valueNode.value;
-        var path = this.pathNode.value;
-        var domain = this.domainNode.value;
-        var isSecure = this.secureNode.checked;
-        var isHttpOnly = this.httpOnly.checked;
+        if (!this.checkValues())
+            return;
+
         var isSession = this.sessionNode.checked;
-        var isDomain = (domain.charAt(0) == ".");
-        var expires = null;
+        var host = this.domainNode.value;
+
+        // Create a helper cookie object from the provided data.
+        var values = {
+            name: this.nameNode.value,
+            value: this.valueNode.value,
+            path: this.pathNode.value,
+            host: host,
+            isSecure: this.secureNode.checked,
+            isHttpOnly: this.httpOnly.checked,
+            isDomain: (host.charAt(0) == "."),
+            expires: null // is computed below
+        };
 
         // xxxHonza: Notice that if the user sets the session flag, the cookie
         // will be immediately removed.
         if (!isSession)
         {
             // If it isn't a session cookie set the proper expire time.
-            expires = new Date();
+            var expires = new Date();
             expires.setTime(Date.parse(this.expireNode.value));          
-            expires = Math.floor(expires.valueOf() / 1000);
+            values.expires = Math.floor(expires.valueOf() / 1000);
         }
 
-        if (!this.checkValues())
-            return;
-           
-        // Create URI                    
-        var httpProtocol = isSecure ? "https://" : "http://";
-        var uri = ioService.newURI(httpProtocol + domain + path, null, null);
-        		
-        // Create/modify cookie.
-        // Fix Issue #2 - contribution by arantius
-        // cookieService.setCookieString(uri, null, cookieString, null);
-        cookieManager.add(domain, path, name, value, isSecure, isHttpOnly, 
-            isSession, expires);
+        // Create/modify cookie. 
+        var cookie = new Firebug.FireCookieModel.Cookie(values);
+        Firebug.FireCookieModel.createNewCookie(cookie);
 
         // Close dialog.                
         window.close();
@@ -157,31 +153,37 @@ var EditCookie =
         return true;    	
     },
 
-    replaceDateTimeField: function()
+    createDateTimeField: function()
     {
-        // Remove the old text field.
+        // Get the box element where the dateTime field should be located.
         var expireBox = document.getElementById("fcExpireBox");
-        while (expireBox.childNodes.length)
-            expireBox.removeChild(expireBox.lastChild);
 
-        // Create new element for date time picking.
-        var dateTimePicker = document.createElement("dateTimePicker");
-        dateTimePicker.id = "fcExpire";
-        expireBox.appendChild(dateTimePicker);
+        var dateTimeField = null;
+        if (versionChecker.compare(appInfo.version, "3.0*") >= 0)
+        {
+            // Use new <datepicker> and <timepicker> XUL elements (introduced in Firefox 3)
+            dateTimeField = document.createElement("dateTimePicker");
+        }
+        else
+        {
+            // Use simple text field with GMT time format.
+            dateTimeField = document.createElement("textbox");
+            dateTimeField.setAttribute("cols", "12");
+            dateTimeField.setAttribute("flex", "1");
+        }
+
+        // Append it into the UI.
+        dateTimeField.id = "fcExpire";
+        expireBox.appendChild(dateTimeField);
     },
 
     getChromeWindow: function()
     {
-        return window.QueryInterface(Ci.nsIInterfaceRequestor)
-           .getInterface(Ci.nsIWebNavigation).QueryInterface(Ci.nsIDocShellTreeItem)
-           .rootTreeItem.QueryInterface(Ci.nsIInterfaceRequestor)
-           .getInterface(Ci.nsIDOMWindow); 
+        return windowMediator.getMostRecentWindow("navigator:browser");
     }
 }
 
-//-----------------------------------------------------------------------------
-
-const Firebug = EditCookie.getChromeWindow().Firebug;
+var Firebug = EditCookie.getChromeWindow().Firebug;
 
 //-----------------------------------------------------------------------------
 }
