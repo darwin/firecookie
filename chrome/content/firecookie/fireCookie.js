@@ -3120,7 +3120,16 @@ var HttpObserver = extend(BaseObserver,
         // context (associated with this tab) for the previous URL.
         var context = contexts[tabId];
         context = context ? context : TabWatcher.getContextByWindow(win);
-  
+
+        // The context doesn't have to exist due to the activation support.
+        if (!context)
+        {
+            if (FBTrace.DBG_COOKIES) 
+                FBTrace.sysout("---------> onModifyRequest: context is NOT available for:" + 
+                    request.URI.host + ", tabId: " + tabId + "\n");
+            return;
+        }
+
         // Collect all the host (redirects, iframes) as cookies for all of them 
         // will be displayed.
         var activeHosts = context.cookies.activeHosts;
@@ -3182,6 +3191,15 @@ var HttpObserver = extend(BaseObserver,
         var win = getWindowForRequest(request);
         context = context ? context : TabWatcher.getContextByWindow(win);
             
+        // The context doesn't have to exist due to the activation support.
+        if (!context)
+        {
+            if (FBTrace.DBG_COOKIES) 
+                FBTrace.sysout("---------> onExamineResponse: context is NOT available for:" + 
+                    request.URI.host + ", tabId: " + tabId + "\n");
+            return;
+        }
+
         // Associate the setCookie string with proper active host (active
         // host can be the page itself or an embedded iframe or a XHR).
         // Also remember originalURI so, the info where the cookies comes
