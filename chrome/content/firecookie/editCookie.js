@@ -4,6 +4,9 @@ with (FBL) {
 
 //-----------------------------------------------------------------------------
 
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
 const cookieManager = CCSV("@mozilla.org/cookiemanager;1", "nsICookieManager2");
 const cookieService = CCSV("@mozilla.org/cookieService;1", "nsICookieService");
 const ioService = CCSV("@mozilla.org/network/io-service;1", "nsIIOService");

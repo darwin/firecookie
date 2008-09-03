@@ -123,7 +123,7 @@ Firebug.FireCookieModel = extend(BaseModule,
     initialize: function() 
     {    
         // Support for trace-console customization in Firebug 1.3
-        if (Firebug.TraceModule.addListener)
+        if (Firebug.TraceModule && Firebug.TraceModule.addListener)
             Firebug.TraceModule.addListener(this.TraceListener);
 
         this.panelName = panelName;
@@ -147,7 +147,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         this.unregisterObservers(null);
 
         // Support for trace-console customization in Firebug 1.3
-        if (Firebug.TraceModule.removeListener)
+        if (Firebug.TraceModule && Firebug.TraceModule.removeListener)
             Firebug.TraceModule.removeListener(this.TraceListener);
     },
 
