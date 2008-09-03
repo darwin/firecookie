@@ -32,7 +32,7 @@ Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
     * pl-PL localization - contribution by Leszek(teo)¯yczkowski
     * de-De localization - contribution by CosmicForce    
     * pt-BR localization - contribution by Alberto Eidh
-    * tr-TR localization - contribution by efecan
+    * tr-TR localization - contribution by Efecan Erdur
     
 == Bug Fixes ==
     * Issue 2: Edit Cookie feature does not change the cookie value

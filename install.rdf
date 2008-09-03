@@ -11,12 +11,13 @@
     <em:description>Cookie manager for Firebug. Firebug has to be installed in order to use this extension.</em:description>
     <em:creator>Jan Odvarko</em:creator>
     <em:contributor>Aleksandar Gajic (cookie icon)</em:contributor>
+    <em:contributor>Leszek(teo)Życzkowski</em:contributor>
     <em:iconURL>chrome://firecookie/skin/cookie32.png</em:iconURL>
     <em:homepageURL>http://www.janodvarko.cz/firecookie</em:homepageURL>
-    <em:translator>Leszek(teo)Życzkowski</em:translator>
-    <em:translator>CosmicForce</em:translator>
-    <em:translator>Alberto Eidh</em:translator>
-    <em:translator>Efecan Erdur</em:translator>
+    <em:translator>Leszek(teo)Życzkowski (pl-PL)</em:translator>
+    <em:translator>CosmicForce (de-De)</em:translator>
+    <em:translator>Alberto Eidh (pt-BR)</em:translator>
+    <em:translator>Efecan Erdur (tr-TR)</em:translator>
 
     <!-- Firefox -->
     <em:targetApplication>
