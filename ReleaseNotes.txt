@@ -4,6 +4,7 @@ Author: Jan Odvarko, odvarko@gmail.com, http://www.softwareishard.com/
 Home page: http://www.janodvarko.cz/firecookie
 Addon page: https://addons.mozilla.org/en-US/firefox/addon/6683
 Issue list: http://code.google.com/p/firecookie/issues/list
+Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
 
 == Enhancements ==
     * Cookies panel now supports activation just like Console, Script and Net 
