@@ -411,6 +411,8 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         this.registerObservers(context);
 
+        $("fbStatusIcon").setAttribute(panelName, "on");
+
         // Make sure the panel is refreshed (no page reload) and the cookie
         // list is displayed instead of the Panel Activation Manager.
         context.invalidatePanels(panelName);
@@ -425,9 +427,16 @@ Firebug.FireCookieModel = extend(BaseModule,
                 destroy + "\n");
     },
 
+    onLastPanelDeactivate: function(context, destroy)
+    {
+        $("fbStatusIcon").removeAttribute(panelName);
+    },
+
     onSuspendFirebug: function(context)
     {
         this.unregisterObservers(context);
+
+        $("fbStatusIcon").removeAttribute(panelName);
 
         if (FBTrace.DBG_COOKIES)
             FBTrace.dumpProperties("---------> onSuspendFirebug", context);
@@ -437,9 +446,11 @@ Firebug.FireCookieModel = extend(BaseModule,
     {
         this.registerObservers(context);
 
+        if (Firebug.FireCookieModel.isEnabled(context))
+            $("fbStatusIcon").setAttribute(panelName, "on");
+
         if (FBTrace.DBG_COOKIES)
             FBTrace.dumpProperties("---------> onResumeFirebug", context);
-
     },
 
     isEnabled: function(context)
@@ -3109,7 +3120,7 @@ var HttpObserver = extend(BaseObserver,
         // context (associated with this tab) for the previous URL.
         var context = contexts[tabId];
         context = context ? context : TabWatcher.getContextByWindow(win);
-        
+  
         // Collect all the host (redirects, iframes) as cookies for all of them 
         // will be displayed.
         var activeHosts = context.cookies.activeHosts;
