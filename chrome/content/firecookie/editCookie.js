@@ -92,11 +92,11 @@ var EditCookie =
             values.expires = Math.floor(expires.valueOf() / 1000);
         }
 
-        // Create/modify cookie. 
+        // Create/modify cookie.
         var cookie = new Firebug.FireCookieModel.Cookie(values);
         Firebug.FireCookieModel.createNewCookie(cookie);
 
-        // Close dialog.                
+        // Close dialog.
         window.close();
     },
     
@@ -105,20 +105,24 @@ var EditCookie =
         var name = this.nameNode.value;
         if (!name)
         {
-            // xxxHonza localization
-            alert("Cookie name is not valid.");
+            alert(Firebug.FireCookieModel.$FC_STR("firecookie.edit.invalidname"));
             return false;
         }
         
-        var path = this.pathNode.value;
         var domain = this.domainNode.value;
-        if (!this.checkUrl(domain, path))
+        if (!this.checkHost(domain))
         {
-            // xxxHonza localization
-            alert("Host URI is not valid.");
+            alert(Firebug.FireCookieModel.$FC_STR("firecookie.edit.invalidhost"));
             return false;
         }
-        
+
+        var path = this.pathNode.value;
+        if (!this.checkPath(domain, path))
+        {
+            alert(Firebug.FireCookieModel.$FC_STR("firecookie.edit.invalidpath"));
+            return false;
+        }
+
         return true;
     },
     
@@ -132,25 +136,35 @@ var EditCookie =
         this.expireNode.disabled = this.sessionNode.checked;
     },
     
-    checkUrl: function(host, path)
+    checkHost: function(host)
     {
-	    try {
+        if (!host)
+            return false;
+
+	    try 
+        {
  		    var uri = "http://" + host + "/";
- 		    var newUri = ioService.newURI(uri, null, null);
+            return ioService.newURI(uri, null, null) ? true : false;
 	    }
  		catch (err) {
-            return false;
  		}
+        
+        return false;
+    },
+
+    checkPath: function(host, path)
+    {
+        if (!path)
+            return false;
 
 		try {
  		    var uri = "http://" + host + "/" + path;
- 		    var newUri = ioService.newURI(uri, null, null);
+            return ioService.newURI(uri, null, null) ? true : false;
 		} 
 		catch(err) {
-            return false;
 		}
 
-        return true;    	
+        return false;
     },
 
     createDateTimeField: function()

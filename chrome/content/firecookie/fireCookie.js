@@ -2569,9 +2569,6 @@ Cookie.prototype =
     }    
 };
 
-// So, the object is accessible even from editCookie.js dialog
-Firebug.FireCookieModel.Cookie = Cookie;
-
 // Cookie Helpers
 //-----------------------------------------------------------------------------
 
@@ -3515,6 +3512,13 @@ Firebug.FireCookieModel.TraceListener =
         }
     }
 };
+
+// Make following APIs accessible in editCookie.js
+//-----------------------------------------------------------------------------
+
+Firebug.FireCookieModel.Cookie = Cookie;
+Firebug.FireCookieModel.$FC_STR = $FC_STR;
+Firebug.FireCookieModel.$FC_STRF = $FC_STRF;
 
 // Firebug Registration
 //-----------------------------------------------------------------------------
