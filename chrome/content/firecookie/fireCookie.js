@@ -105,35 +105,86 @@ if (typeof FBTrace == "undefined")
 // Module Implementation
 //-----------------------------------------------------------------------------
 
-Firebug.FireCookieModel = extend(Firebug.Module, 
+/**
+ * FireCookieModel supports activation (enable/disable of the Cookies panel).
+ * This new functionality has been introduced in Firebug 1.2 and makes possible
+ * to control activity of Firebug panels in order to avoid (performance) expensive 
+ * features.
+ */ 
+var BaseModule = Firebug.ActivableModule ? Firebug.ActivableModule : Firebug.Module;
+
+// Firecookie module object
+Firebug.FireCookieModel = extend(BaseModule, 
 { 
+    // Set to true if all hooks for monitoring cookies are registered; otherwise false.
+    observersRegistered: false,
+
     // Module life-cycle    
     initialize: function() 
     {    
+        // Support for trace-console customization in Firebug 1.3
+        if (Firebug.TraceModule.addListener)
+            Firebug.TraceModule.addListener(this.TraceListener);
+
+        this.panelName = panelName;
+        this.description = $FC_STR("cookies.modulemanager.description");
+
+        BaseModule.initialize.apply(this, arguments);
+
         permTooltip.fcEnabled = true;
-        
+
+        // All the necessary observers are registered by default. Even if the 
+        // panel can be disabled (entirely or for a specific host) there is
+        // no simple way to find out this now, as the context isn't available. 
+        // All will be unregistered again in the initContext (if necessary).
+        // There is no big overhead, the initContext is called just after the
+        // first document request.
+        this.registerObservers(null);
+    },
+
+    shutdown: function() 
+    {
+        this.unregisterObservers(null);
+
+        // Support for trace-console customization in Firebug 1.3
+        if (Firebug.TraceModule.removeListener)
+            Firebug.TraceModule.removeListener(this.TraceListener);
+    },
+
+    registerObservers: function(context)
+    {
+        if (this.observersRegistered)
+            return;
+
         observerService.addObserver(HttpObserver, "http-on-modify-request", false);            
         observerService.addObserver(HttpObserver, "http-on-examine-response", false);   
         observerService.addObserver(PermissionObserver, "perm-changed", false);
         registerCookieObserver(CookieObserver);        
         prefs.addObserver(networkPrefDomain, PrefObserver, false); 
 
-        // Tracing in Firebug 1.3
-        if (Firebug.TraceModule.addListener)
-            Firebug.TraceModule.addListener(this.TraceListener);
+        this.observersRegistered = true;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("---------> ENABLE Cookies monitoring for: " + 
+                (context ? context.window.location.href : "") + "\n");
     },
 
-    shutdown: function() 
+    unregisterObservers: function(context)
     {
+        if (!this.observersRegistered)
+            return;
+
         observerService.removeObserver(HttpObserver, "http-on-modify-request");
         observerService.removeObserver(HttpObserver, "http-on-examine-response");
         observerService.removeObserver(PermissionObserver, "perm-changed");
         unregisterCookieObserver(CookieObserver);
         prefs.removeObserver(networkPrefDomain, PrefObserver);
 
-        // Tracing in Firebug 1.3
-        if (Firebug.TraceModule.removeListener)
-            Firebug.TraceModule.removeListener(this.TraceListener);
+        this.observersRegistered = false;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("---------> DISABLE Cookies monitoring for: " + 
+                (context ? context.window.location.href : "") + "\n");
     },
 
     // Helper context
@@ -158,11 +209,13 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         {
             FBTrace.sysout("---------> Copy " + tempContext.events.length + 
                 " events to real-context." + "\n");
-                
-            FBTrace.sysout("---------> Copy active hosts to real-context: ");
+
+            var message = "---------> Copy active hosts (";
             for (var host in tempContext.cookies.activeHosts)
-                FBTrace.sysout("--------->" + host + ", ");
-            FBTrace.sysout("---------> in the temp context.\n");
+                message += host + ", ";
+            message = message.substring(0, message.length - 2);
+            message += ") from temp context into the real context.\n";
+            FBTrace.dumpProperties(message, tempContext);
         }            
 
         // Copy all active hosts on the page. In case of redirects or embedded IFrames, there
@@ -196,13 +249,17 @@ Firebug.FireCookieModel = extend(Firebug.Module,
     // Context life-cycle
     initContext: function(context)
     {
+        BaseModule.initContext.apply(this, arguments);
+
         var tabId = getTabIdForWindow(context.window);
 
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("---------> INIT real context for: " + tabId + ", " +
                 context.window.location.href + "\n");
     
-        // Create sub-context for cookies.
+        // Create sub-context for cookies. 
+        // xxxHonza: the cookies object exists within the context even if 
+        // the panel is disabled.
         context.cookies = {};
         context.cookies.activeHosts = [];
 
@@ -215,11 +272,17 @@ Firebug.FireCookieModel = extend(Firebug.Module,
             
             if (FBTrace.DBG_COOKIES)
                 FBTrace.sysout("---------> DESTROY temporary context, tabId: " + tempContext.tabId + "\n");
-        }   
+        }
+
+        // Unregister all observers if the panel is disabled.
+        if (!this.isEnabled(context))
+            this.unregisterObservers(context);
     },
 
     reattachContext: function(browser, context) 
     {
+        BaseModule.reattachContext.apply(this, arguments);
+
         var chrome = context ? context.chrome : FirebugChrome;
 
         // The context isn't available if FB is disabled.
@@ -257,6 +320,8 @@ Firebug.FireCookieModel = extend(Firebug.Module,
 
     destroyContext: function(context) 
     {
+        BaseModule.destroyContext.apply(this, arguments);
+
         for (var p in context.cookies)
             delete context.cookies[p];
         
@@ -332,6 +397,103 @@ Firebug.FireCookieModel = extend(Firebug.Module,
         }
     },
 
+    /**
+     * Support for ActivableModule
+     */
+    onPanelActivate: function(context, init, activatedPanelName)
+    {
+        if (activatedPanelName != panelName)
+            return;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("---------> onPanelActivate: " + activatedPanelName + "," + 
+                init + "\n");
+
+        this.registerObservers(context);
+
+        // Make sure the panel is refreshed (no page reload) and the cookie
+        // list is displayed instead of the Panel Activation Manager.
+        context.invalidatePanels(panelName);
+    },
+
+    onPanelDeactivate: function(context, destroy, activatedPanelName)
+    {
+        this.unregisterObservers(context);
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("---------> onPanelDeactivate: " + activatedPanelName + "," + 
+                destroy + "\n");
+    },
+
+    onSuspendFirebug: function(context)
+    {
+        this.unregisterObservers(context);
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> onSuspendFirebug", context);
+    },
+
+    onResumeFirebug: function(context)
+    {
+        this.registerObservers(context);
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> onResumeFirebug", context);
+
+    },
+
+    isEnabled: function(context)
+    {
+        // For backward compatibility with Firebug 1.1. ActivableModule has been
+        // introduced in Firebug 1.2.
+        if (!Firebug.ActivableModule)
+            return true;
+
+        return BaseModule.isEnabled.apply(this, arguments);
+    },
+
+    getMenuLabel: function(option, location)
+    {
+        var host = getURIHost(location);
+
+        // Translate these two options in panel activable menu from firecookie.properties
+        switch (option)
+        {
+        case "disable-site":
+            return $FC_STRF("cookies.HostDisable", [host]);
+        case "enable-site":
+            return $FC_STRF("cookies.HostEnable", [host]);
+        }
+
+        return BaseModule.getMenuLabel.apply(this, arguments);
+    },
+
+    // xxxHonza: This method is overriden just to provide translated strings from 
+    // firecookie.properties file.
+    openPermissions: function(event, context)
+    {
+        cancelEvent(event);
+
+        var browserURI = FirebugChrome.getBrowserURI(context);
+        var host = this.getHostForURI(browserURI);
+
+        var params = {
+            permissionType: this.getPrefDomain(),
+            windowTitle: $FC_STR(this.panelName + ".Permissions"), // use FC_STR
+            introText: $FC_STR(this.panelName + ".PermissionsIntro"), // use FC_STR
+            blockVisible: true,
+            sessionVisible: false,
+            allowVisible: true,
+            prefilledHost: host,
+        };
+
+        openWindow("Browser:Permissions", "chrome://browser/content/preferences/permissions.xul",
+            "", params);
+    },
+
+    /**
+     * UI Commands
+     */
     onRemoveAllShowTooltip: function(tooltip, context) 
     {
         tooltip.label = $FC_STR("firecookie.removeall.tooltip");
@@ -635,6 +797,9 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
     
     refresh: function()
     {
+        if (!Firebug.FireCookieModel.isEnabled(this.context))
+            return;
+
         // Create cookie list table.        
         this.table = Templates.CookieTable.createTable(this.panelNode);
 
@@ -754,7 +919,19 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
     
     show: function(state)
     {
-        // Updatee permission button in the toolbar.
+        // For backward compatibility with Firebug 1.1
+        if (Firebug.ActivableModule)
+        {
+            var shouldShow = Firebug.FireCookieModel.isEnabled(this.context);
+            this.showToolbarButtons("fbCookieButtons", shouldShow);
+            if (!shouldShow)
+            {
+                Firebug.ModuleManagerPage.show(this, Firebug.FireCookieModel);
+                return;
+            }
+        }
+
+        // Update permission button in the toolbar.
         Firebug.FireCookieModel.Perm.updatePermButton(this.context);        
     },
     
@@ -3242,6 +3419,7 @@ function unregisterCookieObserver(observer) {
 
 Firebug.FireCookieModel.TraceListener = 
 {
+    // Called when console window is loaded.
     onLoadConsole: function(win, rootNode)
     {
         var doc = rootNode.ownerDocument;
@@ -3251,8 +3429,11 @@ Firebug.FireCookieModel.TraceListener =
 	    addStyleSheet(doc, styleSheet);
     },
 
+    // Called when a new message is logged in to the trace-console window.
     onDump: function(message)
     {
+        // Set type of the log message so, custom CSS style can be applied
+        // in order to distinguishe it from other messages.
         var index = message.text.indexOf("--------->");
         if (index == 0)
         {
@@ -3266,8 +3447,13 @@ Firebug.FireCookieModel.TraceListener =
 // Firebug Registration
 //-----------------------------------------------------------------------------
 
+// For backward compatibility with Firebug 1.1
+if (Firebug.ActivableModule)
+    Firebug.registerActivableModule(Firebug.FireCookieModel);
+else
+    Firebug.registerModule(Firebug.FireCookieModel);
+
 Firebug.registerPanel(FireCookiePanel);
-Firebug.registerModule(Firebug.FireCookieModel);
 
 Firebug.registerRep(
     Templates.CookieTable,          // Cookie table with list of cookies
