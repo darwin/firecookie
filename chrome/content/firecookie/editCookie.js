@@ -1,9 +1,5 @@
 /* See license.txt for terms of usage */
 
-with (FBL) { 
-
-//-----------------------------------------------------------------------------
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
@@ -12,6 +8,12 @@ const versionChecker = CCSV("@mozilla.org/xpcom/version-comparator;1", "nsIVersi
 const appInfo = CCSV("@mozilla.org/xre/app-info;1", "nsIXULAppInfo");
 const windowMediator = CCSV("@mozilla.org/appshell/window-mediator;1", "nsIWindowMediator");
 
+//-----------------------------------------------------------------------------
+
+/**
+ * Edit cookie dialog implementation. This dialog is used to create a new cookie
+ * and edit an existing cookie.
+ */
 var EditCookie = 
 {
     cookie: null,
@@ -197,7 +199,7 @@ var EditCookie =
     }
 }
 
-var Firebug = EditCookie.getChromeWindow().Firebug;
-
 //-----------------------------------------------------------------------------
-}
+
+// Some APIs from Firebug.FireCookieModel namespase are used here.
+var Firebug = EditCookie.getChromeWindow().Firebug;

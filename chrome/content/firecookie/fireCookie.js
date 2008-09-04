@@ -190,9 +190,6 @@ Firebug.FireCookieModel = extend(BaseModule,
     // Helper context
     initTempContext: function(tempContext)
     {
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> INIT temporary context for: " + tempContext.tabId + "\n");
-    
         tempContext.cookieTempObserver = registerCookieObserver(new CookieTempObserver(tempContext));
         
         // Create sub-context for cookies.
@@ -249,8 +246,6 @@ Firebug.FireCookieModel = extend(BaseModule,
     // Context life-cycle
     initContext: function(context)
     {
-        BaseModule.initContext.apply(this, arguments);
-
         var tabId = getTabIdForWindow(context.window);
 
         if (FBTrace.DBG_COOKIES)
@@ -273,6 +268,13 @@ Firebug.FireCookieModel = extend(BaseModule,
             if (FBTrace.DBG_COOKIES)
                 FBTrace.sysout("---------> DESTROY temporary context, tabId: " + tempContext.tabId + "\n");
         }
+
+        // The base class must be called after the context for Cookies panel is 
+        // properly initialized. The panel can be created inside this function
+        // (within Firebug.ActivableModule.enablePanel), which can result in
+        // calling FireCookiePanel.initialize method. This method directly calls
+        // FireCookiePanel.refresh, which needs the context.cookies object ready.
+        BaseModule.initContext.apply(this, arguments);
 
         // Unregister all observers if the panel is disabled.
         if (!this.isEnabled(context))
@@ -874,8 +876,8 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
                 if (FBTrace.DBG_COOKIES) 
                 {
                     FBTrace.dumpProperties(
-                        "---------> Cookie context isn't properly initialized - ERROR.\n",
-                        this.context);
+                        "---------> Cookie context isn't properly initialized - ERROR: " + 
+                        this.context.window.location.href, this.context);
                 }
                 return;
             }
@@ -3152,6 +3154,11 @@ var HttpObserver = extend(BaseObserver,
             {
                 var tempContext = new TempContext(tabId);
                 contexts[tabId] = tempContext;
+
+                if (FBTrace.DBG_COOKIES)
+                    FBTrace.dumpProperties("---------> INIT temporary context for: " + 
+                        tempContext.tabId, request);
+
                 Firebug.FireCookieModel.initTempContext(tempContext);
             }
         }        
