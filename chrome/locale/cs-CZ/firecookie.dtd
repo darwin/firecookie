@@ -1,0 +1,29 @@
+<!ENTITY firecookie.RemoveAll "Odstranit pro tento web">
+<!ENTITY firecookie.Create "Vytvořit cookie">
+<!ENTITY firecookie.ViewAll "Zobrazit všechny cookies...">
+<!ENTITY firecookie.ViewAllTooltip "Otevře správce cookies">
+<!ENTITY firecookie.ViewExceptions "Nastavení webů...">
+<!ENTITY firecookie.ViewExceptionsTooltip "Zobrazí seznam povolených nebo zakázaných webů">
+<!ENTITY firecookie.Tools "Nástroje">
+<!ENTITY firecookie.ToolsTooltip "Nástroje">
+<!ENTITY firecookie.Help "Nápověda">
+<!ENTITY firecookie.HelpTooltip "Nápověda k Firecookie">
+<!ENTITY firecookie.About "O Firecookie">
+<!ENTITY firecookie.AboutTooltip "O Firecookie">
+<!ENTITY firecookie.edit.title "Upravit cookie">
+<!ENTITY firecookie.edit.group.title "Detaily cookie">
+<!ENTITY firecookie.edit.name.label "Název:">
+<!ENTITY firecookie.edit.value.label "Hodnota:">
+<!ENTITY firecookie.edit.domain.label "Host:">
+<!ENTITY firecookie.edit.path.label "Cesta:">
+<!ENTITY firecookie.edit.expire.label "Vyprší:">
+<!ENTITY firecookie.edit.ok.label "OK">
+<!ENTITY firecookie.edit.cancel.label "Zrušit">
+<!ENTITY firecookie.edit.session.label "Sezení">
+<!ENTITY firecookie.edit.secure.label "Zabezpečená cookie">
+<!ENTITY firecookie.Filter "Filtr">
+<!ENTITY firecookie.FilterTooltip "Zobrazí seznam cookies dle zadaných filtrů">
+<!ENTITY firecookie.filter.byPath "Filtrovat cookies dle cesty">
+<!ENTITY firecookie.filter.byPathTooltip "Zobrazí pouze cookies, které odpovídají aktuální cestě">
+<!ENTITY firecookie.filter.showRejectedCookies "Zobrazit odmítnuté cookies">
+<!ENTITY firecookie.filter.showRejectedCookiesTooltip "Zobrazí v seznamu i odmítnuté cookies">
