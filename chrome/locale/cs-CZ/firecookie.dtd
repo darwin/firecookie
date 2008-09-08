@@ -17,10 +17,9 @@
 <!ENTITY firecookie.edit.domain.label "Host:">
 <!ENTITY firecookie.edit.path.label "Cesta:">
 <!ENTITY firecookie.edit.expire.label "Vyprší:">
-<!ENTITY firecookie.edit.ok.label "OK">
-<!ENTITY firecookie.edit.cancel.label "Zrušit">
 <!ENTITY firecookie.edit.session.label "Sezení">
 <!ENTITY firecookie.edit.secure.label "Zabezpečená cookie">
+<!ENTITY firecookie.edit.httponly.label     "HTTP Only">
 <!ENTITY firecookie.Filter "Filtr">
 <!ENTITY firecookie.FilterTooltip "Zobrazí seznam cookies dle zadaných filtrů">
 <!ENTITY firecookie.filter.byPath "Filtrovat cookies dle cesty">

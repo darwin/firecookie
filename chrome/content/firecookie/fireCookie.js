@@ -2033,7 +2033,7 @@ Templates.CookieTable = domplate(Templates.Rep,
                     ),
                     TD({id: "colHttpOnly", class: "cookieHeaderCell alphaValue"},
                         DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.httponly.tooltip")}, 
-                        $FC_STR("firecookie.header.httpOnly"))
+                        $FC_STR("firecookie.header.httponly"))
                     ),
                     TD({id: "colSecurity", class: "cookieHeaderCell alphaValue"},
                         DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.security.tooltip")}, 

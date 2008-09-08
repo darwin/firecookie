@@ -19,6 +19,7 @@
 <!ENTITY firecookie.edit.expire.label "Verfalldatum:">
 <!ENTITY firecookie.edit.session.label "Sitzung">
 <!ENTITY firecookie.edit.secure.label "Cookie schützen">
+<!ENTITY firecookie.edit.httponly.label     "HTTP Only">
 <!ENTITY firecookie.Filter "Filter">
 <!ENTITY firecookie.FilterTooltip "Einstellungen als Filter übernehmen.">
 <!ENTITY firecookie.filter.byPath "Cookies nach Pfad filtern">

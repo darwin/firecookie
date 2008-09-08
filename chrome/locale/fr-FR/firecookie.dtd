@@ -17,10 +17,9 @@
 <!ENTITY firecookie.edit.domain.label "Hôte :">
 <!ENTITY firecookie.edit.path.label "Chemin :">
 <!ENTITY firecookie.edit.expire.label "Expire :">
-<!ENTITY firecookie.edit.ok.label "OK">
-<!ENTITY firecookie.edit.cancel.label "Annuler">
 <!ENTITY firecookie.edit.session.label "Session">
 <!ENTITY firecookie.edit.secure.label "Sécuriser le cookie">
+<!ENTITY firecookie.edit.httponly.label     "HTTP Only">
 <!ENTITY firecookie.Filter "Filtre">
 <!ENTITY firecookie.FilterTooltip "Utiliser les options données pour filtrer la liste de cookies.">
 <!ENTITY firecookie.filter.byPath "Filtrer les cookies par emplacement">
