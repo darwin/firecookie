@@ -1,0 +1,29 @@
+<!ENTITY firecookie.RemoveAll "Retirer du site">
+<!ENTITY firecookie.Create "Créer le cookie">
+<!ENTITY firecookie.ViewAll "Montrer tous les cookies...">
+<!ENTITY firecookie.ViewAllTooltip "Ouvrir le gestionnaire de téléchargements des cookies">
+<!ENTITY firecookie.ViewExceptions "Autorisation des sites Web">
+<!ENTITY firecookie.ViewExceptionsTooltip "Voir la liste des sites Web autorisés ou interdits">
+<!ENTITY firecookie.Tools "Outils">
+<!ENTITY firecookie.ToolsTooltip "Outils">
+<!ENTITY firecookie.Help "Aide">
+<!ENTITY firecookie.HelpTooltip "Aide pour Firecookie">
+<!ENTITY firecookie.About "À propos...">
+<!ENTITY firecookie.AboutTooltip "À propos de Firecookie">
+<!ENTITY firecookie.edit.title "Modifier le cookie">
+<!ENTITY firecookie.edit.group.title "Détails du cookie">
+<!ENTITY firecookie.edit.name.label "Nom :">
+<!ENTITY firecookie.edit.value.label "Contenu :">
+<!ENTITY firecookie.edit.domain.label "Hôte :">
+<!ENTITY firecookie.edit.path.label "Chemin :">
+<!ENTITY firecookie.edit.expire.label "Expire :">
+<!ENTITY firecookie.edit.ok.label "OK">
+<!ENTITY firecookie.edit.cancel.label "Annuler">
+<!ENTITY firecookie.edit.session.label "Session">
+<!ENTITY firecookie.edit.secure.label "Sécuriser le cookie">
+<!ENTITY firecookie.Filter "Filtre">
+<!ENTITY firecookie.FilterTooltip "Utiliser les options données pour filtrer la liste de cookies.">
+<!ENTITY firecookie.filter.byPath "Filtrer les cookies par emplacement">
+<!ENTITY firecookie.filter.byPathTooltip "N&apos;afficher que les cookies qui correspondent à l&apos;emplacement actuel.">
+<!ENTITY firecookie.filter.showRejectedCookies "Afficher les cookies rejetés">
+<!ENTITY firecookie.filter.showRejectedCookiesTooltip "Afficher aussi les cookies rejetés dans la liste.">
