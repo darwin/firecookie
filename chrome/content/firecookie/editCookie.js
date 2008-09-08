@@ -1,5 +1,9 @@
 /* See license.txt for terms of usage */
 
+with (FBL) { 
+
+//-----------------------------------------------------------------------------
+
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
@@ -203,3 +207,6 @@ var EditCookie =
 
 // Some APIs from Firebug.FireCookieModel namespase are used here.
 var Firebug = EditCookie.getChromeWindow().Firebug;
+
+//-----------------------------------------------------------------------------
+}

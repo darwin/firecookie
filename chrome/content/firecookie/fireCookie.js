@@ -445,6 +445,13 @@ Firebug.FireCookieModel = extend(BaseModule,
         // Make sure the panel is refreshed (no page reload) and the cookie
         // list is displayed instead of the Panel Activation Manager.
         context.invalidatePanels(panelName);
+
+        // Make sure the toolbar is updated.
+        // xxxHonza: This should be done automatically ba calling panel.show mehtod,
+        // where the visibility of the toolbar is already managed.
+        // Why Firebug doesn't call show within Firebug.panelActivate?
+        var panel = context.getPanel(panelName, true);
+        panel.showToolbarButtons("fbCookieButtons", true);
     },
 
     onPanelDeactivate: function(context, destroy, activatedPanelName)
