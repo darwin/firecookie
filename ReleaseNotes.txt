@@ -33,6 +33,9 @@ Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
     * de-De localization - contribution by CosmicForce    
     * pt-BR localization - contribution by Alberto Eidh
     * tr-TR localization - contribution by Efecan Erdur
+    * cs-CS localization - contribution by Lukáš Kucharczyk
+    * fr-FR localization - contribution by delphine
+    * es-ES localization - contribution by Johnbo
     
 == Bug Fixes ==
     * Issue 2: Edit Cookie feature does not change the cookie value
