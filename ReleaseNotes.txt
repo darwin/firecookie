@@ -1,5 +1,5 @@
-Release Notes for Firecookie 0.6.2
-----------------------------------
+Release Notes for Firecookie 0.7 beta
+-------------------------------------
 Author: Jan Odvarko, odvarko@gmail.com, http://www.softwareishard.com/
 Home page: http://www.janodvarko.cz/firecookie
 Addon page: https://addons.mozilla.org/en-US/firefox/addon/6683
