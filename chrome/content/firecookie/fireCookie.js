@@ -3132,7 +3132,7 @@ var HttpObserver = extend(BaseObserver,
         // Dump debug information to the console.
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.sysout("---------> onModifyRequest: " + request.name + "\n"); 
+            FBTrace.dumpProperties("---------> onModifyRequest: " + request.name, request); 
             FBTrace.sysout("---------> Cookies sent: " + 
                 cookieService.getCookieString(request.URI, request) + "\n"); 
         }
@@ -3210,7 +3210,8 @@ var HttpObserver = extend(BaseObserver,
             return;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> onExamineResponse: " + request.name + "\n"); 
+            FBTrace.dumpProperties("---------> onExamineResponse: " + request.name, 
+                request);
             
         if (!logEvents()) 
             return;
