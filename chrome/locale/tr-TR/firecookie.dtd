@@ -19,6 +19,7 @@
 <!ENTITY firecookie.edit.expire.label "Süresi:">
 <!ENTITY firecookie.edit.session.label "Oturum">
 <!ENTITY firecookie.edit.secure.label "Çerezi Güvenceye Al">
+<!ENTITY firecookie.edit.httponly.label "Sadece HTTP">
 <!ENTITY firecookie.Filter "Filtre">
 <!ENTITY firecookie.FilterTooltip "Çerez listesi için belirtilen filtreyi kullan.">
 <!ENTITY firecookie.filter.byPath "Çerezleri konuma göre filtrele">
