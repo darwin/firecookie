@@ -966,6 +966,9 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
     
     show: function(state)
     {
+        // Update permission button in the toolbar.
+        Firebug.FireCookieModel.Perm.updatePermButton(this.context);        
+
         // For backward compatibility with Firebug 1.1
         if (Firebug.ActivableModule)
         {
@@ -977,9 +980,6 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
                 return;
             }
         }
-
-        // Update permission button in the toolbar.
-        Firebug.FireCookieModel.Perm.updatePermButton(this.context);        
     },
     
     hide: function()
