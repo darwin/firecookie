@@ -48,3 +48,4 @@ Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
     * Issue 14: HttpOnly support
     * Issue 15: Enable/Disable cookie panel
     * Issue 16: Firecookie 0.7beta4 not compatable with Firebug 1.3.0a1
+    * Issue 17: Summary of cookie value is truncated in "value" column
