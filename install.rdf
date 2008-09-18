@@ -31,14 +31,14 @@
       </Description>
     </em:targetApplication>
 
-    <!-- Firebug -->
+    <!-- Firebug xxxHonza: see Issue 17, Comment #3
     <em:requires>
       <Description>
         <em:id>firebug@software.joehewitt.com</em:id>
-        <em:minVersion>1.0</em:minVersion>
+        <em:minVersion>0</em:minVersion>
         <em:maxVersion>1.3.*</em:maxVersion>
       </Description>
-    </em:requires>
+    </em:requires> -->
       
   </Description>      
 </RDF>
