@@ -2792,6 +2792,11 @@ var CookieObserver = extend(BaseObserver,
     isHostFromContext: function(context, host, path)
     {
         var location = context.window.location;
+
+        // Invalid in Chromebug.
+        if (!location)
+            return;            
+
         if (location.protocol.indexOf("http") != 0)
             return false;
 
@@ -2836,7 +2841,7 @@ var CookieObserver = extend(BaseObserver,
         // In such a case let's displaye the event in all contexts.
         if (cookie && !this.isCookieFromContext(context, cookie))
             return;
-            
+
         if (FBTrace.DBG_COOKIES)
         {
             FBTrace.dumpProperties("---------> onCookieChanged: " + 
