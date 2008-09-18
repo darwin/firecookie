@@ -1874,8 +1874,7 @@ Templates.CookieChanged = domplate(Templates.Rep,
     },
 
     getValue: function(cookieEvent) {
-        var value = unescape(cookieEvent.cookie.value);
-        return cropString(value, 75);
+        return cropString(cookieEvent.cookie.value, 75);
     },
 
     getDomain: function(cookieEvent) {
@@ -2592,7 +2591,7 @@ function makeCookieObject(cookie)
 {
     var c = { 
         name        : cookie.name,
-        value       : cookie.value,
+        value       : unescape(cookie.value),
         isDomain    : cookie.isDomain,
         host        : cookie.host,
         path        : cookie.path,
@@ -2864,9 +2863,10 @@ var CookieObserver = extend(BaseObserver,
             return;
         }
     
-        // If log into the Console tab is on, print "deleted", "added" and "changed" events.
+        // If log into the Console tab is on, create "deleted", "added" and "changed" events.
         if (logEvents())
-            this.logEvent(new CookieChangedEvent(context, cookie, action), context, "cookie");
+            this.logEvent(new CookieChangedEvent(context, makeCookieObject(cookie), 
+                action), context, "cookie");
     },
    
     onClear: function(context)
