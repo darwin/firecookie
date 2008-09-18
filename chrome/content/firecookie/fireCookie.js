@@ -1874,7 +1874,8 @@ Templates.CookieChanged = domplate(Templates.Rep,
     },
 
     getValue: function(cookieEvent) {
-        return cropString(cookieEvent.cookie.value, 75);
+        var value = unescape(cookieEvent.cookie.value);
+        return cropString(value, 75);
     },
 
     getDomain: function(cookieEvent) {
