@@ -1832,37 +1832,29 @@ Templates.CookieChanged = domplate(Templates.Rep,
         if (!context.cookies.activeCookies)
             return strippedHost;
 
-        var name = cookieEvent.cookie.name;
-        var path = cookieEvent.cookie.path;
-
-        if (FBTrace.DBG_COOKIES)
-        {
-            FBTrace.dumpProperties("---------> activeHosts:", 
-                context.cookies.activeCookies);
-
-            FBTrace.dumpProperties("---------> getOriginalURI: " + 
-                strippedHost + ", " + name + ", " + path +
-                "\n", cookieEvent);
-        }
-
-        var activeCookies = context.cookies.activeCookies[strippedHost];
+        var cookie = cookieEvent.cookie;
+        var activeCookies = context.cookies.activeCookies[cookie.host];
         if (!activeCookies)
             return strippedHost;
 
-        // Iterate list of received cookies for this context and look for the match. 
-        // There is an info about the originalURI where the cookie came from.
-        for (var i=0; i<activeCookies.length; i++) 
+        var activeCookie = activeCookies[getCookieId(cookie)];
+
+        var originalURI;
+        if (activeCookie)
+            originalURI = activeCookie.originalURI.spec;
+        else 
+            originalURI = cookieEvent.rawHost;
+
+        if (FBTrace.DBG_COOKIES)
         {
-            var cookie = activeCookies[i].cookie;
-            if (makeStrippedHost(cookie.host) == strippedHost &&
-                cookie.name == name &&
-                cookie.path == path) 
-            {
-                return cookie.originalURI.spec;
-            }
+            FBTrace.dumpProperties("---------> context.cookies.activeCookies[" + cookie.host + "]",
+                activeCookies);
+
+            FBTrace.dumpProperties("---------> Original URI for: " + getCookieId(cookie) + 
+                " is: " + originalURI, activeCookie);
         }
 
-        return cookieEvent.rawHost;
+        return originalURI;
     },
 
     getAction: function(cookieEvent) {
@@ -2581,6 +2573,11 @@ Cookie.prototype =
 // Cookie Helpers
 //-----------------------------------------------------------------------------
 
+function getCookieId(cookie)
+{
+    return cookie.host + cookie.path + cookie.name;
+}
+
 function makeStrippedHost(aHost)
 {
     var formattedHost = aHost.charAt(0) == "." ? aHost.substring(1, aHost.length) : aHost;
@@ -2731,7 +2728,7 @@ var CookieObserver = extend(BaseObserver,
             }
         }
         catch (err) {
-            ERROR(err);
+            FBTrace.sysout("---------> CookieObserver.observe ERROR " + aTopic, err);
         }
     },
 
@@ -3034,6 +3031,8 @@ var CookieObserver = extend(BaseObserver,
     
     logEvent: function(eventObject, context, className)
     {
+        // xxxHonza: if the cookie is changed befor initContext, the log in
+        // console is lost.
         Firebug.Console.log(eventObject, context, className, null, true);
     }
 });
@@ -3193,17 +3192,9 @@ var HttpObserver = extend(BaseObserver,
         {
             activeHosts[host] = {host: host, path: request.URI.path};
         
-            if (FBTrace.DBG_COOKIES) 
-            {
+            if (FBTrace.DBG_COOKIES)
                 FBTrace.sysout("---------> New host (on-modify-request): " + 
-                    request.URI.host + ", tabId: " + tabId + "\n");
-
-                var hostList = "";
-                for (var host in activeHosts)
-                    hostList += host + ", ";
-                FBTrace.dumpProperties("---------> Active host list: " + hostList + "\n",
-                    activeHosts);
-            }
+                    request.URI.host + ", tabId: " + tabId, activeHosts);
 
             // Refresh the panel asynchronously.
             if (context instanceof Firebug.TabContext)
@@ -3237,9 +3228,6 @@ var HttpObserver = extend(BaseObserver,
         // Bail out if no cookies is received.
         if (!setCookie)
             return;
-
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> Set-Cookie: " + setCookie + "\n", request);
 
         // Try to get the context from the contexts array first. The TabWatacher
         // could return context for the previous page in this tab.
@@ -3300,14 +3288,17 @@ var HttpObserver = extend(BaseObserver,
             // Push into activeCookies
             if (!activeCookies[cookie.host])
                 activeCookies[cookie.host] = [];
-            activeCookies[cookie.host].push(cookieWrapper);
 
-            if (FBTrace.DBG_COOKIES) 
-            {
+            var activeCookiesForHost = activeCookies[cookie.host];
+            activeCookiesForHost[getCookieId(cookie)] = cookie;
+
+            if (FBTrace.DBG_COOKIES)
                 FBTrace.dumpProperties("---------> Cookie received: " + 
                     cookie.host + ", cookie: " + cookie.name + "\n", cookie);
-            }
         }
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> Set-Cookie: " + setCookie + "\n", activeCookies);
     }
 });
 
