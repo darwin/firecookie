@@ -1346,8 +1346,8 @@ Templates.CookieRow = domplate(Templates.Rep,
         DIV({class: "cookieInfoBody", _repObject: "$cookie"},
             DIV({class: "cookieInfoTabs"},
                 A({class: "cookieInfoValueTab cookieInfoTab", onclick: "$onClickTab",
-                    view: $FC_STR("firecookie.info.valuetab.label")},
-                    "Value"
+                    view: "Value"},
+                    $FC_STR("firecookie.info.valuetab.label")
                 )
             ),
             DIV({class: "cookieInfoValueText cookieInfoText"},
