@@ -925,6 +925,10 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
     
     initializeNode: function(oldPanelNode)
     {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> FireCookiePanel.initializeNode\n", 
+                oldPanelNode);
+
         // xxxHonza 
         // This method isn't called when FB UI is detached. So, the columns
         // are *not* resizable when FB is open in external window.
@@ -939,6 +943,9 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
     
     destroyNode: function()
     {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> FireCookiePanel.destroyNode\n");
+
         this.document.removeEventListener("mouseclick", this.onMouseClick, true);
         this.document.removeEventListener("mousedown", this.onMouseDown, true);
         this.document.removeEventListener("mousemove", this.onMouseMove, true);
