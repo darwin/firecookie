@@ -16,7 +16,7 @@
 <!ENTITY firecookie.edit.value.label "Wert:">
 <!ENTITY firecookie.edit.domain.label "Host:">
 <!ENTITY firecookie.edit.path.label "Pfad:">
-<!ENTITY firecookie.edit.expire.label "Verfalldatum:">
+<!ENTITY firecookie.edit.expire.label "Verfallsdatum:">
 <!ENTITY firecookie.edit.session.label "Sitzung">
 <!ENTITY firecookie.edit.secure.label "Cookie schützen">
 <!ENTITY firecookie.edit.httponly.label     "HTTP Only">
