@@ -46,7 +46,7 @@
                         label="&firecookie.filter.byPath;" 
                         tooltiptext="&firecookie.filter.byPathTooltip;" 
                         command="cmd_cookieFilterByPath"/>
-                    <menuitem id="fcShowRejectedCookies25" type="checkbox" value="firecookie.showRejectedCookies" 
+                    <menuitem id="fcShowRejectedCookies" type="checkbox" value="firecookie.showRejectedCookies" 
                         label="&firecookie.filter.showRejectedCookies;" 
                         tooltiptext="&firecookie.filter.showRejectedCookiesTooltip;" 
                         command="cmd_cookieShowRejectedCookies"/>
