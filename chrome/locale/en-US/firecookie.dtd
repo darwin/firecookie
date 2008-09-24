@@ -22,7 +22,7 @@
 <!ENTITY  firecookie.edit.httponly.label     "HTTP Only">
 <!ENTITY  firecookie.Filter                  "Filter">
 <!ENTITY  firecookie.FilterTooltip           "Use given options to filter the cookie list.">
-<!ENTITY  firecookie.filter.byPath           "Filter Cookies By Path">
+<!ENTITY  firecookie.filter.byPath           "Filter Cookies By Current Path">
 <!ENTITY  firecookie.filter.byPathTooltip    "Show only cookies that match the current path.">
 <!ENTITY  firecookie.filter.showRejectedCookies     "Show Rejected Cookies">
 <!ENTITY  firecookie.filter.showRejectedCookiesTooltip     "Display even rejected cookies in the list.">

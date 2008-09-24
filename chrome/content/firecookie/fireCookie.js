@@ -258,6 +258,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         context.cookies = {};
         context.cookies.activeHosts = [];
 
+        // Initialize custom path filter for this context
+        context.cookies.pathFilter = "/";
+
         // The temp context isn't created e.g. for empty tabs, chrome pages.
         var tempContext = contexts[tabId];
         if (tempContext)
@@ -688,6 +691,31 @@ Firebug.FireCookieModel = extend(BaseModule,
         return true;
     },
     
+    // Custom path filter 
+    onFilterPanelShowing: function(filterPanel, context)
+    {
+        filterPanel.value = context.cookies.pathFilter;
+        return true;
+    },
+
+    onFilterPanelApply: function(filterPanel, context)
+    {
+        var parentMenu = $("fcFilterMenu");
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("---------> onApplyPathFilter, filter: " + 
+                filterPanel.value, [filterPanel]);
+
+        // Use the filter from panel.
+        context.cookies.pathFilter = filterPanel.value;
+
+        // xxxHonza refresh the list.
+
+        // Close menu and panel.
+        panel.hidePopup();
+        parentMenu.hidePopup();
+    },
+
     onHelp: function(context) 
     {
         openNewTab("http://www.janodvarko.cz/firecookie");
