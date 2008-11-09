@@ -101,7 +101,7 @@ var contexts = new Array();
 // Helper for debug logs.
 if (typeof FBTrace == "undefined")
     FBTrace = { sysout: function() {} };
-    
+
 // Module Implementation
 //-----------------------------------------------------------------------------
 
@@ -838,8 +838,8 @@ function $FC_STR_BRAND(name)
 //-----------------------------------------------------------------------------
 
 function FireCookiePanel() {} 
-
-FireCookiePanel.prototype = extend(Firebug.Panel, 
+var BasePanel = Firebug.AblePanel ? Firebug.AblePanel : Firebug.Panel;
+FireCookiePanel.prototype = extend(BasePanel, 
 { 
     name: panelName, 
     title: $FC_STR("firecookie.Panel"),
@@ -862,7 +862,7 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
         this.onMouseUp = bind(hcr.onMouseUp, hcr);
         this.onMouseOut = bind(hcr.onMouseOut, hcr);
     
-        Firebug.Panel.initialize.apply(this, arguments);
+        BasePanel.initialize.apply(this, arguments);
 
         // Just after the initialization, so the this.document member is set.                
         Firebug.FireCookieModel.addStyleSheet(this);
@@ -983,12 +983,12 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
 
     detach: function(oldChrome, newChrome)
     {
-        Firebug.Panel.detach.apply(this, arguments);
+        BasePanel.detach.apply(this, arguments);
     },
 
     reattach: function(doc)
     {
-        Firebug.Panel.reattach.apply(this, arguments);
+        BasePanel.reattach.apply(this, arguments);
     },
             
     clear: function()
@@ -1071,7 +1071,7 @@ FireCookiePanel.prototype = extend(Firebug.Panel,
         if (header)
             return Templates.CookieTable;
             
-        return Firebug.Panel.getPopupObject.apply(this, arguments);
+        return BasePanel.getPopupObject.apply(this, arguments);
     },       
     
     findRepObject: function(cookie)
