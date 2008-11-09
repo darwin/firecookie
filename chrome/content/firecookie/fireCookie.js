@@ -506,6 +506,15 @@ Firebug.FireCookieModel = extend(BaseModule,
     {
         var host = getURIHost(location);
 
+        // In case of local files or system pages use this labels instead of host.
+        // xxxHonza: the panel should be automatically disabled for local files
+        // and system pages as there are no cookies associated.
+        // These options shouldn't be available at all.
+        if (isSystemURL(location.spec))
+            host = $FC_STR("firecookie.SystemPages");
+        else if (!getURIHost(location))
+            host = $FC_STR("firecookie.LocalFiles");
+
         // Translate these two options in panel activable menu from firecookie.properties
         switch (option)
         {
