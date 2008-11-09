@@ -1901,8 +1901,22 @@ Templates.CookieChanged = domplate(Templates.Rep,
         return originalURI;
     },
 
-    getAction: function(cookieEvent) {
-        return cookieEvent.action;
+    getAction: function(cookieEvent) 
+    {
+        // Return properly localized action.
+        switch(cookieEvent.action)
+        {
+          case "deleted":
+              return $FC_STR("firecookie.console.deleted");
+          case "added":
+              return $FC_STR("firecookie.console.added");
+          case "changed":
+              return $FC_STR("firecookie.console.changed");
+          case "cleared":
+              return $FC_STR("firecookie.console.cleared");
+        }
+
+        return "";
     },
         
     getName: function(cookieEvent) {
