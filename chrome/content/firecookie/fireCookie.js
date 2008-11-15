@@ -1461,7 +1461,9 @@ Templates.CookieRow = domplate(Templates.Rep,
     },
 
     getExpires: function(cookie) {
-    
+        if (cookie.cookie.expires == undefined)
+            return "";
+
         // The first character is space so, if the table is sorted accoroding 
         // to this column, all "Session" cookies are displayed at the begining.        
         if (cookie.cookie.expires == 0)
