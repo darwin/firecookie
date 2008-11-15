@@ -36,7 +36,7 @@
 }
 
 .logRow-cookiesRejected {
-    border-bottom: 1px solid #D7D7D7;    
+    border-bottom: 1px solid #D7D7D7;
 }
 
 .logRow-cookiesRejected .cookieCol,
@@ -286,4 +286,35 @@
 
 .cookieInfoText[selected="true"] {
     display: block;
+}
+
+/************************************************************************************************/
+
+/* Support for Net panel */
+.netInfoCookiesText {
+    padding: 0 !important;
+}
+
+.netInfoCookiesList {
+    padding: 5px 0 5px 20px;
+    margin: 0px; 
+}
+
+.netInfoCookiesGroup {
+    font-family: Lucida Grande, Tahoma, sans-serif;
+    font-weight: bold;
+    color: #565656;
+    list-style-type: disc;
+}
+
+.netInfoCookies {
+    margin: 5px 0 5px 0;
+}
+
+.netInfoCookies > .cookieTable {
+    border-left: solid 1px rgb(239, 239, 239);
+}
+
+.netInfoCookies .cookieInfoRow:last-child > .cookieInfoCol {
+    border-bottom: 1px solid #EEEEEE;
 }

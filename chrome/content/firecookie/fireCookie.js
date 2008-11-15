@@ -140,6 +140,12 @@ Firebug.FireCookieModel = extend(BaseModule,
         // There is no big overhead, the initContext is called just after the
         // first document request.
         this.registerObservers(null);
+
+        // Register listener for NetInfoBody (if the API is available) so,
+        // a new tab (Cookies) can be appended into the Net panel request info.
+        var netInfoBody = Firebug.NetMonitor.NetInfoBody;
+        if (netInfoBody.addListener)
+            netInfoBody.addListener(this.NetInfoBody);
     },
 
     shutdown: function() 
@@ -149,6 +155,10 @@ Firebug.FireCookieModel = extend(BaseModule,
         // Support for trace-console customization in Firebug 1.3
         if (Firebug.TraceModule && Firebug.TraceModule.removeListener)
             Firebug.TraceModule.removeListener(this.TraceListener);
+
+        var netInfoBody = Firebug.NetMonitor.NetInfoBody;
+        if (netInfoBody.removeListener)
+            netInfoBody.removeListener(this.NetInfoBody);
     },
 
     registerObservers: function(context)
@@ -372,7 +382,8 @@ Firebug.FireCookieModel = extend(BaseModule,
         // The console panel can be displayed sooner than the Cookies
         // panel, in such a case the Stylesheet must be ready as 
         // there are cookies logs in the console.
-        if (panel && panel.name == "console")
+        // Cookie table is also used within the net panel.
+        if (panel && (panel.name == "console" || panel.name == "net"))
             this.addStyleSheet(panel);       
     },
 
@@ -1424,6 +1435,9 @@ Templates.CookieRow = domplate(Templates.Rep,
     },
     
     getDomain: function(cookie) {
+        if (!cookie.cookie.host)
+            return "";
+
         return cookie.cookie.host;
     },
 
@@ -1483,6 +1497,9 @@ Templates.CookieRow = domplate(Templates.Rep,
     },
     
     getPath: function(cookie) {
+        if (!cookie.cookie.path)
+            return "";
+
         return cookie.cookie.path;
     },
     
@@ -2638,6 +2655,9 @@ function getCookieId(cookie)
 
 function makeStrippedHost(aHost)
 {
+    if (!aHost)
+        return aHost;
+
     var formattedHost = aHost.charAt(0) == "." ? aHost.substring(1, aHost.length) : aHost;
     return formattedHost.substring(0, 4) == "www." ? formattedHost.substring(4, formattedHost.length) : formattedHost;
 }
@@ -2712,6 +2732,20 @@ function parseFromString(string)
     }
     
     return cookie;
+}
+
+function parseSentCookiesFromString(header)
+{
+    var cookies = [];
+    var pairs = header.split("; ");
+    
+    for (var i=0; i<pairs.length; i++) {
+        var option = pairs[i].split("=");
+        if (option.length == 2)
+            cookies.push(new Cookie({name: option[0], value: option[1]}));
+    }
+
+    return cookies;
 }
 
 // Cookie Event objects
@@ -3589,6 +3623,114 @@ Firebug.FireCookieModel.TraceListener =
 Firebug.FireCookieModel.Cookie = Cookie;
 Firebug.FireCookieModel.$FC_STR = $FC_STR;
 Firebug.FireCookieModel.$FC_STRF = $FC_STRF;
+
+// Custom info tab within Net panel
+//-----------------------------------------------------------------------------
+
+Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
+{
+    tag:
+        UL({class: "netInfoCookiesList"},
+            LI({class: "netInfoCookiesGroup", $collapsed: "$cookiesInfo|hideReceivedCookies"}, 
+                DIV($FC_STR("firecookie.netinfo.Received_Cookies")),
+                DIV({class: "netInfoReceivedCookies netInfoCookies"})
+            ),
+            LI({class: "netInfoCookiesGroup", $collapsed: "$cookiesInfo|hideSentCookies"}, 
+                DIV($FC_STR("firecookie.netinfo.Sent_Cookies")),
+                DIV({class: "netInfoSentCookies netInfoCookies"})
+            )
+        ),
+
+    hideReceivedCookies: function(cookiesInfo)
+    {
+        return !cookiesInfo.receivedCookies.length;
+    },
+
+    hideSentCookies: function(cookiesInfo)
+    {
+        return !cookiesInfo.sentCookies.length;
+    },
+    
+    // NetInfoBody listener
+    initTabBody: function(infoBox, file)
+    {
+        var sentCookiesHeader = this.findHeader(file.requestHeaders, "Cookie");
+        var receivedCookiesHeader = this.findHeader(file.responseHeaders, "Set-Cookie");
+        
+        // Create tab only if there are some cookies.
+        if (sentCookiesHeader || receivedCookiesHeader)
+            Firebug.NetMonitor.NetInfoBody.appendTab(infoBox, "Cookies", 
+                $FC_STR("firecookie.Panel"));
+    },
+
+    destroyTabBody: function(infoBox, file)
+    {
+    },
+
+    updateTabBody: function(infoBox, file, context)
+    {
+        var tab = infoBox.selectedTab;
+        if (tab.dataPresented || !hasClass(tab, "netInfoCookiesTab"))
+            return;
+
+        tab.dataPresented = true;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("---------> NetInfoBodyListener.updateTabBody", 
+                [file.requestHeaders, file.responseHeaders]);
+
+        var sentCookiesHeader = this.findHeader(file.requestHeaders, "Cookie");
+        var receivedCookiesHeader = this.findHeader(file.responseHeaders, "Set-Cookie");
+
+        // Parse all received cookies and generate UI.
+        var receivedCookies = [];
+        var sentCookies = [];
+
+        // Parse received cookies.
+        var cookies = receivedCookiesHeader.split("\n");
+        for (var i=0; i<cookies.length; i++) {
+            var cookie = parseFromString(cookies[i]);
+            if (!cookie.host)
+                cookie.host = file.request.URI.host;
+            receivedCookies.push(new Cookie(cookie));
+        }
+
+        // Parse sent cookies.
+        sentCookies = parseSentCookiesFromString(sentCookiesHeader);
+
+        // Create basic UI content
+        var tabBody = getElementByClass(infoBox, "netInfoCookiesText");
+        this.tag.replace({cookiesInfo: {
+            receivedCookies: receivedCookies,
+            sentCookies: sentCookies,
+        }}, tabBody);
+
+        var tag = Templates.CookieRow.cookieTag;
+
+        // Generate UI for received cookies.
+        var receivedCookiesBody = getElementByClass(tabBody, "netInfoReceivedCookies");
+        var table = Templates.CookieTable.createTable(receivedCookiesBody);
+        var header = getElementByClass(table, "cookieHeaderRow");
+        context.throttle(tag.insertRows, tag, [{cookies: receivedCookies}, header]);
+
+        // Generate UI for sent cookies.
+        var sentCookiesBody = getElementByClass(tabBody, "netInfoSentCookies");
+        table = Templates.CookieTable.createTable(sentCookiesBody);
+        header = getElementByClass(table, "cookieHeaderRow");
+        context.throttle(tag.insertRows, tag, [{cookies: sentCookies}, header]);
+    },
+
+    // Helpers
+    findHeader: function(headers, name)
+    {
+        for (var i=0; i<headers.length; i++) {
+            if (headers[i].name == name)
+                return headers[i].value;
+        }
+
+        return null;
+    }
+});
 
 // Firebug Registration
 //-----------------------------------------------------------------------------
