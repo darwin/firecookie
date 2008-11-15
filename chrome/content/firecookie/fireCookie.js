@@ -817,7 +817,7 @@ function $FC_STR(name)
 {
     try
     {
-        return document.getElementById("strings_firecookie").getString(name);
+        return document.getElementById("strings_firecookie").getString(name.replace(' ', '_', "g"));
     }
     catch (err)
     {
@@ -827,6 +827,11 @@ function $FC_STR(name)
             FBTrace.dumpProperties("cookies.getString FAILS ", err);
         }
     }
+
+    // Use only the label after last dot.
+    var index = name.lastIndexOf(".");
+    if (index > 0)
+        name = name.substr(index + 1);
 
     return name;
 }
@@ -835,7 +840,7 @@ function $FC_STRF(name, args)
 {
     try
     {
-        return document.getElementById("strings_firecookie").getFormattedString(name, args);
+        return document.getElementById("strings_firecookie").getFormattedString(name.replace(' ', '_', "g"), args);
     }
     catch (err)
     {
@@ -845,6 +850,11 @@ function $FC_STRF(name, args)
             FBTrace.dumpProperties("cookies.getString FAILS ", err);
         }
     }
+
+    // Use only the label after last dot.
+    var index = name.lastIndexOf(".");
+    if (index > 0)
+        name = name.substr(index + 1);
 
     return name;
 }
@@ -3632,11 +3642,11 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
     tag:
         UL({class: "netInfoCookiesList"},
             LI({class: "netInfoCookiesGroup", $collapsed: "$cookiesInfo|hideReceivedCookies"}, 
-                DIV($FC_STR("firecookie.netinfo.Received_Cookies")),
+                DIV($FC_STR("firecookie.netinfo.Received Cookies")),
                 DIV({class: "netInfoReceivedCookies netInfoCookies"})
             ),
             LI({class: "netInfoCookiesGroup", $collapsed: "$cookiesInfo|hideSentCookies"}, 
-                DIV($FC_STR("firecookie.netinfo.Sent_Cookies")),
+                DIV($FC_STR("firecookie.netinfo.Sent Cookies")),
                 DIV({class: "netInfoSentCookies netInfoCookies"})
             )
         ),
