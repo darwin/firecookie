@@ -1413,6 +1413,11 @@ Templates.CookieRow = domplate(Templates.Rep,
                 A({class: "cookieInfoValueTab cookieInfoTab", onclick: "$onClickTab",
                     view: "Value"},
                     $FC_STR("firecookie.info.valuetab.label")
+                ),
+                A({class: "cookieInfoRawValueTab cookieInfoTab", onclick: "$onClickTab",
+                    view: "RawValue",
+                    $collapsed: "$cookie|hideRawValue"},
+                    $FC_STR("firecookie.info.rawdatatab.Raw Data")
                 )
             ),
             DIV({class: "cookieInfoValueText cookieInfoText"},
@@ -1420,13 +1425,17 @@ Templates.CookieRow = domplate(Templates.Rep,
                     TBODY()
                 )
             ),
-            DIV({class: "cookieInfoEditorText cookieInfoText"},
-                TABLE({class: "cookieInfoEditorTable", cellpadding: 0, cellspacing: 0},
+            DIV({class: "cookieInfoRawValueText cookieInfoText"},
+                TABLE({class: "cookieInfoRawValueTable", cellpadding: 0, cellspacing: 0},
                     TBODY()
                 )
             )
         ),
         
+    hideRawValue: function(cookie) {
+        return (cookie.cookie.value == cookie.cookie.rawValue);
+    },
+
     getAction: function(cookie) {
         return cookie.action;
     },
@@ -1832,6 +1841,19 @@ Templates.CookieRow = domplate(Templates.Rep,
                     insertWrappedText(text, valueBox);
             }
         }
+        else if (hasClass(tab, "cookieInfoRawValueTab"))
+        {
+            var valueBox = getChildByClass(cookieInfoBody, "cookieInfoRawValueText");
+            if (!cookieInfoBody.rawValuePresented)
+            {
+                cookieInfoBody.rawValuePresented = true;
+
+                var text = cookie.cookie.rawValue;
+                if (text != undefined)
+                    insertWrappedText(text, valueBox);
+            }
+        }
+
     }
 });
 
@@ -2674,15 +2696,25 @@ function makeStrippedHost(aHost)
 
 function makeCookieObject(cookie)
 {
+    // Remember the raw value.
+    var rawValue = cookie.value;
+
+    // Unescape '+' characters that are used to encode a space.
+    // This isn't done by unescape method.
+    var value = cookie.value;
+    if (value)
+        value = value.replace(/\+/g, " ");
+
     var c = { 
         name        : cookie.name,
-        value       : unescape(cookie.value),
+        value       : unescape(value),
         isDomain    : cookie.isDomain,
         host        : cookie.host,
         path        : cookie.path,
         isSecure    : cookie.isSecure,
         expires     : cookie.expires,
-        isHttpOnly  : cookie.isHttpOnly
+        isHttpOnly  : cookie.isHttpOnly,
+        rawValue    : rawValue
     };
     
     return c;
@@ -2752,7 +2784,7 @@ function parseSentCookiesFromString(header)
     for (var i=0; i<pairs.length; i++) {
         var option = pairs[i].split("=");
         if (option.length == 2)
-            cookies.push(new Cookie({name: option[0], value: option[1]}));
+            cookies.push(new Cookie(makeCookieObject({name: option[0], value: option[1]})));
     }
 
     return cookies;
@@ -3389,7 +3421,7 @@ var HttpObserver = extend(BaseObserver,
                 cookie.host = host;
 
             // Push into activeHosts
-            var cookieWrapper = new Cookie(cookie);
+            var cookieWrapper = new Cookie(makeCookieObject(cookie));
             activeHost.receivedCookies.push(cookieWrapper);
             
             // Push into activeCookies
@@ -3702,7 +3734,7 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
             var cookie = parseFromString(cookies[i]);
             if (!cookie.host)
                 cookie.host = file.request.URI.host;
-            receivedCookies.push(new Cookie(cookie));
+            receivedCookies.push(new Cookie(makeCookieObject(cookie)));
         }
 
         // Parse sent cookies.
