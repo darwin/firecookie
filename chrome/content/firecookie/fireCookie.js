@@ -175,7 +175,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         this.observersRegistered = true;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> ENABLE Cookies monitoring for: " + 
+            FBTrace.sysout("cookies.ENABLE Cookies monitoring for: " + 
                 (context ? context.window.location.href : "") + "\n");
     },
 
@@ -193,7 +193,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         this.observersRegistered = false;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> DISABLE Cookies monitoring for: " + 
+            FBTrace.sysout("cookies.DISABLE Cookies monitoring for: " + 
                 (context ? context.window.location.href : "") + "\n");
     },
 
@@ -214,10 +214,10 @@ Firebug.FireCookieModel = extend(BaseModule,
             
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.sysout("---------> Copy " + tempContext.events.length + 
+            FBTrace.sysout("cookies.Copy " + tempContext.events.length + 
                 " events to real-context." + "\n");
 
-            var message = "---------> Copy active hosts (";
+            var message = "cookies.Copy active hosts (";
             for (var host in tempContext.cookies.activeHosts)
                 message += host + ", ";
             message = message.substring(0, message.length - 2);
@@ -241,7 +241,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         for (var i=0; i<events.length; i++) {
             var e = events[i];
             if (FBTrace.DBG_COOKIES)
-                FBTrace.sysout("---------> Fire fake cookie event: " + e.topic + ", " + e.data + "\n");
+                FBTrace.sysout("cookies.Fire fake cookie event: " + e.topic + ", " + e.data + "\n");
             CookieObserver.observe(e.subject, e.topic, e.data);
         }
         
@@ -259,7 +259,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         var tabId = getTabIdForWindow(context.window);
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> INIT real context for: " + tabId + ", " +
+            FBTrace.sysout("cookies.INIT real context for: " + tabId + ", " +
                 context.window.location.href + "\n");
     
         // Create sub-context for cookies. 
@@ -279,7 +279,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             delete contexts[tabId];
             
             if (FBTrace.DBG_COOKIES)
-                FBTrace.sysout("---------> DESTROY temporary context, tabId: " + tempContext.tabId + "\n");
+                FBTrace.sysout("cookies.DESTROY temporary context, tabId: " + tempContext.tabId + "\n");
         }
 
         // The base class must be called after the context for Cookies panel is 
@@ -345,7 +345,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         if (FBTrace.DBG_COOKIES)
         {
             var tabId = getTabIdForWindow(context.window);
-            FBTrace.sysout("---------> DESTROY context, tabId: " + tabId + 
+            FBTrace.sysout("cookies.DESTROY context, tabId: " + tabId + 
                 ", " + context.window.location.href + "\n");
         }
     },
@@ -406,10 +406,10 @@ Firebug.FireCookieModel = extend(BaseModule,
         if (FBTrace.DBG_COOKIES)                
         {
             var tabId = getTabIdForWindow(view);
-            FBTrace.sysout("---------> On before unload tab:  " + tabId + "\n");
+            FBTrace.sysout("cookies.On before unload tab:  " + tabId + "\n");
             
             if (contexts[tabId])
-                FBTrace.sysout("---------> !!! There is a temp context leak!\n");
+                FBTrace.sysout("cookies.!!! There is a temp context leak!\n");
         }
     },
 
@@ -449,7 +449,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             return;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> onPanelActivate: " + activatedPanelName + "," + 
+            FBTrace.sysout("cookies.onPanelActivate: " + activatedPanelName + "," + 
                 init + "\n");
 
         this.registerObservers(context);
@@ -473,7 +473,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         this.unregisterObservers(context);
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> onPanelDeactivate: " + activatedPanelName + "," + 
+            FBTrace.sysout("cookies.onPanelDeactivate: " + activatedPanelName + "," + 
                 destroy + "\n");
     },
 
@@ -489,7 +489,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         $("fbStatusIcon").removeAttribute(panelName);
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> onSuspendFirebug", context);
+            FBTrace.dumpProperties("cookies.onSuspendFirebug", context);
     },
 
     onResumeFirebug: function(context)
@@ -500,7 +500,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             $("fbStatusIcon").setAttribute(panelName, "on");
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> onResumeFirebug", context);
+            FBTrace.dumpProperties("cookies.onResumeFirebug", context);
     },
 
     isEnabled: function(context)
@@ -723,7 +723,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         var parentMenu = $("fcFilterMenu");
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> onApplyPathFilter, filter: " + 
+            FBTrace.dumpProperties("cookies.onApplyPathFilter, filter: " + 
                 filterPanel.value, [filterPanel]);
 
         // Use the filter from panel.
@@ -823,8 +823,8 @@ function $FC_STR(name)
     {
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.sysout("---------> Missing translation for: " + name + "\n");
-            FBTrace.dumpProperties("---------> getString FAILS ", err);
+            FBTrace.sysout("cookies.Missing translation for: " + name + "\n");
+            FBTrace.dumpProperties("cookies.getString FAILS ", err);
         }
     }
 
@@ -841,8 +841,8 @@ function $FC_STRF(name, args)
     {
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.sysout("---------> Missing translation for: " + name + "\n");
-            FBTrace.dumpProperties("---------> getString FAILS ", err);
+            FBTrace.sysout("cookies.Missing translation for: " + name + "\n");
+            FBTrace.dumpProperties("cookies.getString FAILS ", err);
         }
     }
 
@@ -931,7 +931,7 @@ FireCookiePanel.prototype = extend(BasePanel,
                 if (FBTrace.DBG_COOKIES) 
                 {
                     FBTrace.dumpProperties(
-                        "---------> Cookie context isn't properly initialized - ERROR: " + 
+                        "cookies.Cookie context isn't properly initialized - ERROR: " + 
                         this.context.window.location.href, this.context);
                 }
                 return;
@@ -966,7 +966,7 @@ FireCookiePanel.prototype = extend(BasePanel,
         }
         
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> Cookie list refreshed.\n", cookies);
+            FBTrace.dumpProperties("cookies.Cookie list refreshed.\n", cookies);
         
         // xxxHonza the last sorted column should be remembered in preferences.
     },
@@ -974,7 +974,7 @@ FireCookiePanel.prototype = extend(BasePanel,
     initializeNode: function(oldPanelNode)
     {
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> FireCookiePanel.initializeNode\n", 
+            FBTrace.dumpProperties("cookies.FireCookiePanel.initializeNode\n", 
                 oldPanelNode);
 
         // xxxHonza 
@@ -992,7 +992,7 @@ FireCookiePanel.prototype = extend(BasePanel,
     destroyNode: function()
     {
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> FireCookiePanel.destroyNode\n");
+            FBTrace.dumpProperties("cookies.FireCookiePanel.destroyNode\n");
 
         this.document.removeEventListener("mouseclick", this.onMouseClick, true);
         this.document.removeEventListener("mousedown", this.onMouseDown, true);
@@ -1642,7 +1642,7 @@ Templates.CookieRow = domplate(Templates.Rep,
             return;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> Get cookie values from clipboard", values);
+            FBTrace.dumpProperties("cookies.Get cookie values from clipboard", values);
 
         // Change name so it's unique and use the current host.
         values.name = Firebug.FireCookieModel.getDefaultCookieName(context, values.name);
@@ -1706,7 +1706,7 @@ Templates.CookieRow = domplate(Templates.Rep,
     onClickRow: function(event)
     {
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> Click on cookie row.\n");
+            FBTrace.sysout("cookies.Click on cookie row.\n");
     
         if (isLeftClick(event))
         {
@@ -1749,7 +1749,7 @@ Templates.CookieRow = domplate(Templates.Rep,
     onClickTab: function(event)
     {
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> onClickTab\n");
+            FBTrace.sysout("cookies.onClickTab\n");
 
         this.selectTab(event.currentTarget);
     },
@@ -1908,10 +1908,10 @@ Templates.CookieChanged = domplate(Templates.Rep,
 
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.dumpProperties("---------> context.cookies.activeCookies[" + cookie.host + "]",
+            FBTrace.dumpProperties("cookies.context.cookies.activeCookies[" + cookie.host + "]",
                 activeCookies);
 
-            FBTrace.dumpProperties("---------> Original URI for: " + getCookieId(cookie) + 
+            FBTrace.dumpProperties("cookies.Original URI for: " + getCookieId(cookie) + 
                 " is: " + originalURI, activeCookie);
         }
 
@@ -2117,7 +2117,7 @@ Templates.CookieTable = domplate(Templates.Rep,
     onClickHeader: function(event)
     {
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> onClickHeader\n");
+            FBTrace.sysout("cookies.onClickHeader\n");
 
         if (!isLeftClick(event))
             return;
@@ -2342,7 +2342,7 @@ var HeaderColumnResizer =
     
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.sysout("---------> Mouse out, target: " + event.target.localName + 
+            FBTrace.sysout("cookies.Mouse out, target: " + event.target.localName + 
                 ", " + event.target.className + "\n");
             FBTrace.sysout("      explicitOriginalTarget: " + event.explicitOriginalTarget.localName + 
                 ", " + event.explicitOriginalTarget.className + "\n");
@@ -2402,7 +2402,7 @@ var HeaderColumnResizer =
         if (FBTrace.DBG_COOKIES)
         {
             var colId = this.currColumn.getAttribute("id");
-            FBTrace.sysout("---------> Start resizing column (id): " + colId + 
+            FBTrace.sysout("cookies.Start resizing column (id): " + colId + 
                 ", start width: " + this.startWidth + "\n");
         }
     },
@@ -2418,7 +2418,7 @@ var HeaderColumnResizer =
         if (FBTrace.DBG_COOKIES)
         {
             var colId = this.currColumn.getAttribute("id");
-            FBTrace.sysout("---------> Resizing column (id): " + colId + 
+            FBTrace.sysout("cookies.Resizing column (id): " + colId + 
                 ", new width: " + newWidth + "\n");
         }
     },
@@ -2447,7 +2447,7 @@ var HeaderColumnResizer =
         if (FBTrace.DBG_COOKIES)
         {
             var colId = this.currColumn.getAttribute("id");
-            FBTrace.sysout("---------> End resizing column (id): " + colId + 
+            FBTrace.sysout("cookies.End resizing column (id): " + colId + 
                 ", new width: " + maxWidth + "\n");
         }
     }
@@ -2482,7 +2482,7 @@ var CookieClipboard = extend(Object,
             var str = this.getTransferData();
 
             if (FBTrace.DBG_COOKIES)
-                FBTrace.sysout("---------> Get Cookie data from clipboard: " + str + "\n");
+                FBTrace.sysout("cookies.Get Cookie data from clipboard: " + str + "\n");
 
             return parseFromJSON(str);
         }
@@ -2537,7 +2537,7 @@ var CookieClipboard = extend(Object,
         trans.setTransferData(this.cookieFlavour, wrapper1, json.length * 2);
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> Create JSON transfer data : " + json, cookie);
+            FBTrace.dumpProperties("cookies.Create JSON transfer data : " + json, cookie);
 
         var str = cookie.toString();
         var wrapper2 = CCIN("@mozilla.org/supports-string;1", "nsISupportsString");
@@ -2546,7 +2546,7 @@ var CookieClipboard = extend(Object,
         trans.setTransferData(this.unicodeFlavour, wrapper2, str.length * 2);
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> Create string transfer data : " + str, cookie);
+            FBTrace.dumpProperties("cookies.Create string transfer data : " + str, cookie);
 
         return trans;
     },
@@ -2716,7 +2716,7 @@ function parseFromString(string)
                     var tempDate = new Date(cookie[name] * 1000);
                     if (value != tempDate.toGMTString())
                     {
-                        FBTrace.sysout("---------> parseFromString: ERROR, " + 
+                        FBTrace.sysout("cookies.parseFromString: ERROR, " + 
                             "from: " + value + 
                             ", to: " + tempDate.toGMTString() + 
                             ", cookie: " + string + 
@@ -2820,7 +2820,7 @@ var CookieObserver = extend(BaseObserver,
             }
         }
         catch (err) {
-            FBTrace.sysout("---------> CookieObserver.observe ERROR " + aTopic, err);
+            FBTrace.sysout("cookies.CookieObserver.observe ERROR " + aTopic, err);
         }
     },
 
@@ -2936,7 +2936,7 @@ var CookieObserver = extend(BaseObserver,
 
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.dumpProperties("---------> onCookieChanged: " + 
+            FBTrace.dumpProperties("cookies.onCookieChanged: " + 
                 (cookie ? cookie.name : "null") + 
                 ", " + action + "\n", cookie);
         }
@@ -2979,7 +2979,7 @@ var CookieObserver = extend(BaseObserver,
             return;
     
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> onCookieRejected: " + uri.spec + "\n");
+            FBTrace.sysout("cookies.onCookieRejected: " + uri.spec + "\n");
 
         // Mark host and all its cookies as rejected.
         // xxxHonza there was an exception "context.cookies is undefined".
@@ -3172,7 +3172,7 @@ var PrefObserver = extend(BaseObserver,
             return;
             
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> observe: " + aTopic + ", " + aData + "\n");
+            FBTrace.sysout("cookies.observe: " + aTopic + ", " + aData + "\n");
             
         if (aData == networkPrefDomain + "." + cookieBehaviorPref || 
             aData == networkPrefDomain + "." + cookieLifeTimePref) {
@@ -3193,7 +3193,7 @@ var PermissionObserver = extend(BaseObserver,
             return;
         
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> observe: " + aTopic + ", " + aData + "\n");
+            FBTrace.sysout("cookies.observe: " + aTopic + ", " + aData + "\n");
         
         var fn = Firebug.FireCookieModel.Perm.updatePermButton;
         TabWatcher.iterateContexts(fn);
@@ -3236,8 +3236,8 @@ var HttpObserver = extend(BaseObserver,
         // Dump debug information to the console.
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.dumpProperties("---------> onModifyRequest: " + request.name, request); 
-            FBTrace.sysout("---------> Cookies sent: " + 
+            FBTrace.dumpProperties("cookies.onModifyRequest: " + request.name, request); 
+            FBTrace.sysout("cookies.Cookies sent: " + 
                 cookieService.getCookieString(request.URI, request) + "\n"); 
         }
 
@@ -3251,7 +3251,7 @@ var HttpObserver = extend(BaseObserver,
             (name == origName) && (win == win.parent))
         {
             if (FBTrace.DBG_COOKIES && contexts[tabId])
-                FBTrace.sysout("---------> !!! Temporary context exists for: " + tabId + "\n");             
+                FBTrace.sysout("cookies.!!! Temporary context exists for: " + tabId + "\n");             
 
             // Create temporary context
             if (!contexts[tabId]) 
@@ -3260,7 +3260,7 @@ var HttpObserver = extend(BaseObserver,
                 contexts[tabId] = tempContext;
 
                 if (FBTrace.DBG_COOKIES)
-                    FBTrace.dumpProperties("---------> INIT temporary context for: " + 
+                    FBTrace.dumpProperties("cookies.INIT temporary context for: " + 
                         tempContext.tabId, request);
 
                 Firebug.FireCookieModel.initTempContext(tempContext);
@@ -3276,7 +3276,7 @@ var HttpObserver = extend(BaseObserver,
         if (!context)
         {
             if (FBTrace.DBG_COOKIES) 
-                FBTrace.sysout("---------> onModifyRequest: context is NOT available for:" + 
+                FBTrace.sysout("cookies.onModifyRequest: context is NOT available for:" + 
                     request.URI.host + ", tabId: " + tabId + "\n");
             return;
         }
@@ -3290,7 +3290,7 @@ var HttpObserver = extend(BaseObserver,
             activeHosts[host] = {host: host, path: request.URI.path};
         
             if (FBTrace.DBG_COOKIES)
-                FBTrace.sysout("---------> New host (on-modify-request): " + 
+                FBTrace.sysout("cookies.New host (on-modify-request): " + 
                     request.URI.host + ", tabId: " + tabId, activeHosts);
 
             // Refresh the panel asynchronously.
@@ -3306,7 +3306,7 @@ var HttpObserver = extend(BaseObserver,
             return;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> onExamineResponse: " + request.name, 
+            FBTrace.dumpProperties("cookies.onExamineResponse: " + request.name, 
                 request);
             
         if (!logEvents()) 
@@ -3336,7 +3336,7 @@ var HttpObserver = extend(BaseObserver,
         if (!context)
         {
             if (FBTrace.DBG_COOKIES) 
-                FBTrace.sysout("---------> onExamineResponse: context is NOT available for:" + 
+                FBTrace.sysout("cookies.onExamineResponse: context is NOT available for:" + 
                     request.URI.host + ", tabId: " + tabId + "\n");
             return;
         }
@@ -3390,12 +3390,12 @@ var HttpObserver = extend(BaseObserver,
             activeCookiesForHost[getCookieId(cookie)] = cookie;
 
             if (FBTrace.DBG_COOKIES)
-                FBTrace.dumpProperties("---------> Cookie received: " + 
+                FBTrace.dumpProperties("cookies.Cookie received: " + 
                     cookie.host + ", cookie: " + cookie.name + "\n", cookie);
         }
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("---------> Set-Cookie: " + setCookie + "\n", activeCookies);
+            FBTrace.dumpProperties("cookies.Set-Cookie: " + setCookie + "\n", activeCookies);
     }
 });
 
@@ -3607,10 +3607,10 @@ Firebug.FireCookieModel.TraceListener =
     {
         // Set type of the log message so, custom CSS style can be applied
         // in order to distinguishe it from other messages.
-        var index = message.text.indexOf("--------->");
+        var index = message.text.indexOf("cookies.");
         if (index == 0)
         {
-            message.text = message.text.substr("--------->".length);
+            message.text = message.text.substr("cookies.".length);
             message.text = trimLeft(message.text);
             message.type = "DBG_COOKIES";
         }
@@ -3676,7 +3676,7 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
         tab.dataPresented = true;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("---------> NetInfoBodyListener.updateTabBody", 
+            FBTrace.sysout("cookies.NetInfoBodyListener.updateTabBody", 
                 [file.requestHeaders, file.responseHeaders]);
 
         var sentCookiesHeader = this.findHeader(file.requestHeaders, "Cookie");
