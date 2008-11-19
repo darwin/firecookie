@@ -146,6 +146,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         var netInfoBody = Firebug.NetMonitor.NetInfoBody;
         if (netInfoBody.addListener)
             netInfoBody.addListener(this.NetInfoBody);
+
+        // Localize UI (use firecookie.properties instead of firecookies.dtd)
+        this.internationalizeUI();
     },
 
     shutdown: function() 
@@ -159,6 +162,11 @@ Firebug.FireCookieModel = extend(BaseModule,
         var netInfoBody = Firebug.NetMonitor.NetInfoBody;
         if (netInfoBody.removeListener)
             netInfoBody.removeListener(this.NetInfoBody);
+    },
+
+    internationalizeUI: function()
+    {
+        fcInternationalize("fcCustomPathFilter", "label");
     },
 
     registerObservers: function(context)
@@ -714,25 +722,50 @@ Firebug.FireCookieModel = extend(BaseModule,
     // Custom path filter 
     onFilterPanelShowing: function(filterPanel, context)
     {
-        filterPanel.value = context.cookies.pathFilter;
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onFilterPanelShowing ", filterPanel);
+
+        // Initialize filter input field.
+        filterPanel.init(context.cookies.pathFilter);
+
+        // A menu does not take the keyboard focus and keyboard messages are 
+        // sent to the window. In order to avoid unwante shortcuts execution
+        // register a window keypress listeners for the time when the filter
+        // popup is displayed and stop propagation of these events.
+        // https://developer.mozilla.org/en/XUL/PopupGuide/PopupKeys
+        window.addEventListener("keypress", this.onFilterKeyPress, true);
         return true;
     },
 
-    onFilterPanelApply: function(filterPanel, context)
+    onFilterPanelHiding: function(filterPanel, context)
+    {
+        window.removeEventListener("keypress", this.onFilterKeyPress, true);
+        return true;
+    },
+
+    onFilterKeyPress: function(event) 
+    {
+        // Stop propagation of keypress events when filter popup is displayed.
+        event.stopPropagation();
+    },
+
+    onFilterPanelApply: function(context)
     {
         var parentMenu = $("fcFilterMenu");
+        var filterPanel = $("fcCustomPathFilterPanel");
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.dumpProperties("cookies.onApplyPathFilter, filter: " + 
-                filterPanel.value, [filterPanel]);
+            FBTrace.sysout("cookies.onApplyPathFilter, filter: " + filterPanel.value, 
+                filterPanel);
 
         // Use the filter from panel.
         context.cookies.pathFilter = filterPanel.value;
 
-        // xxxHonza refresh the list.
+        // Refresh cookie list.
+        var panel = context.getPanel(panelName);
+        panel.refresh();
 
-        // Close menu and panel.
-        panel.hidePopup();
+        // Close menu.
         parentMenu.hidePopup();
     },
 
@@ -862,6 +895,18 @@ function $FC_STRF(name, args)
 function $FC_STR_BRAND(name)
 {
     return document.getElementById("bundle_brand").getString(name);
+}
+
+function fcInternationalize(element, attr, args)
+{
+    if (typeof element == "string")
+        element = document.getElementById(element);
+
+    var xulString = element.getAttribute(attr);
+    var localized = args ? $FC_STRF(xulString, args) : $FC_STR(xulString);
+
+    // Set localized value of the attribute.
+    element.setAttribute(attr, localized);
 }
 
 // Panel Implementation

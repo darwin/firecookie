@@ -42,7 +42,7 @@
                     label="&firecookie.RemoveAll;" class="toolbar-text-button"
                     tooltip="fcRemoveAllTooltip" command="cmd_cookieRemoveAll"/>
                 <toolbarbutton label="&firecookie.Filter;" type="menu" tooltiptext="&firecookie.FilterTooltip;">
-                    <menupopup id="fcFilterMenu" 
+                    <menupopup id="fcFilterMenu"
                                onpopupshowing="return Firebug.FireCookieModel.onFilterPopupShowing(this)">
                         <menuitem id="fcFilterByPath" type="checkbox" value="firecookie.filterByPath" 
                             label="&firecookie.filter.byPath;" 
@@ -53,11 +53,11 @@
                             tooltiptext="&firecookie.filter.showRejectedCookiesTooltip;" 
                             command="cmd_cookieShowRejectedCookies"/>
                         <menuseparator/>
-                        <menu id="fcCustomPathFilter" label="Custom Path Filter">
-                            <menupopup id="fcCustomPathFilterPanel"
-                                onpopupshowing="Firebug.FireCookieModel.onFilterPanelShowing(this, FirebugContext)"
-                                onapply="Firebug.FireCookieModel.onFilterPanelApply(this, FirebugContext)"
-                                value="/"/>
+                        <menu id="fcCustomPathFilter" label="firecookie.Path Filter">
+                            <menupopup id="fcCustomPathFilterPanel" ignorekeys="true"
+                                onpopupshowing="return Firebug.FireCookieModel.onFilterPanelShowing(this, FirebugContext)"
+                                onpopuphiding="return Firebug.FireCookieModel.onFilterPanelHiding(this, FirebugContext)"
+                                onapply="Firebug.FireCookieModel.onFilterPanelApply(FirebugContext)"/>
                         </menu>
                     </menupopup>
                 </toolbarbutton>
