@@ -88,7 +88,6 @@ var EditCookie =
             expires: null // is computed below
         };
 
-        // xxxHonza: Notice that if the user sets the session flag, the cookie
         // will be immediately removed.
         if (!isSession)
         {

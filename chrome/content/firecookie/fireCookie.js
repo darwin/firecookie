@@ -427,25 +427,13 @@ Firebug.FireCookieModel = extend(BaseModule,
      */
     createNewCookie: function(cookie)
     {
-        // xxxHonza: it't weird, but the cookie-manager works only in 
-        // Firefox 3 and cookie-service only in Firefox 2
-        if (versionChecker.compare(appInfo.version, "3.0*") >= 0)
-        {
-            cookieManager.add(cookie.cookie.host, cookie.cookie.path, 
-                cookie.cookie.name, cookie.cookie.value, cookie.cookie.isSecure, 
-                cookie.cookie.isHttpOnly, (cookie.cookie.expires ? false : true), 
-                cookie.cookie.expires);
-        }
-        else
-        {
-            // Create URI                    
-            var httpProtocol = cookie.cookie.isSecure ? "https://" : "http://";
-            var uri = ioService.newURI(httpProtocol + cookie.cookie.host + 
-                cookie.cookie.path, null, null);
+        // Create URI                    
+        var httpProtocol = cookie.cookie.isSecure ? "https://" : "http://";
+        var uri = ioService.newURI(httpProtocol + cookie.cookie.host + 
+            cookie.cookie.path, null, null);
 
-            var cookieString = cookie.toString();
-            cookieService.setCookieString(uri, null, cookieString, null);
-        }
+        var cookieString = cookie.toString(true);
+        cookieService.setCookieString(uri, null, cookieString, null);
     },
 
     /**
@@ -1717,10 +1705,8 @@ Templates.CookieRow = domplate(Templates.Rep,
         // Unescape cookie value (it's escaped in toJSON method).
         values.value = unescape(values.value);
 
-        // If the expire time isn't set use the default value. Some time must be set as 
-        // the session flag is alwas set to false (see add method below); otherwise the 
-        // cookie wouldn't be created.
-        if (!values.expires)
+        // If the expire time isn't set use the default value.
+        if (values.expires == undefined)
             values.expires = Firebug.FireCookieModel.getDefaultCookieExpireTime();
 
         // Create/modify cookie. 
@@ -2701,22 +2687,27 @@ Cookie.prototype =
     cookie: null,
     action: null,
     
-    toString: function()
+    toString: function(noDomain)
     {
+        var value = escape(this.cookie.value);
+        if (value)
+            value = value.replace(/\+/g, "%2B");
+
         var expires = this.cookie.expires ? new Date(this.cookie.expires * 1000) : null;
-        return this.cookie.name + "=" + this.cookie.value +
-            ((expires) ? "; expires=" + expires.toGMTString() : "") +
+        return this.cookie.name + "=" + value +
+            (expires ? "; expires=" + expires.toGMTString() : "") +
             ((this.cookie.path) ? "; path=" + this.cookie.path : "; path=/") +
-            ((this.cookie.host) ? "; domain=" + this.cookie.host : "") +
+            (noDomain ? "" : ((this.cookie.host) ? "; domain=" + this.cookie.host : "")) +
             ((this.cookie.secure) ? "; secure" : "") + 
             ((this.cookie.isHttpOnly) ? "; HttpOnly" : "");
     },
 
     toJSON: function()
     {        
+        var expires = this.cookie.expires;
         return "({name: '" + this.cookie.name + "'," +
             "value: '" + escape(this.cookie.value) + "'," +
-            "expires: '" + this.cookie.expires + "'," +
+            "expires: " + (expires ? ("'" + expires + "'") : 0) + "," +
             "path: '" + (this.cookie.path ? this.cookie.path : "/") + "'," +
             "host: '" + this.cookie.host + "'," +
             "isHttpOnly: " + (this.cookie.isHttpOnly ? "true" : "false") + "," +
