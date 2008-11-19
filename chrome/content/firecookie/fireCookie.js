@@ -1098,6 +1098,31 @@ FireCookiePanel.prototype = extend(BasePanel,
         ];
     },
 
+    getContextMenuItems: function(object, target)
+    {
+        var items = [];
+
+        // If the user clicked at a cookie row, the context menu is already
+        // initialized and so, bail out.
+        var cookieRow = getAncestorByClass(target, "cookieRow");
+        if (cookieRow)
+            return items;
+
+        // Make sure default items (cmd_copy) is removed.
+        Templates.Rep.getContextMenuItems.apply(this, arguments);
+        
+        // Create Paste menu-item so, the a new cookie can be pasted 
+        // even if the user clicks within the panel area (not on a cookie row)
+        items.push({
+            label: $FC_STR("firecookie.Paste"),
+            nol10n: true,
+            disabled: CookieClipboard.isCookieAvailable() ? false : true,
+            command: bindFixed(Templates.CookieRow.onPaste, Templates.CookieRow)
+        });
+
+        return items;
+    },
+
     search: function(text)
     {
         if (!text)
@@ -1626,9 +1651,6 @@ Templates.CookieRow = domplate(Templates.Rep,
     {
         Templates.Rep.getContextMenuItems.apply(this, arguments);
         
-        var popup = $("fbContextMenu");
-        FBL.eraseNode(popup);
-        
         var items = [];
         var rejected = cookie.cookie.rejected;
         
@@ -1688,7 +1710,7 @@ Templates.CookieRow = domplate(Templates.Rep,
         CookieClipboard.copyTo(clickedCookie);
     },
 
-    onPaste: function(clickedCookie)
+    onPaste: function(clickedCookie) // clickedCookie can be null if the user clicks within panel area.
     {
         var context = FirebugContext;
         var values = CookieClipboard.getFrom();
@@ -2272,9 +2294,6 @@ Templates.CookieTable = domplate(Templates.Rep,
     {
         Templates.Rep.getContextMenuItems.apply(this, arguments);
     
-        var popup = $("fbContextMenu");
-        FBL.eraseNode(popup);
-        
         var items = [
             { 
               label: $FC_STR("firecookie.header.ResetColumns"), 
