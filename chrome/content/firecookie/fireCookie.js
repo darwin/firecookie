@@ -1822,9 +1822,6 @@ Templates.CookieRow = domplate(Templates.Rep,
 
     onClickTab: function(event)
     {
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.onClickTab\n");
-
         this.selectTab(event.currentTarget);
     },
 
