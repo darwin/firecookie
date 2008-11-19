@@ -3174,6 +3174,7 @@ var CookieObserver = extend(BaseObserver,
         {
             var cookieInfoBody = getElementByClass(row.nextSibling, "cookieInfoBody");
             cookieInfoBody.valuePresented = false;
+            cookieInfoBody.rawValuePresented = false;
             rowTemplate.updateInfo(cookieInfoBody, repCookie, context);
         }
 
