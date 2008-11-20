@@ -3784,12 +3784,14 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
         var sentCookies = [];
 
         // Parse received cookies.
-        var cookies = receivedCookiesHeader.split("\n");
-        for (var i=0; i<cookies.length; i++) {
-            var cookie = parseFromString(cookies[i]);
-            if (!cookie.host)
-                cookie.host = file.request.URI.host;
-            receivedCookies.push(new Cookie(makeCookieObject(cookie)));
+        if (receivedCookiesHeader) {
+            var cookies = receivedCookiesHeader.split("\n");
+            for (var i=0; i<cookies.length; i++) {
+                var cookie = parseFromString(cookies[i]);
+                if (!cookie.host)
+                    cookie.host = file.request.URI.host;
+                receivedCookies.push(new Cookie(makeCookieObject(cookie)));
+            }
         }
 
         // Parse sent cookies.
@@ -3805,16 +3807,20 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
         var tag = Templates.CookieRow.cookieTag;
 
         // Generate UI for received cookies.
-        var receivedCookiesBody = getElementByClass(tabBody, "netInfoReceivedCookies");
-        var table = Templates.CookieTable.createTable(receivedCookiesBody);
-        var header = getElementByClass(table, "cookieHeaderRow");
-        context.throttle(tag.insertRows, tag, [{cookies: receivedCookies}, header]);
+        if (receivedCookies.length) {
+            var receivedCookiesBody = getElementByClass(tabBody, "netInfoReceivedCookies");
+            var table = Templates.CookieTable.createTable(receivedCookiesBody);
+            var header = getElementByClass(table, "cookieHeaderRow");
+            context.throttle(tag.insertRows, tag, [{cookies: receivedCookies}, header]);
+        }
 
         // Generate UI for sent cookies.
-        var sentCookiesBody = getElementByClass(tabBody, "netInfoSentCookies");
-        table = Templates.CookieTable.createTable(sentCookiesBody);
-        header = getElementByClass(table, "cookieHeaderRow");
-        context.throttle(tag.insertRows, tag, [{cookies: sentCookies}, header]);
+        if (sentCookies.length) {
+            var sentCookiesBody = getElementByClass(tabBody, "netInfoSentCookies");
+            table = Templates.CookieTable.createTable(sentCookiesBody);
+            header = getElementByClass(table, "cookieHeaderRow");
+            context.throttle(tag.insertRows, tag, [{cookies: sentCookies}, header]);
+        }
     },
 
     // Helpers
