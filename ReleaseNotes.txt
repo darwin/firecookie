@@ -29,11 +29,11 @@ Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
       only for Firefox 3 and higher (issue 6).
 
 == Localization ==    
-    * pl-PL localization - contribution by Leszek(teo)¯yczkowski
+    * pl-PL localization - contribution by Leszek(teo)ï¿½yczkowski
     * de-De localization - contribution by CosmicForce    
     * pt-BR localization - contribution by Alberto Eidh
     * tr-TR localization - contribution by Efecan Erdur
-    * cs-CS localization - contribution by Lukáš Kucharczyk
+    * cs-CS localization - contribution by Lukï¿½ Kucharczyk
     * fr-FR localization - contribution by delphine
     * es-ES localization - contribution by Johnbo
     
