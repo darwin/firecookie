@@ -1426,66 +1426,66 @@ Templates.CookieRow = domplate(Templates.Rep,
 
     cookieTag:
         FOR("cookie", "$cookies",
-            TR({class: "cookieRow", _repObject: "$cookie", onclick: "$onClickRow", 
+            TR({"class": "cookieRow", _repObject: "$cookie", onclick: "$onClickRow", 
                 $sessionCookie: "$cookie|isSessionCookie",
                 $rejectedCookie: "$cookie|isRejected"},
-                TD({class: "cookieNameCol cookieCol"},
-                    DIV({class: "cookieNameLabel cookieLabel"}, "$cookie|getName")
+                TD({"class": "cookieNameCol cookieCol"},
+                    DIV({"class": "cookieNameLabel cookieLabel"}, "$cookie|getName")
                 ),
-                TD({class: "cookieValueCol cookieCol"},
-                    DIV({class: "cookieValueLabel cookieLabel"}, 
+                TD({"class": "cookieValueCol cookieCol"},
+                    DIV({"class": "cookieValueLabel cookieLabel"}, 
                         SPAN("$cookie|getValue"))
                 ),
-                TD({class: "cookieDomainCol cookieCol"},
-                    SPAN({class: "cookieDomainLabel cookieLabel", onclick: "$onClickDomain"}, 
+                TD({"class": "cookieDomainCol cookieCol"},
+                    SPAN({"class": "cookieDomainLabel cookieLabel", onclick: "$onClickDomain"}, 
                         "$cookie|getDomain")
                 ),
-                TD({class: "cookieSizeCol cookieCol"},
-                    DIV({class: "cookieSizeLabel cookieLabel"}, "$cookie|getSize")
+                TD({"class": "cookieSizeCol cookieCol"},
+                    DIV({"class": "cookieSizeLabel cookieLabel"}, "$cookie|getSize")
                 ),
-                TD({class: "cookiePathCol cookieCol"},
-                    DIV({class: "cookiePathLabel cookieLabel"}, "$cookie|getPath")
+                TD({"class": "cookiePathCol cookieCol"},
+                    DIV({"class": "cookiePathLabel cookieLabel"}, "$cookie|getPath")
                 ),
-                TD({class: "cookieExpiresCol cookieCol"},
-                    DIV({class: "cookieExpiresLabel cookieLabel"}, "$cookie|getExpires")
+                TD({"class": "cookieExpiresCol cookieCol"},
+                    DIV({"class": "cookieExpiresLabel cookieLabel"}, "$cookie|getExpires")
                 ),
-                TD({class: "cookieHttpOnlyCol cookieCol"},
-                    DIV({class: "cookieHttpOnlyLabel cookieLabel"}, "$cookie|isHttpOnly")
+                TD({"class": "cookieHttpOnlyCol cookieCol"},
+                    DIV({"class": "cookieHttpOnlyLabel cookieLabel"}, "$cookie|isHttpOnly")
                 ),
-                TD({class: "cookieSecurityCol cookieCol"},
-                    DIV({class: "cookieLabel"}, "$cookie|isSecure")
+                TD({"class": "cookieSecurityCol cookieCol"},
+                    DIV({"class": "cookieLabel"}, "$cookie|isSecure")
                 ),
-                TD({class: "cookieStatusCol cookieCol"},
-                    DIV({class: "cookieLabel"}, "$cookie|getStatus")
+                TD({"class": "cookieStatusCol cookieCol"},
+                    DIV({"class": "cookieLabel"}, "$cookie|getStatus")
                 )
             )
         ),
 
     bodyRow:
-        TR({class: "cookieInfoRow"},
-            TD({class: "cookieInfoCol", colspan: 9})
+        TR({"class": "cookieInfoRow"},
+            TD({"class": "cookieInfoCol", colspan: 9})
         ),
 
     bodyTag:
-        DIV({class: "cookieInfoBody", _repObject: "$cookie"},
-            DIV({class: "cookieInfoTabs"},
-                A({class: "cookieInfoValueTab cookieInfoTab", onclick: "$onClickTab",
+        DIV({"class": "cookieInfoBody", _repObject: "$cookie"},
+            DIV({"class": "cookieInfoTabs"},
+                A({"class": "cookieInfoValueTab cookieInfoTab", onclick: "$onClickTab",
                     view: "Value"},
                     $FC_STR("firecookie.info.valuetab.label")
                 ),
-                A({class: "cookieInfoRawValueTab cookieInfoTab", onclick: "$onClickTab",
+                A({"class": "cookieInfoRawValueTab cookieInfoTab", onclick: "$onClickTab",
                     view: "RawValue",
                     $collapsed: "$cookie|hideRawValue"},
                     $FC_STR("firecookie.info.rawdatatab.Raw Data")
                 )
             ),
-            DIV({class: "cookieInfoValueText cookieInfoText"},
-                TABLE({class: "cookieInfoValueTable", cellpadding: 0, cellspacing: 0},
+            DIV({"class": "cookieInfoValueText cookieInfoText"},
+                TABLE({"class": "cookieInfoValueTable", cellpadding: 0, cellspacing: 0},
                     TBODY()
                 )
             ),
-            DIV({class: "cookieInfoRawValueText cookieInfoText"},
-                TABLE({class: "cookieInfoRawValueTable", cellpadding: 0, cellspacing: 0},
+            DIV({"class": "cookieInfoRawValueText cookieInfoText"},
+                TABLE({"class": "cookieInfoRawValueTable", cellpadding: 0, cellspacing: 0},
                     TBODY()
                 )
             )
@@ -1923,23 +1923,23 @@ Templates.CookieChanged = domplate(Templates.Rep,
 
     // Console
     tag:
-        DIV({class: "cookieEvent", _repObject: "$object"},
+        DIV({"class": "cookieEvent", _repObject: "$object"},
             TABLE({cellpadding: 0, cellspacing: 0},
                 TBODY(
                     TR(
                         TD({width: "100%"},
                             SPAN($FC_STR("firecookie.console.cookie"), " "),
-                            SPAN({class: "cookieNameLabel", onclick: "$onClick"}, 
+                            SPAN({"class": "cookieNameLabel", onclick: "$onClick"}, 
                                 "$object|getName", 
                                 " "),
-                            SPAN({class: "cookieActionLabel"}, 
+                            SPAN({"class": "cookieActionLabel"}, 
                                 "$object|getAction", 
                                 ".&nbsp;&nbsp;"),
-                            SPAN({class: "cookieValueLabel"}, 
+                            SPAN({"class": "cookieValueLabel"}, 
                                 "$object|getValue")
                         ),
                         TD(
-                            SPAN({class: "cookieDomainLabel", onclick: "$onClickDomain",
+                            SPAN({"class": "cookieDomainLabel", onclick: "$onClickDomain",
                                 title: "$object|getOriginalURI"}, "$object|getDomain"),
                             SPAN("&nbsp;") 
                         )
@@ -2063,19 +2063,19 @@ Templates.CookieRejected = domplate(Templates.Rep,
     inspectable: false,
 
     tag:
-        DIV({class: "cookieEvent", _repObject: "$object"},
+        DIV({"class": "cookieEvent", _repObject: "$object"},
             TABLE({cellpadding: 0, cellspacing: 0},
                 TBODY(
                     TR(
                         TD({width: "100%"},
-                            SPAN({class: "cookieRejectedLabel"},
+                            SPAN({"class": "cookieRejectedLabel"},
                                 $FC_STR("firecookie.console.cookiesrejected")),
                             " ",
-                            SPAN({class: "cookieRejectedList"},
+                            SPAN({"class": "cookieRejectedList"},
                                 "$object|getCookieList")
                         ),
                         TD(
-                            SPAN({class: "cookieDomainLabel", onclick: "$onClickDomain"}, 
+                            SPAN({"class": "cookieDomainLabel", onclick: "$onClickDomain"}, 
                                 "$object|getDomain"),
                             SPAN("&nbsp;") 
                         )
@@ -2156,43 +2156,43 @@ Templates.CookieTable = domplate(Templates.Rep,
     inspectable: false,
 
     tableTag:
-        TABLE({class: "cookieTable", cellpadding: 0, cellspacing: 0},
+        TABLE({"class": "cookieTable", cellpadding: 0, cellspacing: 0},
             TBODY(
-                TR({class: "cookieHeaderRow", onclick: "$onClickHeader"},
-                    TD({id: "colName", class: "cookieHeaderCell alphaValue"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.name.tooltip")}, 
+                TR({"class": "cookieHeaderRow", onclick: "$onClickHeader"},
+                    TD({id: "colName", "class": "cookieHeaderCell alphaValue"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.name.tooltip")}, 
                         $FC_STR("firecookie.header.name"))
                     ),
-                    TD({id: "colValue", class: "cookieHeaderCell alphaValue"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.value.tooltip")}, 
+                    TD({id: "colValue", "class": "cookieHeaderCell alphaValue"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.value.tooltip")}, 
                         $FC_STR("firecookie.header.value"))
                     ),
-                    TD({id: "colDomain", class: "cookieHeaderCell alphaValue"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.domain.tooltip")}, 
+                    TD({id: "colDomain", "class": "cookieHeaderCell alphaValue"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.domain.tooltip")}, 
                         $FC_STR("firecookie.header.domain"))
                     ),
-                    TD({id: "colSize", class: "cookieHeaderCell"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.size.tooltip")}, 
+                    TD({id: "colSize", "class": "cookieHeaderCell"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.size.tooltip")}, 
                         $FC_STR("firecookie.header.size"))
                     ),
-                    TD({id: "colPath", class: "cookieHeaderCell alphaValue"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.path.tooltip")}, 
+                    TD({id: "colPath", "class": "cookieHeaderCell alphaValue"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.path.tooltip")}, 
                         $FC_STR("firecookie.header.path"))
                     ),
-                    TD({id: "colExpires", class: "cookieHeaderCell alphaValue"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.expires.tooltip")}, 
+                    TD({id: "colExpires", "class": "cookieHeaderCell alphaValue"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.expires.tooltip")}, 
                         $FC_STR("firecookie.header.expires"))
                     ),
-                    TD({id: "colHttpOnly", class: "cookieHeaderCell alphaValue"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.httponly.tooltip")}, 
+                    TD({id: "colHttpOnly", "class": "cookieHeaderCell alphaValue"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.httponly.tooltip")}, 
                         $FC_STR("firecookie.header.httponly"))
                     ),
-                    TD({id: "colSecurity", class: "cookieHeaderCell alphaValue"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.security.tooltip")}, 
+                    TD({id: "colSecurity", "class": "cookieHeaderCell alphaValue"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.security.tooltip")}, 
                         $FC_STR("firecookie.header.security"))
                     ),
-                    TD({id: "colStatus", class: "cookieHeaderCell alphaValue"},
-                        DIV({class: "cookieHeaderCellBox", title: $FC_STR("firecookie.header.status.tooltip")}, 
+                    TD({id: "colStatus", "class": "cookieHeaderCell alphaValue"},
+                        DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.status.tooltip")}, 
                         $FC_STR("firecookie.header.status"))
                     )
                 )
@@ -3728,14 +3728,14 @@ Firebug.FireCookieModel.$FC_STRF = $FC_STRF;
 Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
 {
     tag:
-        UL({class: "netInfoCookiesList"},
-            LI({class: "netInfoCookiesGroup", $collapsed: "$cookiesInfo|hideReceivedCookies"}, 
+        UL({"class": "netInfoCookiesList"},
+            LI({"class": "netInfoCookiesGroup", $collapsed: "$cookiesInfo|hideReceivedCookies"}, 
                 DIV($FC_STR("firecookie.netinfo.Received Cookies")),
-                DIV({class: "netInfoReceivedCookies netInfoCookies"})
+                DIV({"class": "netInfoReceivedCookies netInfoCookies"})
             ),
-            LI({class: "netInfoCookiesGroup", $collapsed: "$cookiesInfo|hideSentCookies"}, 
+            LI({"class": "netInfoCookiesGroup", $collapsed: "$cookiesInfo|hideSentCookies"}, 
                 DIV($FC_STR("firecookie.netinfo.Sent Cookies")),
-                DIV({class: "netInfoSentCookies netInfoCookies"})
+                DIV({"class": "netInfoSentCookies netInfoCookies"})
             )
         ),
 
