@@ -1,13 +1,13 @@
 content firecookie chrome/content/firecookie/
-skin	firecookie	classic/1.0	chrome/skin/classic/
+skin    firecookie	classic/1.0	chrome/skin/classic/
 
-locale	firecookie	en-US		chrome/locale/en-US/
-locale	firecookie	pl-PL		chrome/locale/pl-PL/
-locale	firecookie	de-DE		chrome/locale/de-DE/
-locale	firecookie	pt-BR		chrome/locale/pt-BR/
-locale	firecookie	tr-TR		chrome/locale/tr-TR/
-locale	firecookie	cs-CZ		chrome/locale/cs-CZ/
-locale	firecookie	fr-FR		chrome/locale/fr-FR/
-locale	firecookie	es-ES		chrome/locale/es-ES/
+locale  firecookie  en-US       chrome/locale/en-US/
+locale  firecookie  pl-PL       chrome/locale/pl-PL/
+locale  firecookie  de-DE       chrome/locale/de-DE/
+locale  firecookie  pt-BR       chrome/locale/pt-BR/
+locale  firecookie  tr-TR       chrome/locale/tr-TR/
+locale  firecookie  cs-CZ       chrome/locale/cs-CZ/
+locale  firecookie  fr-FR       chrome/locale/fr-FR/
+locale  firecookie  es-ES       chrome/locale/es-ES/
 
 overlay chrome://firebug/content/firebugOverlay.xul         chrome://firecookie/content/fireCookie.xul

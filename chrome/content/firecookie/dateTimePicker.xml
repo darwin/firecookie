@@ -29,7 +29,7 @@
             ]]></getter>
             <setter><![CDATA[
                 var dateTime = new Date();
-                dateTime.setTime(Date.parse(val));          
+                dateTime.setTime(Date.parse(val));
                 this.datePicker.dateValue = dateTime;
                 this.timePicker.dateValue = dateTime;
             ]]></setter>

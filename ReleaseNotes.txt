@@ -11,32 +11,32 @@ Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
       panels in Firebug. So, it's possible to disable the panel entirely or for 
       specific hosts (issue 15).
     * The console cookie event displays a source URL (as a tooltip for the domain
-      link on the right side), which causes the cookie modification. Of course, 
+      link on the right side), which causes the cookie modification. Of course,
       "Cookies->Options->Show logs in console" option must be on to see it (issue 5)
     * The "Remove for site" toolbar button has been renamed to "Remove Cookies".
-      This action always removes only cookies currently displayed in the list (Issue 10). 
+      This action always removes only cookies currently displayed in the list (Issue 10).
       Notice that the list can be filtered using:
       (a) The Filter toolbar button.
       (b) The Firebug's search box (located on the right side of the FB tab bar).
-    * Support for HttpOnly cookies. There is a new column indicating whether a cookie 
+    * Support for HttpOnly cookies. There is a new column indicating whether a cookie
       is HttpOnly or not and the Edit Cookie dialog makes possible to change this flag.
       Also clipboard has been updated to support it (issue 14).
-    
-=== Cookie Expire Time ===  
-    * Expire time is now displayed using the local time zone and locale. 
+
+=== Cookie Expire Time ===
+    * Expire time is now displayed using the local time zone and locale.
     * The Edit Cookie dialog uses date and time pickers so, editing also
       supports local time zone and current language. This is available
       only for Firefox 3 and higher (issue 6).
 
-== Localization ==    
+== Localization ==
     * pl-PL localization - contribution by Leszek(teo)�yczkowski
-    * de-De localization - contribution by CosmicForce    
+    * de-De localization - contribution by CosmicForce
     * pt-BR localization - contribution by Alberto Eidh
     * tr-TR localization - contribution by Efecan Erdur
     * cs-CS localization - contribution by Luk� Kucharczyk
     * fr-FR localization - contribution by delphine
     * es-ES localization - contribution by Johnbo
-    
+
 == Bug Fixes ==
     * Issue 2: Edit Cookie feature does not change the cookie value
     * Issue 3: + doesnt change to -

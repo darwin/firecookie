@@ -1,6 +1,6 @@
 /* See license.txt for terms of usage */
 
-with (FBL) { 
+with (FBL) {
 
 //-----------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ var EditCookie =
         this.sessionNode = $("fcSession");
         this.secureNode = $("fcSecure");
         this.httpOnly = $("fcHttpOnly");
-        
+
         this.nameNode.value = this.cookie.name;
         this.valueNode.value = this.cookie.value;
         this.domainNode.value = this.cookie.host;
@@ -67,7 +67,7 @@ var EditCookie =
         // Update expire date-time picker.
         this.onSession();
     },
-    
+
     onOK: function()
     {
         if (!this.checkValues())
@@ -93,7 +93,7 @@ var EditCookie =
         {
             // If it isn't a session cookie set the proper expire time.
             var expires = new Date();
-            expires.setTime(Date.parse(this.expireNode.value));          
+            expires.setTime(Date.parse(this.expireNode.value));
             values.expires = Math.floor(expires.valueOf() / 1000);
         }
 
@@ -104,7 +104,7 @@ var EditCookie =
         // Close dialog.
         window.close();
     },
-    
+
     checkValues: function()
     {
         var name = this.nameNode.value;
@@ -113,7 +113,7 @@ var EditCookie =
             alert(Firebug.FireCookieModel.$FC_STR("firecookie.edit.invalidname"));
             return false;
         }
-        
+
         var domain = this.domainNode.value;
         if (!this.checkHost(domain))
         {
@@ -130,30 +130,30 @@ var EditCookie =
 
         return true;
     },
-    
+
     onCancel: function()
     {
         window.close();
     },
- 
+
     onSession: function()
     {
         this.expireNode.disabled = this.sessionNode.checked;
     },
-    
+
     checkHost: function(host)
     {
         if (!host)
             return false;
 
-	    try 
+        try 
         {
- 		    var uri = "http://" + host + "/";
+            var uri = "http://" + host + "/";
             return ioService.newURI(uri, null, null) ? true : false;
-	    }
- 		catch (err) {
- 		}
-        
+        }
+        catch (err) {
+        }
+
         return false;
     },
 
@@ -162,12 +162,12 @@ var EditCookie =
         if (!path)
             return false;
 
-		try {
- 		    var uri = "http://" + host + "/" + path;
+        try {
+            var uri = "http://" + host + "/" + path;
             return ioService.newURI(uri, null, null) ? true : false;
-		} 
-		catch(err) {
-		}
+        } 
+        catch(err) {
+        }
 
         return false;
     },

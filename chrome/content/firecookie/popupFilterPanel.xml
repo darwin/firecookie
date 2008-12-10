@@ -33,7 +33,7 @@
             
             // Create new text box.
             this.textbox = document.createElementNS(
-                "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", 
+                "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
                 "xul:textbox");
             this.textbox.setAttribute("anonid", "filterValue");
             this.textbox.setAttribute("size", "35");

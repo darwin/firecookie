@@ -26,7 +26,7 @@
         <command id="cmd_cookieFilterByPath" oncommand="Firebug.FireCookieModel.onFilter(FirebugContext, 'firecookie.filterByPath')"/>
         <command id="cmd_cookieShowRejectedCookies" oncommand="Firebug.FireCookieModel.onFilter(FirebugContext, 'firecookie.showRejectedCookies')"/>
     </commandset> 
-    
+
     <toolbar id="fbToolbar" align="center"> 
         <hbox id="fbToolbarInner" insertbefore="fbDetachButton" flex="1" align="center"> 
             <hbox id="fbCookieButtons" insertafter="fbNetButtons" collapsed="true">
@@ -64,17 +64,17 @@
                 <toolbarseparator/>
                 <tooltip id="fcPermTooltip"
                     onpopupshowing="return Firebug.FireCookieModel.Perm.onTooltipShowing(this, FirebugContext)"/>
-	            <toolbarbutton id="fcPerm" type="menu" tooltip="fcPermTooltip">
-		            <menupopup
-			            oncommand="return Firebug.FireCookieModel.Perm.onCommand(event, FirebugContext)"
-			            onpopupshowing="return Firebug.FireCookieModel.Perm.onPopupShowing(this, FirebugContext)"
-			            onpopuphiding="return Firebug.FireCookieModel.Perm.onPopupHiding(this, FirebugContext)">
-			            <menuitem type="radio" name="fcPerm" value="default"/>
-			            <menuitem type="radio" name="fcPerm" value="host-deny"/>
-			            <menuitem type="radio" name="fcPerm" value="host-allow"/>
-			            <menuitem type="radio" name="fcPerm" value="host-allow-session"/>
-		            </menupopup>
-	            </toolbarbutton>
+                <toolbarbutton id="fcPerm" type="menu" tooltip="fcPermTooltip">
+                    <menupopup
+                        oncommand="return Firebug.FireCookieModel.Perm.onCommand(event, FirebugContext)"
+                        onpopupshowing="return Firebug.FireCookieModel.Perm.onPopupShowing(this, FirebugContext)"
+                        onpopuphiding="return Firebug.FireCookieModel.Perm.onPopupHiding(this, FirebugContext)">
+                        <menuitem type="radio" name="fcPerm" value="default"/>
+                        <menuitem type="radio" name="fcPerm" value="host-deny"/>
+                        <menuitem type="radio" name="fcPerm" value="host-allow"/>
+                        <menuitem type="radio" name="fcPerm" value="host-allow-session"/>
+                    </menupopup>
+                </toolbarbutton>
                 <toolbarseparator/>
                 <toolbarbutton label="&firecookie.Tools;" type="menu" tooltiptext="&firecookie.ToolsTooltip;">
                     <menupopup>
