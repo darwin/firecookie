@@ -2538,7 +2538,7 @@ var HeaderColumnResizer =
 // Clipboard helper
 //-----------------------------------------------------------------------------
 
-var CookieClipboard = extend(Object,
+Firebug.FireCookieModel.CookieClipboard = extend(Object,
 {
     cookieFlavour: "text/firecookie-cookie",
     unicodeFlavour: "text/unicode",
@@ -2653,6 +2653,9 @@ var CookieClipboard = extend(Object,
     }
 });
 
+// Helper shortcut
+var CookieClipboard = Firebug.FireCookieModel.CookieClipboard;
+ 
 //-----------------------------------------------------------------------------
 
 function insertWrappedText(text, textBox)
@@ -2708,7 +2711,7 @@ Cookie.prototype =
     {
         var value = escape(this.cookie.value);
         if (value)
-            value = value.replace(/\+/g, "%2B");
+            value = decodeURIComponent(value);
 
         var expires = this.cookie.expires ? new Date(this.cookie.expires * 1000) : null;
         return this.cookie.name + "=" + value +
