@@ -2,15 +2,15 @@
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<script src="utils.js" type="text/javascript"></script>
 <script src="env.js" type="text/javascript"></script>
+<script src="utils.js" type="text/javascript"></script>
 <script>
-netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+enablePrivilege("UniversalXPConnect");
 
 var requestUri = getCurrentPath() + "cookieClipboard.txt";
 fireunit.registerPathHandler(requestUri, function (metadata, response) 
 {
-    netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    enablePrivilege("UniversalXPConnect");
     response.setHeader("Set-Cookie", 
         "TestCookie=TestValue; " +
         "expires=Sat, 01-Jan-2100 00:00:00 GMT; " +
@@ -21,23 +21,23 @@ fireunit.registerPathHandler(requestUri, function (metadata, response)
 
 setTimeout(function() 
 {
-    netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-    fireunit.FBTrace.sysout("fireunit.cookieClipboard.testClipboard.");
+    enablePrivilege("UniversalXPConnect");
+    FBTrace.sysout("fireunit.cookieClipboard.testClipboard.");
 
-    fireunit.Firebug.showBar(true);
-    fireunit.FirebugChrome.selectPanel("cookies");
+    Firebug.showBar(true);
+    FirebugChrome.selectPanel("cookies");
     var panelNode = fireunit.panel("cookies");
 
     makeRequest("GET", requestUri, function(request) 
     {
-        netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+        enablePrivilege("UniversalXPConnect");
 
         // Helper shortcuts
-        var CookieRow = fireunit.Firebug.FireCookieModel.Templates.CookieRow;
-        var CookieClipboard = fireunit.Firebug.FireCookieModel.CookieClipboard
+        var CookieRow = Firebug.FireCookieModel.Templates.CookieRow;
+        var CookieClipboard = Firebug.FireCookieModel.CookieClipboard
 
         // Copy cookie into the clipboard, get from clipboard again and check.
-        var cookieRow = fireunit.FBL.getElementsByClass(panelNode, "cookieRow")[0];
+        var cookieRow = FBL.getElementsByClass(panelNode, "cookieRow")[0];
         var cookie = cookieRow.repObject;
         CookieRow.onCopy(cookie);
 
@@ -50,7 +50,7 @@ setTimeout(function()
         fireunit.ok(values.isHttpOnly, "Result from clipboard: HTTP Only flag verified.");
 
         // Finish test
-        fireunit.FBTrace.sysout("fireunit.cookieClipboard.DONE");
+        FBTrace.sysout("fireunit.cookieClipboard.DONE");
         fireunit.testDone();
     });
 }, layoutTimeout);

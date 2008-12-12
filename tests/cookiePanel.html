@@ -2,22 +2,22 @@
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<script src="utils.js" type="text/javascript"></script>
 <script src="env.js" type="text/javascript"></script>
+<script src="utils.js" type="text/javascript"></script>
 <script>
 setTimeout(function()
 {
-    netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-    fireunit.FBTrace.sysout("fireunit.cookiePanel.checkCookiePanel");
+    enablePrivilege("UniversalXPConnect");
+    FBTrace.sysout("fireunit.cookiePanel.checkCookiePanel");
 
     // Make sure the Cookie panel's UI is there.
-    fireunit.Firebug.showBar(true);
-    fireunit.FirebugChrome.selectPanel("cookies");
+    Firebug.showBar(true);
+    FirebugChrome.selectPanel("cookies");
     var panelNode = fireunit.panel("cookies");
     fireunit.ok(panelNode, "Cookies panel must be initialized.");
 
     // Finish test
-    fireunit.FBTrace.sysout("fireunit.cookiePanel.DONE");
+    FBTrace.sysout("fireunit.cookiePanel.DONE");
     fireunit.testDone();
 }, layoutTimeout);
 </script>

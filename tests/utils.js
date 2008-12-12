@@ -4,22 +4,22 @@
 
 function expandCookieRows(panelNode, className) // className, className, ...
 {
-    var rows = fireunit.FBL.getElementsByClass.apply(null, arguments);
+    var rows = FBL.getElementsByClass.apply(null, arguments);
     for (var i=0; i<rows.length; i++)
     {
         var row = rows[i];
-        if (!fireunit.FBL.hasClass(row, "opened"))
+        if (!FBL.hasClass(row, "opened"))
             fireunit.click(row);
     }
 }
 
 function expandCookieTabs(panelNode, tabClass)
 {
-    var tabs = fireunit.FBL.getElementsByClass.apply(null, arguments);
+    var tabs = FBL.getElementsByClass.apply(null, arguments);
     for (var i=0; i<tabs.length; i++)
     {
         var tab = tabs[i];
-        if (!fireunit.FBL.hasClass(tab, "collapsed"))
+        if (!FBL.hasClass(tab, "collapsed"))
             fireunit.click(tab);
     }
 }
