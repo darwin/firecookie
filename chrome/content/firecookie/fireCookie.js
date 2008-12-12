@@ -144,7 +144,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         // Register listener for NetInfoBody (if the API is available) so,
         // a new tab (Cookies) can be appended into the Net panel request info.
         var netInfoBody = Firebug.NetMonitor.NetInfoBody;
-        if (netInfoBody.addListener)
+        if ("addListener" in netInfoBody)
             netInfoBody.addListener(this.NetInfoBody);
 
         // Localize UI (use firecookie.properties instead of firecookies.dtd)
@@ -160,7 +160,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             Firebug.TraceModule.removeListener(this.TraceListener);
 
         var netInfoBody = Firebug.NetMonitor.NetInfoBody;
-        if (netInfoBody.removeListener)
+        if ("removeListener" in netInfoBody)
             netInfoBody.removeListener(this.NetInfoBody);
     },
 
@@ -2840,9 +2840,14 @@ function parseSentCookiesFromString(header)
     var pairs = header.split("; ");
 
     for (var i=0; i<pairs.length; i++) {
-        var option = pairs[i].split("=");
-        if (option.length == 2)
-            cookies.push(new Cookie(makeCookieObject({name: option[0], value: option[1]})));
+        var pair = pairs[i];
+        var index =pair.indexOf("=");
+        if (index > 0) {
+            var name = pair.substring(0, index-1);
+            var value = pair.substr(index+1);
+            if (name.length & value.length)
+                cookies.push(new Cookie(makeCookieObject({name: name, value: value})));
+        }
     }
 
     return cookies;
