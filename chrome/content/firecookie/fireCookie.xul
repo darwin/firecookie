@@ -68,13 +68,13 @@
                             label="&firecookie.filter.showRejectedCookies;" 
                             tooltiptext="&firecookie.filter.showRejectedCookiesTooltip;" 
                             command="cmd_cookieShowRejectedCookies"/>
-                        <menuseparator/>
+                        <!--<menuseparator/>
                         <menu id="fcCustomPathFilter" label="firecookie.Path Filter">
                             <menupopup id="fcCustomPathFilterPanel" ignorekeys="true"
                                 onpopupshowing="return Firebug.FireCookieModel.onFilterPanelShowing(this, FirebugContext)"
                                 onpopuphiding="return Firebug.FireCookieModel.onFilterPanelHiding(this, FirebugContext)"
                                 onapply="Firebug.FireCookieModel.onFilterPanelApply(FirebugContext)"/>
-                        </menu>
+                        </menu>-->
                     </menupopup>
                 </toolbarbutton>
                 <toolbarseparator/>
