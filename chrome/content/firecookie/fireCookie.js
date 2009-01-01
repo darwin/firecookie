@@ -168,7 +168,7 @@ Firebug.FireCookieModel = extend(BaseModule,
     internationalizeUI: function()
     {
         // Filter menu
-        fcInternationalize("fcCustomPathFilter", "label");
+        //fcInternationalize("fcCustomPathFilter", "label");
 
         // Cookies menu
         fcInternationalize("fcCookiesMenu", "label");
