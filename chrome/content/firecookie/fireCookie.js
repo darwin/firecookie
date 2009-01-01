@@ -27,6 +27,7 @@ const nsIHttpChannel = Ci.nsIHttpChannel;
 const nsIPermission = Ci.nsIPermission;
 const nsIXULAppInfo = Ci.nsIXULAppInfo;
 const nsIVersionComparator = Ci.nsIVersionComparator;
+const nsIFilePicker = Ci.nsIFilePicker;
 
 // Firefox Preferences
 const networkPrefDomain = "network.cookie";
@@ -166,7 +167,16 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     internationalizeUI: function()
     {
+        // Filter menu
         fcInternationalize("fcCustomPathFilter", "label");
+
+        // Cookies menu
+        fcInternationalize("fcCookiesMenu", "label");
+
+        // Export menu items
+        fcInternationalize("fcExportAll", "label");
+        fcInternationalize("fcExportAll", "tooltiptext");
+        fcInternationalize("fcExportForSite", "label");
     },
 
     registerObservers: function(context)
@@ -678,6 +688,87 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         // Return final expiration time.
         return (now.getTime() / 1000);
+    },
+
+    onExportAll: function(context)
+    {
+        try 
+        {
+            var fp = CCIN("@mozilla.org/filepicker;1", "nsIFilePicker");
+            fp.init(window, null, nsIFilePicker.modeSave);
+            fp.appendFilters(nsIFilePicker.filterAll | nsIFilePicker.filterText);
+            fp.filterIndex = 1;
+            fp.defaultString = "cookies.txt";
+
+            var rv = fp.show();
+            if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace)
+            {
+                var foStream = CCIN("@mozilla.org/network/file-output-stream;1", "nsIFileOutputStream");
+                foStream.init(fp.file, 0x02 | 0x08 | 0x20, 0666, 0); // write, create, truncate
+
+                var e = cookieManager.enumerator;
+                while(e.hasMoreElements())
+                {
+                    var cookie = e.getNext();
+                    cookie = cookie.QueryInterface(nsICookie2);
+                    var cookieWrapper = new Cookie(makeCookieObject(cookie));
+                    var cookieInfo = cookieWrapper.toTxt();
+                    foStream.write(cookieInfo, cookieInfo.length);
+                }
+
+                foStream.close();
+            }
+        }
+        catch (err)
+        {
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("firecookie.onExportAll EXCEPTION", err);
+            alert(err.toString());
+        }
+    },
+
+    onExportForSiteShowTooltip: function(tooltip, context)
+    {
+        var host = context.window.location.host;
+        tooltip.label = $FC_STRF("firecookie.export.Export_For_Site_Tooltip", [host]);
+        return true;
+    },
+
+    onExportForSite: function(context)
+    {
+        try 
+        {
+            var fp = CCIN("@mozilla.org/filepicker;1", "nsIFilePicker");
+            fp.init(window, null, nsIFilePicker.modeSave);
+            fp.appendFilters(nsIFilePicker.filterAll | nsIFilePicker.filterText);
+            fp.filterIndex = 1;
+            fp.defaultString = "cookies.txt";
+
+            var rv = fp.show();
+            if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace)
+            {
+                var foStream = CCIN("@mozilla.org/network/file-output-stream;1", "nsIFileOutputStream");
+                foStream.init(fp.file, 0x02 | 0x08 | 0x20, 0666, 0); // write, create, truncate
+
+                var panel = context.getPanel(panelName, true);
+                var tbody = getElementByClass(panel.panelNode, "cookieTable").firstChild;
+                for (var row = tbody.firstChild; row; row = row.nextSibling) {
+                    if (hasClass(row, "cookieRow") && row.repObject)
+                    {
+                        var cookieInfo = row.repObject.toTxt();
+                        foStream.write(cookieInfo, cookieInfo.length);
+                    }
+                }
+
+                foStream.close();
+            }
+        }
+        catch (err)
+        {
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("firecookie.onExportForSite EXCEPTION", err);
+            alert(err.toString());
+        }
     },
 
     onFilter: function(context, pref)
@@ -1678,9 +1769,18 @@ Templates.CookieRow = domplate(Templates.Rep,
               disabled: CookieClipboard.isCookieAvailable() ? false : true,
               command: bindFixed(this.onPaste, this, cookie)
             });
-
             items.push("-");
+        }
+        
+        items.push({
+          label: $FC_STR("firecookie.CopyAll"),
+          nol10n: true,
+          command: bindFixed(this.onCopyAll, this, cookie)
+        });
+        items.push("-");
 
+        if (!rejected)
+        {
             items.push({
               label: $FC_STR("firecookie.Delete"),
               nol10n: true,
@@ -1709,6 +1809,18 @@ Templates.CookieRow = domplate(Templates.Rep,
     onCopy: function(clickedCookie)
     {
         CookieClipboard.copyTo(clickedCookie);
+    },
+
+    onCopyAll: function(clickedCookie)
+    {
+        var text = "";
+        var tbody = getAncestorByClass(clickedCookie.row, "cookieTable").firstChild;
+        for (var row = tbody.firstChild; row; row = row.nextSibling) {
+            if (hasClass(row, "cookieRow") && row.repObject)
+                text += row.repObject.toString() + "\n";
+        }
+
+        copyToClipboard(text);
     },
 
     onPaste: function(clickedCookie) // clickedCookie can be null if the user clicks within panel area.
@@ -2732,6 +2844,17 @@ Cookie.prototype =
             "host: '" + this.cookie.host + "'," +
             "isHttpOnly: " + (this.cookie.isHttpOnly ? "true" : "false") + "," +
             "isSecure: " + (this.cookie.secure ? "true" : "false") + "})";
+    },
+
+    toTxt: function()
+    {
+        return this.cookie.host + "\t" + 
+            new String(this.cookie.isDomain).toUpperCase() + "\t" + 
+            this.cookie.path + "\t" + 
+            new String(this.cookie.isSecure).toUpperCase()+ "\t" + 
+            this.cookie.expires + "\t" + 
+            this.cookie.name+ "\t" + 
+            this.cookie.value+ "\r\n";
     }
 };
 

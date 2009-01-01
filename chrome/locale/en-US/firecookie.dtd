@@ -26,4 +26,3 @@
 <!ENTITY  firecookie.filter.byPathTooltip    "Show only cookies that match the current path.">
 <!ENTITY  firecookie.filter.showRejectedCookies     "Show Rejected Cookies">
 <!ENTITY  firecookie.filter.showRejectedCookiesTooltip     "Display even rejected cookies in the list.">
-
