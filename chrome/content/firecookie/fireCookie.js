@@ -103,6 +103,11 @@ var contexts = new Array();
 if (typeof FBTrace == "undefined")
     FBTrace = { sysout: function() {} };
 
+// Extend string bundle with new strings for this extension.
+// This must be done yet before domplate definitions.
+if (Firebug.registerStringBundle)
+    Firebug.registerStringBundle("chrome://firecookie/locale/firecookie.properties");
+
 // Module Implementation
 //-----------------------------------------------------------------------------
 
@@ -148,7 +153,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         if ("addListener" in netInfoBody)
             netInfoBody.addListener(this.NetInfoBody);
 
-        // Localize UI (use firecookie.properties instead of firecookies.dtd)
+        // Localize UI (use firecookie.properties instead of firecookie.dtd)
         this.internationalizeUI();
     },
 
@@ -928,6 +933,9 @@ Firebug.FireCookieModel = extend(BaseModule,
 
 function $FC_STR(name)
 {
+    if (Firebug.registerStringBundle)
+        return $STR(name);
+    
     try
     {
         return document.getElementById("strings_firecookie").getString(name.replace(' ', '_', "g"));
@@ -951,6 +959,9 @@ function $FC_STR(name)
 
 function $FC_STRF(name, args)
 {
+    if (Firebug.registerStringBundle)
+        return $STRF(name, args);
+        
     try
     {
         return document.getElementById("strings_firecookie").getFormattedString(name.replace(' ', '_', "g"), args);
@@ -999,7 +1010,6 @@ FireCookiePanel.prototype = extend(BasePanel,
     name: panelName,
     title: $FC_STR("firecookie.Panel"),
     searchable: true,
-    editable: false,
 
     initialize: function(context, doc)
     {
@@ -1570,16 +1580,8 @@ Templates.CookieRow = domplate(Templates.Rep,
                     $FC_STR("firecookie.info.rawdatatab.Raw Data")
                 )
             ),
-            DIV({"class": "cookieInfoValueText cookieInfoText"},
-                TABLE({"class": "cookieInfoValueTable", cellpadding: 0, cellspacing: 0},
-                    TBODY()
-                )
-            ),
-            DIV({"class": "cookieInfoRawValueText cookieInfoText"},
-                TABLE({"class": "cookieInfoRawValueTable", cellpadding: 0, cellspacing: 0},
-                    TBODY()
-                )
-            )
+            DIV({"class": "cookieInfoValueText cookieInfoText"}),
+            DIV({"class": "cookieInfoRawValueText cookieInfoText"})
         ),
 
     hideRawValue: function(cookie) {
