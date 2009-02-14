@@ -1,10 +1,28 @@
-Release Notes for Firecookie 0.7
---------------------------------
 Author: Jan Odvarko, odvarko@gmail.com, http://www.softwareishard.com/
 Home page: http://www.janodvarko.cz/firecookie
 Addon page: https://addons.mozilla.org/en-US/firefox/addon/6683
 Issue list: http://code.google.com/p/firecookie/issues/list
 Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
+
+Release Notes for Firecookie 0.8
+--------------------------------
+
+== Enhancements ==
+    * Each entry in the Net panel contains additional info about received and sent 
+      cookies (issue 27)
+    * It is possible to export all cookie (or cookies for the current site only) into
+      a cookies.txt file (using the standard format of this file)
+
+== Bug Fixes ==
+    * Issue 18: Unescape cookie values
+    * Issue 21: Text in the console-tab is not localized
+    * Issue 24: System pages & local files
+    * Issue 25: Changing expire time to Session deletes cookie
+    * Issue 27: Cookies info-tab for network request
+    * Issue 28: export cookies to cookies.txt
+
+Release Notes for Firecookie 0.7
+--------------------------------
 
 == Enhancements ==
     * Cookies panel now supports activation just like Console, Script and Net 
@@ -29,11 +47,11 @@ Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
       only for Firefox 3 and higher (issue 6).
 
 == Localization ==
-    * pl-PL localization - contribution by Leszek(teo)�yczkowski
+    * pl-PL localization - contribution by Leszek(teo)Życzkowski
     * de-De localization - contribution by CosmicForce
     * pt-BR localization - contribution by Alberto Eidh
     * tr-TR localization - contribution by Efecan Erdur
-    * cs-CS localization - contribution by Luk� Kucharczyk
+    * cs-CS localization - contribution by Lukáš Kucharczyk
     * fr-FR localization - contribution by delphine
     * es-ES localization - contribution by Johnbo
 
