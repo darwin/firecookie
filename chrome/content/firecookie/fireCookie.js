@@ -449,6 +449,10 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         var cookieString = cookie.toString(true);
         cookieService.setCookieString(uri, null, cookieString, null);
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.createNewCookie: set cookie string: " + cookieString,
+                [cookie, uri]);
     },
 
     /**
