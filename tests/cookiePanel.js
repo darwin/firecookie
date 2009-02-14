@@ -4,7 +4,7 @@ function runTest()
     FBTest.loadScript("env.js", this);
     var browser = FBTest.FirebugWindow;
 
-    openURL(basePath + "cookiePanel.html", function(win)
+    openNewTab(basePath + "cookiePanel.html", function(win)
     {
         FBTest.sysout("cookies.fbtest.cookiePanel; Check existence of the Cookies panel.");
 
