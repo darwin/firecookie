@@ -1,5 +1,5 @@
-content firecookie chrome/content/firecookie/
-skin    firecookie	classic/1.0	chrome/skin/classic/
+content firecookie  chrome/content/firecookie/
+skin    firecookie  classic/1.0 chrome/skin/classic/
 
 locale  firecookie  en-US       chrome/locale/en-US/
 locale  firecookie  pl-PL       chrome/locale/pl-PL/

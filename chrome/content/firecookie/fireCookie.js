@@ -2962,6 +2962,10 @@ function parseFromString(string)
 function parseSentCookiesFromString(header)
 {
     var cookies = [];
+
+    if (!header)
+        return cookies;
+
     var pairs = header.split("; ");
 
     for (var i=0; i<pairs.length; i++) {
