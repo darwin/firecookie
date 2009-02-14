@@ -2,25 +2,6 @@
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<script src="env.js" type="text/javascript"></script>
-<script src="utils.js" type="text/javascript"></script>
-<script>
-setTimeout(function()
-{
-    enablePrivilege("UniversalXPConnect");
-    FBTrace.sysout("fireunit.cookiePanel.checkCookiePanel");
-
-    // Make sure the Cookie panel's UI is there.
-    Firebug.showBar(true);
-    FirebugChrome.selectPanel("cookies");
-    var panelNode = fireunit.panel("cookies");
-    fireunit.ok(panelNode, "Cookies panel must be initialized.");
-
-    // Finish test
-    FBTrace.sysout("fireunit.cookiePanel.DONE");
-    fireunit.testDone();
-}, layoutTimeout);
-</script>
 </head>
 <body>
 <h1>Test for existence of Cookies panel</h1>
