@@ -1,13 +1,13 @@
 function runTest()
 {
-    FBTest.sysout("cookies.fbtest.cookieEntry; START");
+    FBTest.sysout("cookies.test.cookieEntry; START");
     FBTest.loadScript("env.js", this);
     var browser = FBTest.FirebugWindow;
 
     // Server side handler.
     FBTest.registerPathHandler("/cookieEntry.html", function (metadata, response) 
     {
-        FBTest.sysout("cookies.fbtest.cookieEntry; Server side handler executed.");
+        FBTest.sysout("cookies.test.cookieEntry; Server side handler executed.");
         response.setHeader("Set-Cookie", 
             "TestCookie=Test Cookie Value; " +
             "expires=Wed, 01-Jan-2020 00:00:00 GMT; " +
@@ -21,7 +21,7 @@ function runTest()
 
     FBTestFirebug.openNewTab(basePath + "cookieEntry.html", function(win)
     {
-        FBTest.sysout("cookies.fbtest.cookieEntry; Check cookie entry in the Cookies panel");
+        FBTest.sysout("cookies.test.cookieEntry; Check cookie entry in the Cookies panel");
 
         // Open Firebug UI and enable Net panel.
         FBTestFireCookie.enableCookiePanel(function(win) 
@@ -39,7 +39,7 @@ function runTest()
             FBTest.ok(cookieInfo.length > 0, "There must be at least one info-body displayed");
 
             // Finish test
-            FBTestFirebug.testDone("cookies.fbtest.cookieEntry; DONE");
+            FBTestFirebug.testDone("cookies.test.cookieEntry; DONE");
         });
     });
 };

@@ -1,12 +1,12 @@
 function runTest()
 {
-    FBTest.sysout("cookies.fbtest.cookiePaste; START");
+    FBTest.sysout("cookies.test.cookiePaste; START");
     FBTest.loadScript("env.js", this);
 
     // Server side handler.
     FBTest.registerPathHandler("/cookiePaste.html", function (metadata, response) 
     {
-        FBTest.sysout("cookies.fbtest.cookiePaste; Server side handler executed.");
+        FBTest.sysout("cookies.test.cookiePaste; Server side handler executed.");
         response.setHeader("Set-Cookie", 
             "CopyPasteCookie=Test Cookie Value; " +
             "expires=Wed, 01-Jan-2020 00:00:00 GMT; " +
@@ -21,7 +21,7 @@ function runTest()
     {
         FBTestFireCookie.enableCookiePanel(function(win) 
         {
-            FBTest.sysout("cookies.fbtest.cookiePaste; Check clipboard functionality");
+            FBTest.sysout("cookies.test.cookiePaste; Check clipboard functionality");
 
             // Make sure the Cookie panel's UI is there.
             FBTestFirebug.openFirebug(true);
@@ -41,7 +41,7 @@ function runTest()
             CookieRow.onPaste(null);
 
             // Check the new cookie
-            var newCookie = getCookieByName(panelNode, "CopyPasteCookie-1");
+            var newCookie = FBTestFireCookie.getCookieByName(panelNode, "CopyPasteCookie-1");
             FBTest.ok(newCookie, "There must be 'CopyPasteCookie-1'.");
             if (!originalCookie)
                 return FBTestFirebug.testDone();
@@ -60,23 +60,7 @@ function runTest()
             newCookie = getCookieByName(panelNode, "CopyPasteCookie-1");
             FBTest.ok(!newCookie, "There must not be 'CopyPasteCookie-1'.");
 
-            return FBTestFirebug.testDone("cookies.fbtest.cookiePaste; DONE");
+            return FBTestFirebug.testDone("cookies.test.cookiePaste; DONE");
         });
     });
 };
-
-function getCookieByName(panelNode, cookieName)
-{
-    var cookieRows = FW.FBL.getElementsByClass(panelNode, "cookieRow");
-    for (var i=0; i<cookieRows.length; i++)
-    {
-        var row = cookieRows[i];
-        var label = FW.FBL.getElementsByClass(row, "cookieNameLabel");
-        if (label.length != 1)
-            return null;
-
-        if (label[0].textContent == cookieName)
-            return row.repObject; 
-    }
-    return null;
-}

@@ -1,12 +1,12 @@
 function runTest()
 {
-    FBTest.sysout("cookies.fbtest.cookieValues; START");
+    FBTest.sysout("cookies.test.cookieValues; START");
     FBTest.loadScript("env.js", this);
 
     // Server side handler.
     FBTest.registerPathHandler("/cookieValues.html", function (metadata, response) 
     {
-        FBTest.sysout("cookies.fbtest.cookieValues; Server side handler executed.");
+        FBTest.sysout("cookies.test.cookieValues; Server side handler executed.");
         response.setHeader("Set-Cookie", 
             "TestCookie=Test Cookie Value; " +
             "expires=Wed, 01-Jan-2020 00:00:00 GMT; " +
@@ -22,7 +22,7 @@ function runTest()
     {
         FBTestFireCookie.enableCookiePanel(function(win) 
         {
-            FBTest.sysout("cookies.fbtest.cookiePanel; Check cookie values");
+            FBTest.sysout("cookies.test.cookiePanel; Check cookie values");
 
             // Make sure the Cookie panel's UI is there.
             FW.Firebug.showBar(true);
@@ -59,7 +59,7 @@ function runTest()
 
             // Finish test
             //removeCurrentTab();
-            FBTest.sysout("cookies.fbtest.cookieValues; DONE");
+            FBTest.sysout("cookies.test.cookieValues; DONE");
             FBTest.testDone();
         });
     });

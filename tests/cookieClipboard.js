@@ -1,13 +1,13 @@
 function runTest()
 {
-    FBTest.sysout("cookies.fbtest.cookieClipboard; START");
+    FBTest.sysout("cookies.test.cookieClipboard; START");
     FBTest.loadScript("env.js", this);
     var browser = FBTest.FirebugWindow;
 
     // Server side handler.
     FBTest.registerPathHandler("/cookieClipboard.html", function (metadata, response) 
     {
-        FBTest.sysout("cookies.fbtest.cookieClipboard; Server side handler executed.");
+        FBTest.sysout("cookies.test.cookieClipboard; Server side handler executed.");
         response.setHeader("Set-Cookie", 
             "TestCookie=Test Cookie Value; " +
             "expires=Wed, 01-Jan-2020 00:00:00 GMT; " +
@@ -21,7 +21,7 @@ function runTest()
 
     FBTestFirebug.openNewTab(basePath + "cookieClipboard.html", function(win)
     {
-        FBTest.sysout("cookies.fbtest.cookieClipboard; Check clipboard functionality");
+        FBTest.sysout("cookies.test.cookieClipboard; Check clipboard functionality");
 
         // Open Firebug UI and enable Net panel.
         FBTestFireCookie.enableCookiePanel(function(win) 
@@ -48,7 +48,7 @@ function runTest()
             FBTest.ok(values.isHttpOnly, "Result from clipboard: HTTP Only flag verified.");
     
             // Finish test
-            FBTestFirebug.testDone("cookies.fbtest.cookieClipboard; DONE");
+            FBTestFirebug.testDone("cookies.test.cookieClipboard; DONE");
         });
     });
 };

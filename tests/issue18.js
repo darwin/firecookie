@@ -1,12 +1,12 @@
 function runTest()
 {
-    FBTest.sysout("cookies.fbtest.issue18; START");
+    FBTest.sysout("cookies.test.issue18; START");
     FBTest.loadScript("env.js", this);
 
     // Server side handler.
     FBTest.registerPathHandler("/issue18.html", function (metadata, response) 
     {
-        FBTest.sysout("cookies.fbtest.issue18; Server side handler executed.");
+        FBTest.sysout("cookies.test.issue18; Server side handler executed.");
         response.setHeader("Set-Cookie", 
             "TestCookie=1 %2B 2 = 3; " +
             "expires=Wed, 01-Jan-2020 00:00:00 GMT; " +
@@ -23,7 +23,7 @@ function runTest()
         // Open Firebug UI and enable Net panel.
         FBTestFireCookie.enableCookiePanel(function(win) 
         {
-            FBTest.sysout("cookies.fbtest.issue18; Check clipboard functionality");
+            FBTest.sysout("cookies.test.issue18; Check clipboard functionality");
 
             // Make sure the Cookie panel's UI is there.
             FBTestFirebug.openFirebug();
@@ -47,7 +47,7 @@ function runTest()
                 "Raw value of the cookie (in the body) validation");
 
             // Finish test
-            FBTestFirebug.testDone("cookies.fbtest.issue18; DONE");
+            FBTestFirebug.testDone("cookies.test.issue18; DONE");
         });
     });
 };

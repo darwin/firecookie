@@ -1890,7 +1890,7 @@ Templates.CookieRow = domplate(Templates.Rep,
         };
 
         var parent = FirebugContext.chrome.window;
-        parent.openDialog("chrome://firecookie/content/editCookie.xul",
+        return parent.openDialog("chrome://firecookie/content/editCookie.xul",
             "_blank", "chrome,centerscreen,resizable=yes,modal=yes", 
             params);
     },
