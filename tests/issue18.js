@@ -2,7 +2,6 @@ function runTest()
 {
     FBTest.sysout("cookies.fbtest.issue18; START");
     FBTest.loadScript("env.js", this);
-    var browser = FBTest.FirebugWindow;
 
     // Server side handler.
     FBTest.registerPathHandler("/issue18.html", function (metadata, response) 
@@ -19,33 +18,36 @@ function runTest()
             "</body></html>");
     });
 
-    openURL(basePath + "issue18.html", function(win)
+    FBTestFirebug.openNewTab(basePath + "issue18.html", function(win)
     {
-        FBTest.sysout("cookies.fbtest.issue18; Check clipboard functionality");
+        // Open Firebug UI and enable Net panel.
+        FBTestFireCookie.enableCookiePanel(function(win) 
+        {
+            FBTest.sysout("cookies.fbtest.issue18; Check clipboard functionality");
 
-        // Make sure the Cookie panel's UI is there.
-        browser.Firebug.showBar(true);
-        var panelNode = browser.FirebugChrome.selectPanel("cookies").panelNode;
+            // Make sure the Cookie panel's UI is there.
+            FBTestFirebug.openFirebug();
+            var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
 
-        var value = browser.FBL.getElementByClass(panelNode, "cookieValueLabel", "cookieLabel");
-        FBTest.compare("1 + 2 = 3", value.textContent, "Value of the cookie validation");
+            var value = FW.FBL.getElementByClass(panelNode, "cookieValueLabel", "cookieLabel");
+            FBTest.compare("1 + 2 = 3", value.textContent, "Value of the cookie validation");
 
-        expandCookieRows(panelNode, "cookieRow");
-        var cookieInfo = browser.FBL.getElementsByClass(panelNode, "cookieInfoRow")[0];
-        expandCookieTabs(cookieInfo, "cookieInfoRawValueTab");
+            FBTestFirebug.expandElements(panelNode, "cookieRow");
+            var cookieInfo = FW.FBL.getElementsByClass(panelNode, "cookieInfoRow")[0];
+            FBTestFirebug.expandElements(cookieInfo, "cookieInfoRawValueTab");
 
-        var infoValue = browser.FBL.getElementByClass(cookieInfo, 
-            "cookieInfoValueText", "cookieInfoText");
-        FBTest.compare("1 + 2 = 3", infoValue.textContent, 
-            "Value of the cookie (in the body) validation");
+            var infoValue = FW.FBL.getElementByClass(cookieInfo, 
+                "cookieInfoValueText", "cookieInfoText");
+            FBTest.compare("1 + 2 = 3", infoValue.textContent, 
+                "Value of the cookie (in the body) validation");
 
-        var rawInfoValue = browser.FBL.getElementByClass(cookieInfo, 
-            "cookieInfoRawValueText", "cookieInfoText");
-        FBTest.compare("1 %2B 2 = 3", rawInfoValue.textContent, 
-            "Raw value of the cookie (in the body) validation");
+            var rawInfoValue = FW.FBL.getElementByClass(cookieInfo, 
+                "cookieInfoRawValueText", "cookieInfoText");
+            FBTest.compare("1 %2B 2 = 3", rawInfoValue.textContent, 
+                "Raw value of the cookie (in the body) validation");
 
-        // Finish test
-        FBTest.sysout("cookies.fbtest.issue18; DONE");
-        FBTest.testDone();
+            // Finish test
+            FBTestFirebug.testDone("cookies.fbtest.issue18; DONE");
+        });
     });
 };

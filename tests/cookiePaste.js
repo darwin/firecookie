@@ -17,48 +17,51 @@ function runTest()
             "</body></html>");
     });
 
-    openURL(basePath + "cookiePaste.html", function(win)
+    FBTestFirebug.openNewTab(basePath + "cookiePaste.html", function(win)
     {
-        FBTest.sysout("cookies.fbtest.cookiePaste; Check clipboard functionality");
+        FBTestFireCookie.enableCookiePanel(function(win) 
+        {
+            FBTest.sysout("cookies.fbtest.cookiePaste; Check clipboard functionality");
 
-        // Make sure the Cookie panel's UI is there.
-        FW.Firebug.showBar(true);
-        var panelNode = FW.FirebugChrome.selectPanel("cookies").panelNode;
+            // Make sure the Cookie panel's UI is there.
+            FBTestFirebug.openFirebug(true);
+            var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
 
-        // Copy cookie into the clipboard, get from clipboard again and check.
-        var originalCookie = getCookieByName(panelNode, "CopyPasteCookie");
-        FBTest.ok(originalCookie, "There must be 'CopyPasteCookie'.");
-        if (!originalCookie)
-            return testDone();
+            // Copy cookie into the clipboard, get from clipboard again and check.
+            var originalCookie = getCookieByName(panelNode, "CopyPasteCookie");
+            FBTest.ok(originalCookie, "There must be 'CopyPasteCookie'.");
+            if (!originalCookie)
+                return FBTestFirebug.testDone();
 
-        // Helper shortcut
-        var CookieRow = FW.Firebug.FireCookieModel.Templates.CookieRow;
+            // Helper shortcut
+            var CookieRow = FW.Firebug.FireCookieModel.Templates.CookieRow;
 
-        // Copy & Paste
-        CookieRow.onCopy(originalCookie);
-        CookieRow.onPaste(null);
+            // Copy & Paste
+            CookieRow.onCopy(originalCookie);
+            CookieRow.onPaste(null);
 
-        // Check the new cookie
-        var newCookie = getCookieByName(panelNode, "CopyPasteCookie-1");
-        FBTest.ok(newCookie, "There must be 'CopyPasteCookie-1'.");
-        if (!originalCookie)
-            return testDone();
+            // Check the new cookie
+            var newCookie = getCookieByName(panelNode, "CopyPasteCookie-1");
+            FBTest.ok(newCookie, "There must be 'CopyPasteCookie-1'.");
+            if (!originalCookie)
+                return FBTestFirebug.testDone();
 
-        FBTest.compare(originalCookie.value, newCookie.value, "The value must be the same.");
-        FBTest.compare(originalCookie.isDomain, newCookie.isDomain, "The isDomain must be the same.");
-        FBTest.compare(originalCookie.host, newCookie.host, "The host must be the same.");
-        FBTest.compare(originalCookie.path, newCookie.path, "The path must be the same.");
-        FBTest.compare(originalCookie.isSecure, newCookie.isSecure, "The isSecure must be the same.");
-        FBTest.compare(originalCookie.expires, newCookie.expires, "The expires must be the same.");
-        FBTest.compare(originalCookie.isHttpOnly, newCookie.isHttpOnly, "The isHttpOnly must be the same.");
-        FBTest.compare(originalCookie.rawValue, newCookie.rawValue, "The rawValue must be the same.");
+            FBTest.compare(originalCookie.value, newCookie.value, "The value must be the same.");
+            FBTest.compare(originalCookie.isDomain, newCookie.isDomain, "The isDomain must be the same.");
+            FBTest.compare(originalCookie.host, newCookie.host, "The host must be the same.");
+            FBTest.compare(originalCookie.path, newCookie.path, "The path must be the same.");
+            FBTest.compare(originalCookie.isSecure, newCookie.isSecure, "The isSecure must be the same.");
+            FBTest.compare(originalCookie.expires, newCookie.expires, "The expires must be the same.");
+            FBTest.compare(originalCookie.isHttpOnly, newCookie.isHttpOnly, "The isHttpOnly must be the same.");
+            FBTest.compare(originalCookie.rawValue, newCookie.rawValue, "The rawValue must be the same.");
 
-        // Delete the cookie
-        CookieRow.onRemove(newCookie);
-        newCookie = getCookieByName(panelNode, "CopyPasteCookie-1");
-        FBTest.ok(!newCookie, "There mus not be 'CopyPasteCookie-1'.");
+            // Delete the cookie
+            CookieRow.onRemove(newCookie);
+            newCookie = getCookieByName(panelNode, "CopyPasteCookie-1");
+            FBTest.ok(!newCookie, "There must not be 'CopyPasteCookie-1'.");
 
-        return testDone();
+            return FBTestFirebug.testDone("cookies.fbtest.cookiePaste; DONE");
+        });
     });
 };
 
@@ -76,11 +79,4 @@ function getCookieByName(panelNode, cookieName)
             return row.repObject; 
     }
     return null;
-}
-
-function testDone()
-{
-    // Finish test
-    FBTest.sysout("cookies.fbtest.cookiePaste; DONE");
-    FBTest.testDone();
 }

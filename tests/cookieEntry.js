@@ -19,24 +19,27 @@ function runTest()
             "</body></html>");
     });
 
-    openURL(basePath + "cookieEntry.html", function(win)
+    FBTestFirebug.openNewTab(basePath + "cookieEntry.html", function(win)
     {
         FBTest.sysout("cookies.fbtest.cookieEntry; Check cookie entry in the Cookies panel");
 
-        // Make sure the Cookie panel's UI is there.
-        browser.Firebug.showBar(true);
-        var panelNode = browser.FirebugChrome.selectPanel("cookies").panelNode;
+        // Open Firebug UI and enable Net panel.
+        FBTestFireCookie.enableCookiePanel(function(win) 
+        {
+            // Make sure the Cookie panel's UI is there.
+            FBTestFirebug.openFirebug(true);
+            var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
+    
+            var cookieRow = FW.FBL.getElementsByClass(panelNode, "cookieRow");
+            FBTest.ok(cookieRow.length > 0, "There must be at least one cookie displayed");
 
-        var cookieRow = FBL.getElementsByClass(panelNode, "cookieRow");
-        FBTest.ok(cookieRow.length > 0, "There must be at least one cookie displayed");
+            FBTestFirebug.expandElements(panelNode, "cookieRow");
 
-        expandCookieRows(panelNode, "cookieRow");
+            var cookieInfo = FW.FBL.getElementsByClass(panelNode, "cookieInfoRow");
+            FBTest.ok(cookieInfo.length > 0, "There must be at least one info-body displayed");
 
-        var cookieInfo = FBL.getElementsByClass(panelNode, "cookieInfoRow");
-        FBTest.ok(cookieInfo.length > 0, "There must be at least one info-body displayed");
-
-        // Finish test
-        FBTest.sysout("cookies.fbtest.cookieEntry; DONE");
-        FBTest.testDone();
+            // Finish test
+            FBTestFirebug.testDone("cookies.fbtest.cookieEntry; DONE");
+        });
     });
 };

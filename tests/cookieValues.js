@@ -2,7 +2,6 @@ function runTest()
 {
     FBTest.sysout("cookies.fbtest.cookieValues; START");
     FBTest.loadScript("env.js", this);
-    var browser = FBTest.FirebugWindow;
 
     // Server side handler.
     FBTest.registerPathHandler("/cookieValues.html", function (metadata, response) 
@@ -19,46 +18,49 @@ function runTest()
             "</body></html>");
     });
 
-    openURL(basePath + "cookieValues.html", function(win)
+    FBTestFirebug.openNewTab(basePath + "cookieValues.html", function(win)
     {
-        FBTest.sysout("cookies.fbtest.cookiePanel; Check cookie values");
+        FBTestFireCookie.enableCookiePanel(function(win) 
+        {
+            FBTest.sysout("cookies.fbtest.cookiePanel; Check cookie values");
 
-        // Make sure the Cookie panel's UI is there.
-        browser.Firebug.showBar(true);
-        var panelNode = browser.FirebugChrome.selectPanel("cookies").panelNode;
+            // Make sure the Cookie panel's UI is there.
+            FW.Firebug.showBar(true);
+            var panelNode = FW.FirebugChrome.selectPanel("cookies").panelNode;
 
-        // Check displayed values.
-        var name = FBL.getElementByClass(panelNode, "cookieNameLabel", "cookieLabel");
-        FBTest.compare("TestCookie", name.textContent, "Name of the cookie validation");
+            // Check displayed values.
+            var name = FW.FBL.getElementByClass(panelNode, "cookieNameLabel", "cookieLabel");
+            FBTest.compare("TestCookie", name.textContent, "Name of the cookie validation");
 
-        var value = FBL.getElementByClass(panelNode, "cookieValueLabel", "cookieLabel");
-        FBTest.compare("Test Cookie Value", value.textContent, "Value of the cookie validation");
+            var value = FW.FBL.getElementByClass(panelNode, "cookieValueLabel", "cookieLabel");
+            FBTest.compare("Test Cookie Value", value.textContent, "Value of the cookie validation");
 
-        var domain = FBL.getElementByClass(panelNode, "cookieDomainLabel", "cookieLabel");
-        FBTest.compare("localhost", domain.textContent, "Domain of the cookie validation");
+            var domain = FW.FBL.getElementByClass(panelNode, "cookieDomainLabel", "cookieLabel");
+            FBTest.compare("localhost", domain.textContent, "Domain of the cookie validation");
 
-        var size = FBL.getElementByClass(panelNode, "cookieSizeLabel", "cookieLabel");
-        FBTest.compare("27 B", size.textContent, "Size of the cookie validation");
+            var size = FW.FBL.getElementByClass(panelNode, "cookieSizeLabel", "cookieLabel");
+            FBTest.compare("27 B", size.textContent, "Size of the cookie validation");
 
-        var path = FBL.getElementByClass(panelNode, "cookiePathLabel", "cookieLabel");
-        FBTest.compare("/dir", path.textContent, "Path of the cookie validation");
+            var path = FW.FBL.getElementByClass(panelNode, "cookiePathLabel", "cookieLabel");
+            FBTest.compare("/dir", path.textContent, "Path of the cookie validation");
 
-        // xxxHonza: TODO
-        //var expires = FBL.getElementByClass(panelNode, "cookieExpiresLabel","cookieLabel");
-        //FBTest.compare("...", expires.textContent, "Expire date of the cookie validation");
+            // xxxHonza: TODO
+            //var expires = FW.FBL.getElementByClass(panelNode, "cookieExpiresLabel","cookieLabel");
+            //FBTest.compare("...", expires.textContent, "Expire date of the cookie validation");
 
-        var httpOnly = FBL.getElementByClass(panelNode, "cookieHttpOnlyLabel","cookieLabel");
-        FBTest.compare("HttpOnly", httpOnly.textContent, "HTTP Only flag validation");
+            var httpOnly = FW.FBL.getElementByClass(panelNode, "cookieHttpOnlyLabel","cookieLabel");
+            FBTest.compare("HttpOnly", httpOnly.textContent, "HTTP Only flag validation");
 
-        expandCookieRows(panelNode, "cookieRow");
-        var cookieInfo = FBL.getElementsByClass(panelNode, "cookieInfoRow");
+            FBTestFirebug.expandElements(panelNode, "cookieRow");
+            var cookieInfo = FW.FBL.getElementsByClass(panelNode, "cookieInfoRow");
 
-        var infoValue = FBL.getElementByClass(panelNode, "cookieInfoValueText", "cookieInfoText");
-        FBTest.compare("Test Cookie Value", infoValue.textContent, "Value of the cookie (in the body) validation");
+            var infoValue = FW.FBL.getElementByClass(panelNode, "cookieInfoValueText", "cookieInfoText");
+            FBTest.compare("Test Cookie Value", infoValue.textContent, "Value of the cookie (in the body) validation");
 
-        // Finish test
-        //removeCurrentTab();
-        FBTest.sysout("cookies.fbtest.cookieValues; DONE");
-        FBTest.testDone();
+            // Finish test
+            //removeCurrentTab();
+            FBTest.sysout("cookies.fbtest.cookieValues; DONE");
+            FBTest.testDone();
+        });
     });
 };

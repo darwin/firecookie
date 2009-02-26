@@ -19,33 +19,36 @@ function runTest()
             "</body></html>");
     });
 
-    openURL(basePath + "cookieClipboard.html", function(win)
+    FBTestFirebug.openNewTab(basePath + "cookieClipboard.html", function(win)
     {
         FBTest.sysout("cookies.fbtest.cookieClipboard; Check clipboard functionality");
 
-        // Make sure the Cookie panel's UI is there.
-        browser.Firebug.showBar(true);
-        var panelNode = browser.FirebugChrome.selectPanel("cookies").panelNode;
+        // Open Firebug UI and enable Net panel.
+        FBTestFireCookie.enableCookiePanel(function(win) 
+        {
+            // Make sure the Cookie panel's UI is there.
+            FBTestFirebug.openFirebug();
+            var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
 
-        // Helper shortcuts
-        var CookieRow = browser.Firebug.FireCookieModel.Templates.CookieRow;
-        var CookieClipboard = browser.Firebug.FireCookieModel.CookieClipboard
-
-        // Copy cookie into the clipboard, get from clipboard again and check.
-        var cookieRow = browser.FBL.getElementsByClass(panelNode, "cookieRow")[0];
-        var cookie = cookieRow.repObject;
-        CookieRow.onCopy(cookie);
-
-        var values = CookieClipboard.getFrom();
-        FBTest.compare("TestCookie", values.name, "Result from clipboard: name verified.");
-        FBTest.compare("Test%20Cookie%20Value", values.value, "Result from clipboard: value verified.");
-        FBTest.compare("1577836800", values.expires, "Result from clipboard: expire date verified.");
-        FBTest.compare("/dir", values.path, "Result from clipboard: path verified.");
-        FBTest.compare("localhost", values.host, "Result from clipboard: host verified.");
-        FBTest.ok(values.isHttpOnly, "Result from clipboard: HTTP Only flag verified.");
-
-        // Finish test
-        FBTest.sysout("cookies.fbtest.cookieClipboard; DONE");
-        FBTest.testDone();
+            // Helper shortcuts
+            var CookieRow = browser.Firebug.FireCookieModel.Templates.CookieRow;
+            var CookieClipboard = browser.Firebug.FireCookieModel.CookieClipboard
+    
+            // Copy cookie into the clipboard, get from clipboard again and check.
+            var cookieRow = browser.FBL.getElementsByClass(panelNode, "cookieRow")[0];
+            var cookie = cookieRow.repObject;
+            CookieRow.onCopy(cookie);
+    
+            var values = CookieClipboard.getFrom();
+            FBTest.compare("TestCookie", values.name, "Result from clipboard: name verified.");
+            FBTest.compare("Test%20Cookie%20Value", values.value, "Result from clipboard: value verified.");
+            FBTest.compare("1577836800", values.expires, "Result from clipboard: expire date verified.");
+            FBTest.compare("/dir", values.path, "Result from clipboard: path verified.");
+            FBTest.compare("localhost", values.host, "Result from clipboard: host verified.");
+            FBTest.ok(values.isHttpOnly, "Result from clipboard: HTTP Only flag verified.");
+    
+            // Finish test
+            FBTestFirebug.testDone("cookies.fbtest.cookieClipboard; DONE");
+        });
     });
 };

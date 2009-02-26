@@ -496,6 +496,9 @@ Firebug.FireCookieModel = extend(BaseModule,
     onLastPanelDeactivate: function(context, destroy)
     {
         $("fbStatusIcon").removeAttribute(panelName);
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.dumpProperties("cookies.onLastPanelDeactivate");
     },
 
     onSuspendFirebug: function(context)
@@ -629,11 +632,23 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     onCreateCookie: function(context)
     {
-        var cookie = new Object();
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onCreateCookie");
+
+        // There is an excepion if the window is closed or not initialized (empty tab)
+        var host;
+        try {
+            host = context.window.location.host
+        }
+        catch (err) {
+            alert($FC_STR("firecookie.message.There_is_no_active_page"));
+            return;
+        }
 
         // Name and domain.
+        var cookie = new Object();
         cookie.name = this.getDefaultCookieName(context);
-        cookie.host = context.window.location.host;
+        cookie.host = host;
         cookie.value = $FC_STR("firecookie.createcookie.defaultvalue");
 
         // Default path

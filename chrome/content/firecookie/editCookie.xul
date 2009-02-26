@@ -17,6 +17,7 @@
         ondialogaccept="EditCookie.onOK()"
         onload="EditCookie.onLoad()"
         minwidth="360px"
+        minheight="300px"
         persist="width height screenX screenY">
 
     <script type="application/x-javascript" src="chrome://firebug/content/xpcom.js"/>
