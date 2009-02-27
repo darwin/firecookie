@@ -1,5 +1,7 @@
 /* See license.txt for terms of usage */
 
+var FBTestFireCookie = FBTest.FireCookie = {};
+
 (function() {
 
 // ************************************************************************************************
@@ -71,6 +73,3 @@ this.editCookie = function(cookie, callback)
 
 // ************************************************************************************************
 }).apply(FBTest.FireCookie);
-
-// Shortcut
-var FBTestFireCookie = FBTest.FireCookie; 

@@ -28,7 +28,7 @@ function runTest()
             var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
 
             // Copy cookie into the clipboard, get from clipboard again and check.
-            var originalCookie = getCookieByName(panelNode, "CopyPasteCookie");
+            var originalCookie = FBTestFireCookie.getCookieByName(panelNode, "CopyPasteCookie");
             FBTest.ok(originalCookie, "There must be 'CopyPasteCookie'.");
             if (!originalCookie)
                 return FBTestFirebug.testDone();
@@ -43,7 +43,7 @@ function runTest()
             // Check the new cookie
             var newCookie = FBTestFireCookie.getCookieByName(panelNode, "CopyPasteCookie-1");
             FBTest.ok(newCookie, "There must be 'CopyPasteCookie-1'.");
-            if (!originalCookie)
+            if (!originalCookie || !newCookie)
                 return FBTestFirebug.testDone();
 
             FBTest.compare(originalCookie.value, newCookie.value, "The value must be the same.");
