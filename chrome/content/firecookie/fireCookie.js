@@ -3764,7 +3764,8 @@ function getRequestWebProgress(request)
 function safeGetWindow(webProgress)
 {
     try {
-        return webProgress.DOMWindow;
+        if (webProgress)
+            return webProgress.DOMWindow;
     }
     catch (ex) {
         return null;
