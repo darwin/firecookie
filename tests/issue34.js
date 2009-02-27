@@ -5,23 +5,8 @@ function runTest()
     FBTest.sysout("cookies.test.issue34; START");
     FBTest.loadScript("env.js", this);
 
-    // Server side handler.
-    FBTest.registerPathHandler("/issue34.html", function (metadata, response) 
-    {
-        FBTest.sysout("cookies.test.issue34; Server side handler executed.");
-        response.setHeader("Set-Cookie", 
-            "TestCookie34=ValueCookie34; " +
-            "expires=Wed, 01-Jan-2020 00:00:00 GMT; " +
-            "path=/dir; " +
-            "domain=.localhost",
-            false);
-        response.write("<html><head><title>Cookie Entry</title></head><body>" +
-            "<h1>Issue 34: firecookie 0.8 cookies with .domain.com the first " +
-            "period gets erased on editing any attribute</h1>" +
-            "</body></html>");
-    });
-
-    FBTestFirebug.openNewTab(basePath + "issue34.html", function(win)
+    var baseRemotePath = "http://www.softwareishard.com/firecookie/tests/issue34/";
+    FBTestFirebug.openNewTab(baseRemotePath + "issue34.php", function(win)
     {
         FBTestFireCookie.enableCookiePanel(function(win) 
         {
@@ -34,7 +19,7 @@ function runTest()
             FBTest.sysout("cookies.test.issue34; this is our cookie", cookie);
 
             // Check domain
-            FBTest.compare(".localhost", cookie.cookie.host, "Check host.");
+            FBTest.compare(".softwareishard.com", cookie.cookie.host, "Check host.");
 
             // The edit cookie dialog is modal so, we have to register a listener
             // to finish the test. 
@@ -47,7 +32,7 @@ function runTest()
 
             // Now the dialog has been finished so, check the new value.
             FBTest.compare("NewValueForCookie34", cookie.cookie.value, "Check new cookie value");
-            FBTestFirebug.testDone("cookies.test.issue34; DONE");
+            //FBTestFirebug.testDone("cookies.test.issue34; DONE");
         });
     });
 };
