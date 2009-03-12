@@ -14,7 +14,7 @@ const windowMediator = CCSV("@mozilla.org/appshell/window-mediator;1", "nsIWindo
 
 //-----------------------------------------------------------------------------
 
-var FBTrace = {};
+var FBTrace = { sysout: function() {} };
 
 /**
  * Edit cookie dialog implementation. This dialog is used to create a new cookie

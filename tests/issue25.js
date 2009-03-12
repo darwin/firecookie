@@ -16,12 +16,15 @@ function runTest()
                 return testDone();
 
             editCookie(cookie, true);
+            FBTest.ok(!cookie.cookie.expires, "Must be Session cookie now.");
 
             cookie = FBTestFireCookie.getCookieByName(panelNode, "TestCookie25");
             if (!verifyCookie(cookie))
                 return testDone();
 
             editCookie(cookie, false);
+            FBTest.ok(cookie.cookie.expires, "Must not be Session cookie now.");
+
             cookie = FBTestFireCookie.getCookieByName(panelNode, "TestCookie25");
             if (!verifyCookie(cookie))
                 return testDone();
