@@ -1023,7 +1023,10 @@ function fcInternationalize(element, attr, args)
 //-----------------------------------------------------------------------------
 
 function FireCookiePanel() {}
+
+// Firebug.AblePanel has been renamed in Firebug 1.4 to ActivablePanel.
 var BasePanel = Firebug.AblePanel ? Firebug.AblePanel : Firebug.Panel;
+BasePanel = Firebug.ActivablePanel ? Firebug.ActivablePanel : BasePanel;
 FireCookiePanel.prototype = extend(BasePanel,
 {
     name: panelName,
@@ -1195,7 +1198,12 @@ FireCookiePanel.prototype = extend(BasePanel,
             this.showToolbarButtons("fbCookieButtons", shouldShow);
             if (!shouldShow)
             {
-                Firebug.ModuleManagerPage.show(this, Firebug.FireCookieModel);
+                // The activation model has been changed in Firebug 1.4. This is 
+                // just to keep backward compatibility.
+                if (Firebug.DisabledPanelPage)
+                    Firebug.DisabledPanelPage.show(this, Firebug.FireCookieModel);
+                else
+                    Firebug.FireCookieModel.disabledPanelPage.show(this);
                 return;
             }
         }
