@@ -26,7 +26,7 @@ function editCookie(cookie)
         return;
 
     FBTest.sysout("cookies.test.issue23; this is our cookie", cookie);
-    FBTest.compare(".softwareishard.com", cookie.cookie.host, "Check cookie host.");
+    FBTest.compare(".janodvarko.cz", cookie.cookie.host, "Check cookie host.");
 
     // Open editCookie.xul dialog and edit the value.
     FBTest.sysout("cookies.test.issue23; let's edit an existing cookie");
