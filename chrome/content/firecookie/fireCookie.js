@@ -443,11 +443,14 @@ Firebug.FireCookieModel = extend(BaseModule,
     createNewCookie: function(cookie)
     {
         // Create URI
+        var host = cookie.cookie.host;
         var httpProtocol = cookie.cookie.isSecure ? "https://" : "http://";
-        var uri = ioService.newURI(httpProtocol + cookie.cookie.host +
-            cookie.cookie.path, null, null);
+        var uri = ioService.newURI(httpProtocol + host + cookie.cookie.path, null, null);
 
-        var cookieString = cookie.toString(true);
+        // Fix for issue 34. The domain must be included in the cookieString if it 
+        // starts with "." But don't include it otherwise, since the "." would be 
+        // appended by the service.
+        var cookieString = cookie.toString(!(host.charAt(0) == "."));
         cookieService.setCookieString(uri, null, cookieString, null);
 
         if (FBTrace.DBG_COOKIES)
