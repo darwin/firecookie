@@ -57,7 +57,7 @@ function runTest()
 
             // Delete the cookie
             CookieRow.onRemove(newCookie);
-            newCookie = getCookieByName(panelNode, "CopyPasteCookie-1");
+            newCookie = FBTestFireCookie.getCookieByName(panelNode, "CopyPasteCookie-1");
             FBTest.ok(!newCookie, "There must not be 'CopyPasteCookie-1'.");
 
             return FBTestFirebug.testDone("cookies.test.cookiePaste; DONE");

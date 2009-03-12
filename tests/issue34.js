@@ -9,14 +9,11 @@ function runTest()
         FBTestFireCookie.enableCookiePanel(function(win) 
         {
             var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
-            var cookie1 = FBTestFireCookie.getCookieByName(panelNode, "TestCookie34-1");
-            var cookie2 = FBTestFireCookie.getCookieByName(panelNode, "TestCookie34-2");
+            var cookie = FBTestFireCookie.getCookieByName(panelNode, "TestCookie34");
 
-            editCookie(cookie1);
-            editCookie(cookie2);
+            editCookie(cookie);
 
-            FBTest.compare("ValueCookie34-modified", cookie1.cookie.value, "Check new cookie value");
-            FBTest.compare("ValueCookie34-modified", cookie2.cookie.value, "Check new cookie value");
+            FBTest.compare("ValueCookie34-modified", cookie.cookie.value, "Check new cookie value");
             FBTestFirebug.testDone("cookies.test.issue34; DONE");
         });
     });
