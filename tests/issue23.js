@@ -3,7 +3,7 @@ function runTest()
     FBTest.sysout("cookies.test.issue23; START");
     FBTest.loadScript("env.js", this);
 
-    var baseRemotePath = "http://www.softwareishard.com/firecookie/tests/issue23/";
+    var baseRemotePath = "http://www.janodvarko.cz/firecookie/tests/issue23/";
     FBTestFirebug.openNewTab(baseRemotePath + "issue23.php", function(win)
     {
         FBTestFireCookie.enableCookiePanel(function(win) 
