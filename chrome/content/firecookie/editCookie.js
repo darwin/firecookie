@@ -14,6 +14,8 @@ const windowMediator = CCSV("@mozilla.org/appshell/window-mediator;1", "nsIWindo
 
 //-----------------------------------------------------------------------------
 
+var FBTrace = {};
+
 /**
  * Edit cookie dialog implementation. This dialog is used to create a new cookie
  * and edit an existing cookie.
@@ -21,9 +23,10 @@ const windowMediator = CCSV("@mozilla.org/appshell/window-mediator;1", "nsIWindo
 var EditCookie = 
 {
     cookie: null,
-    
+
     onLoad: function()
     {
+        this.initFBTrace();
         this.createDateTimeField();
 
         var params = window.arguments[0];
@@ -55,8 +58,16 @@ var EditCookie =
         {
             this.sessionNode.checked = true;
 
-            // Set default value for expire time if the cookie doesn't have it.
-            if (!this.expireNode.value)
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.EditCookie.onLoad; default expire time: " +
+                    this.expireNode.value, this.expireNode.value);
+
+            // Set default value for expire time (current time + some time, see prefs 
+            // defaultInterval) so, the cookie doesn't disappear if the session box 
+            // is just unchecked.
+
+            // xxxHonza: the default time is always set to the current time.
+            //if (!this.expireNode.value)
             {
                 var expireTime = Firebug.FireCookieModel.getDefaultCookieExpireTime();
                 var expires = new Date(expireTime * 1000);
@@ -199,6 +210,20 @@ var EditCookie =
     getChromeWindow: function()
     {
         return windowMediator.getMostRecentWindow("navigator:browser");
+    },
+
+    initFBTrace: function()
+    {
+        try 
+        {
+            FBTrace = Cc["@joehewitt.com/firebug-trace-service;1"]
+                .getService(Ci.nsISupports)
+                .wrappedJSObject.getTracer("extensions.firebug");
+        }
+        catch (err)
+        {
+            
+        }
     }
 }
 
