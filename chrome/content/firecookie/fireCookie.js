@@ -43,6 +43,7 @@ const clearWhenDeny = "firecookie.clearWhenDeny";
 const filterByPath = "firecookie.filterByPath";
 const showRejectedCookies = "firecookie.showRejectedCookies";
 const defaultExpireTime = "firecookie.defaultExpireTime";
+const lastSortedColumn = "firecookie.lastSortedColumn";
 
 // Services
 const cookieManager = CCSV("@mozilla.org/cookiemanager;1", "nsICookieManager2");
@@ -1138,7 +1139,9 @@ FireCookiePanel.prototype = extend(BasePanel,
         if (FBTrace.DBG_COOKIES)
             FBTrace.dumpProperties("cookies.Cookie list refreshed.\n", cookies);
 
-        // xxxHonza the last sorted column should be remembered in preferences.
+        // Sort automaticaly the last sorted column.
+        var column = getPref(FirebugPrefDomain, lastSortedColumn);
+        Templates.CookieTable.sortColumn(this.table, column);
     },
 
     initializeNode: function(oldPanelNode)
@@ -2352,14 +2355,31 @@ Templates.CookieTable = domplate(Templates.Rep,
             return;
 
         var table = getAncestorByClass(event.target, "cookieTable");
-        var cell = getAncestorByClass(event.target, "cookieHeaderCell");
-        if (!cell)
+        var column = getAncestorByClass(event.target, "cookieHeaderCell");
+        this.sortColumn(table, column);
+
+        // Remember last sorted column in preferences.
+        setPref(FirebugPrefDomain, lastSortedColumn, column.getAttribute("id"));
+    },
+
+    sortColumn: function(table, col)
+    {
+        if (!col)
             return;
 
-        var numerical = !hasClass(cell, "alphaValue");
+        if (typeof col == "string")
+        {
+            var doc = table.ownerDocument;
+            col = doc.getElementById(col);
+        }
+
+        if (!col)
+            return;
+
+        var numerical = !hasClass(col, "alphaValue");
 
         var colIndex = 0;
-        for (cell = cell.previousSibling; cell; cell = cell.previousSibling)
+        for (col = col.previousSibling; col; col = col.previousSibling)
             ++colIndex;
 
         this.sort(table, colIndex, numerical);
@@ -2374,7 +2394,7 @@ Templates.CookieTable = domplate(Templates.Rep,
         {
             var cell = row.childNodes[colIndex];
             var value = numerical ? parseFloat(cell.textContent) : cell.textContent;
-            
+
             if (hasClass(row, "opened"))
             {
                 var cookieInfoRow = row.nextSibling;

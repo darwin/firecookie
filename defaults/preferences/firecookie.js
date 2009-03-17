@@ -8,9 +8,10 @@ pref("extensions.firebug.firecookie.filterByPath", false);
 pref("extensions.firebug.firecookie.showRejectedCookies", true);
 pref("extensions.firebug.firecookie.showRejectedCookies", true);
 pref("extensions.firebug.firecookie.defaultExpireTime", 3600);
-pref("extensions.firebug.cookies.enableSites", false);
+pref("extensions.firebug.firecookie.lastSortedColumn", "");
 
 // Activation
+pref("extensions.firebug.cookies.enableSites", false);
 pref("extensions.firebug.cookies.enableLocalFiles", "");
 pref("extensions.firebug.cookies.enableSystemPages", "");
 
