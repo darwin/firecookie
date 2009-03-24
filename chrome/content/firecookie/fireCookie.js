@@ -4015,6 +4015,9 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
     // Helpers
     findHeader: function(headers, name)
     {
+        if (!headers)
+            return null;
+
         for (var i=0; i<headers.length; i++) {
             if (headers[i].name == name)
                 return headers[i].value;
