@@ -1206,7 +1206,7 @@ FireCookiePanel.prototype = extend(BasePanel,
             {
                 // The activation model has been changed in Firebug 1.4. This is 
                 // just to keep backward compatibility.
-                if (Firebug.DisabledPanelPage)
+                if (Firebug.DisabledPanelPage.show)
                     Firebug.DisabledPanelPage.show(this, Firebug.FireCookieModel);
                 else
                     Firebug.FireCookieModel.disabledPanelPage.show(this);
