@@ -32,7 +32,6 @@
     <toolbar id="fbToolbar" align="center"> 
         <hbox id="fbToolbarInner" insertbefore="fbDetachButton" flex="1" align="center"> 
             <hbox id="fbCookieButtons" insertafter="fbNetButtons" collapsed="true">
-                <toolbarseparator/>
                 <toolbarbutton id="fcCookiesMenu" label="firecookie.menu.Cookies" type="menu">
                     <menupopup id="fcCookiesMenuPopup">
                         <tooltip id="fcCreateCookieTooltip"
