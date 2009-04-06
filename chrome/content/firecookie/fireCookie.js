@@ -982,8 +982,9 @@ function $FC_STR(name)
 
 function $FC_STRF(name, args)
 {
-    if (Firebug.registerStringBundle)
-        return $STRF(name, args);
+    // xxxHonza: https://bugzilla.mozilla.org/show_bug.cgi?id=485511
+    //if (Firebug.registerStringBundle)
+    //    return $STRF(name, args);
         
     try
     {
