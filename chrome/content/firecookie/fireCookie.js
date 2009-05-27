@@ -511,7 +511,8 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     onSuspendFirebug: function(context)
     {
-        this.unregisterObservers(context);
+        if (Firebug.FireCookieModel.isAlwaysEnabled())
+            TabWatcher.iterateContexts(Firebug.FireCookieModel.unregisterObservers);
 
         $("fbStatusIcon").removeAttribute(panelName);
 
@@ -521,10 +522,10 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     onResumeFirebug: function(context)
     {
-        this.registerObservers(context);
+        if (Firebug.FireCookieModel.isAlwaysEnabled())
+            TabWatcher.iterateContexts(Firebug.FireCookieModel.registerObservers);
 
-        if (Firebug.FireCookieModel.isEnabled(context))
-            $("fbStatusIcon").setAttribute(panelName, "on");
+        $("fbStatusIcon").setAttribute(panelName, "on");
 
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.onResumeFirebug", context);
