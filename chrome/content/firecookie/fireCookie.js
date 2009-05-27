@@ -511,8 +511,17 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     onSuspendFirebug: function(context)
     {
-        if (Firebug.FireCookieModel.isAlwaysEnabled())
-            TabWatcher.iterateContexts(Firebug.FireCookieModel.unregisterObservers);
+        if (context)
+        {
+            // Firebug 1.3
+            this.unregisterObservers(context);
+        }
+        else
+        {
+            // Firebug 1.4 (context parameter doesn't exist since 1.4)
+            if (Firebug.FireCookieModel.isAlwaysEnabled())
+                TabWatcher.iterateContexts(Firebug.FireCookieModel.unregisterObservers);
+        }
 
         $("fbStatusIcon").removeAttribute(panelName);
 
@@ -522,10 +531,22 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     onResumeFirebug: function(context)
     {
-        if (Firebug.FireCookieModel.isAlwaysEnabled())
-            TabWatcher.iterateContexts(Firebug.FireCookieModel.registerObservers);
+        if (context)
+        {
+            // Firebug 1.3
+            this.registerObservers(context);
 
-        $("fbStatusIcon").setAttribute(panelName, "on");
+            if (Firebug.FireCookieModel.isEnabled(context))
+                $("fbStatusIcon").setAttribute(panelName, "on");
+        }
+        else
+        {
+            // Firebug 1.4 (context parameter doesn't exist since 1.4)
+            if (Firebug.FireCookieModel.isAlwaysEnabled())
+                TabWatcher.iterateContexts(Firebug.FireCookieModel.registerObservers);
+
+            $("fbStatusIcon").setAttribute(panelName, "on");
+        }
 
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.onResumeFirebug", context);
