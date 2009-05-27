@@ -400,7 +400,11 @@ Firebug.FireCookieModel = extend(BaseModule,
     {
         // Update panel's toolbar
         var isCookiePanel = panel && panel.name == panelName;
-        var cookieButtons = browser.chrome.$("fbCookieButtons");
+
+        // Firebug 1.4, chrome changes.
+        var chrome = browser.chrome ? browser.chrome : Firebug.chrome;
+
+        var cookieButtons = chrome.$("fbCookieButtons");
         collapse(cookieButtons, !isCookiePanel);
 
         // The console panel can be displayed sooner than the Cookies
