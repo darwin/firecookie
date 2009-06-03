@@ -3197,8 +3197,15 @@ var CookieObserver = extend(BaseObserver,
         var location = context.window.location;
 
         // Invalid in Chromebug.
-        if (!location)
+        try
+        {
+            if (!location || !location.protocol)
+                return;
+        }
+        catch (err)
+        {
             return;
+        }
 
         if (location.protocol.indexOf("http") != 0)
             return false;
