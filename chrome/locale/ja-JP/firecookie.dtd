@@ -1,0 +1,28 @@
+<!ENTITY firecookie.RemoveAll "Cookie をすべて削除">
+<!ENTITY firecookie.Create "Cookie を作成">
+<!ENTITY firecookie.ViewAll "すべての Cookie を表示...">
+<!ENTITY firecookie.ViewAllTooltip "Cookie マネージャを開きます">
+<!ENTITY firecookie.ViewExceptions "Webサイト別可否設定...">
+<!ENTITY firecookie.ViewExceptionsTooltip "可否設定された Web サイトの一覧を表示します">
+<!ENTITY firecookie.Tools "ツール">
+<!ENTITY firecookie.ToolsTooltip "ツール">
+<!ENTITY firecookie.Help "ヘルプ">
+<!ENTITY firecookie.HelpTooltip "Firecookie のヘルプ">
+<!ENTITY firecookie.About "Firecookie について...">
+<!ENTITY firecookie.AboutTooltip "Firecookie について">
+<!ENTITY firecookie.edit.title "Cookie 編集">
+<!ENTITY firecookie.edit.group.title "Cookie の詳細">
+<!ENTITY firecookie.edit.name.label "名前:">
+<!ENTITY firecookie.edit.value.label "内容:">
+<!ENTITY firecookie.edit.domain.label "ホスト:">
+<!ENTITY firecookie.edit.path.label "パス:">
+<!ENTITY firecookie.edit.expire.label "有効期限:">
+<!ENTITY firecookie.edit.session.label "セッション">
+<!ENTITY firecookie.edit.secure.label "セキュア Cookie">
+<!ENTITY firecookie.edit.httponly.label "HTTP 限定">
+<!ENTITY firecookie.Filter "フィルタ">
+<!ENTITY firecookie.FilterTooltip "Cookie リストをフィルタするため、指定のオプションを使います。">
+<!ENTITY firecookie.filter.byPath "現在のパスで Cookie をフィルタ">
+<!ENTITY firecookie.filter.byPathTooltip "現在のパスに一致する Cookie だけを表示します。">
+<!ENTITY firecookie.filter.showRejectedCookies "拒否された Cookie を表示">
+<!ENTITY firecookie.filter.showRejectedCookiesTooltip "拒否された Cookie もリストに表示します。">

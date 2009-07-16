@@ -9,5 +9,6 @@ locale  firecookie  tr-TR       chrome/locale/tr-TR/
 locale  firecookie  cs-CZ       chrome/locale/cs-CZ/
 locale  firecookie  fr-FR       chrome/locale/fr-FR/
 locale  firecookie  es-ES       chrome/locale/es-ES/
+locale  firecookie  ja-JP       chrome/locale/ja-JP/
 
 overlay chrome://firebug/content/firebugOverlay.xul         chrome://firecookie/content/fireCookie.xul
