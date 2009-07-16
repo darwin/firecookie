@@ -1098,6 +1098,9 @@ FireCookiePanel.prototype = extend(BasePanel,
 
         // Cookies are displayed only for web pages.
         var location = this.context.window.location;
+        if (!location)
+            return;
+
         var protocol = location.protocol;
         if (protocol.indexOf("http") != 0)
             return;
