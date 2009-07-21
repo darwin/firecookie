@@ -3197,17 +3197,18 @@ var CookieObserver = extend(BaseObserver,
 
     isHostFromContext: function(context, host, path)
     {
-        var location = context.window.location;
+        var location;
 
         // Invalid in Chromebug.
         try
         {
+            location = context.window.location;
             if (!location || !location.protocol)
                 return;
         }
         catch (err)
         {
-            return;
+            return false;
         }
 
         if (location.protocol.indexOf("http") != 0)
