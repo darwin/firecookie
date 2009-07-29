@@ -3050,9 +3050,9 @@ function parseSentCookiesFromString(header)
 
     for (var i=0; i<pairs.length; i++) {
         var pair = pairs[i];
-        var index =pair.indexOf("=");
+        var index = pair.indexOf("=");
         if (index > 0) {
-            var name = pair.substring(0, index-1);
+            var name = pair.substring(0, index);
             var value = pair.substr(index+1);
             if (name.length & value.length)
                 cookies.push(new Cookie(makeCookieObject({name: name, value: value})));
