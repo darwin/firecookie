@@ -155,7 +155,8 @@ Firebug.FireCookieModel = extend(BaseModule,
             netInfoBody.addListener(this.NetInfoBody);
 
         // Localize UI (use firecookie.properties instead of firecookie.dtd)
-        this.internationalizeUI();
+        // Firebu 1.5 dispatch "internationalizeUI" message so, don't use the name.
+        this.fcInternationalizeUI();
     },
 
     shutdown: function() 
@@ -171,7 +172,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             netInfoBody.removeListener(this.NetInfoBody);
     },
 
-    internationalizeUI: function()
+    fcInternationalizeUI: function()
     {
         // Filter menu
         //fcInternationalize("fcCustomPathFilter", "label");
@@ -984,7 +985,7 @@ function $FC_STR(name)
 {
     if (Firebug.registerStringBundle)
         return $STR(name);
-    
+
     try
     {
         return document.getElementById("strings_firecookie").getString(name.replace(' ', '_', "g"));
@@ -1040,7 +1041,7 @@ function $FC_STR_BRAND(name)
 
 function fcInternationalize(element, attr, args)
 {
-    if (typeof element == "string")
+    if (typeof(element) == "string")
         element = document.getElementById(element);
 
     var xulString = element.getAttribute(attr);
