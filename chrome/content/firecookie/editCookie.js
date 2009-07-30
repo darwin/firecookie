@@ -101,7 +101,7 @@ var EditCookie =
         // Create a helper cookie object from the provided data.
         var values = {
             name: cookieName,
-            value: cookieValue,
+            rawValue: cookieValue,
             path: this.pathNode.value,
             host: host,
             isSecure: this.secureNode.checked,

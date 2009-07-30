@@ -1925,7 +1925,7 @@ Templates.CookieRow = domplate(Templates.Rep,
         values.name = Firebug.FireCookieModel.getDefaultCookieName(context, values.name);
         values.host = context.browser.currentURI.host;
 
-        // Unescape cookie value (it's escaped in toJSON method).
+        values.rawValue = values.value;
         values.value = unescape(values.value);
 
         // If the expire time isn't set use the default value.
@@ -2972,12 +2972,8 @@ Cookie.prototype =
 
     toString: function(noDomain)
     {
-        var value = escape(this.cookie.value);
-        if (value)
-            value = decodeURIComponent(value);
-
         var expires = this.cookie.expires ? new Date(this.cookie.expires * 1000) : null;
-        return this.cookie.name + "=" + value +
+        return this.cookie.name + "=" + this.cookie.rawValue +
             (expires ? "; expires=" + expires.toGMTString() : "") +
             ((this.cookie.path) ? "; path=" + this.cookie.path : "; path=/") +
             (noDomain ? "" : ((this.cookie.host) ? "; domain=" + this.cookie.host : "")) +
@@ -2989,7 +2985,7 @@ Cookie.prototype =
     {
         var expires = this.cookie.expires;
         return "({name: '" + this.cookie.name + "'," +
-            "value: '" + escape(this.cookie.value) + "'," +
+            "value: '" + this.cookie.rawValue + "'," +
             "expires: " + (expires ? ("'" + expires + "'") : 0) + "," +
             "path: '" + (this.cookie.path ? this.cookie.path : "/") + "'," +
             "host: '" + this.cookie.host + "'," +
@@ -2999,13 +2995,13 @@ Cookie.prototype =
 
     toText: function()
     {
-        return this.cookie.host + "\t" + 
-            new String(this.cookie.isDomain).toUpperCase() + "\t" + 
-            this.cookie.path + "\t" + 
-            new String(this.cookie.isSecure).toUpperCase()+ "\t" + 
-            this.cookie.expires + "\t" + 
-            this.cookie.name+ "\t" + 
-            this.cookie.value+ "\r\n";
+        return this.cookie.host + "\t" +
+            new String(this.cookie.isDomain).toUpperCase() + "\t" +
+            this.cookie.path + "\t" +
+            new String(this.cookie.isSecure).toUpperCase()+ "\t" +
+            this.cookie.expires + "\t" +
+            this.cookie.name + "\t" +
+            this.cookie.rawValue + "\r\n";
     },
 
     getJsonValue: function()
