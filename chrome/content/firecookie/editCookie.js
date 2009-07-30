@@ -42,8 +42,11 @@ var EditCookie =
         this.secureNode = $("fcSecure");
         this.httpOnly = $("fcHttpOnly");
 
-        this.nameNode.value = this.cookie.name;
-        this.valueNode.value = this.cookie.value;
+        // Fix for issue 39: decode cookie name and value for usage in the dialog.
+        // It'll be encoded again when OK is pressed.
+        this.nameNode.value = decodeURIComponent(this.cookie.name);
+        this.valueNode.value = decodeURIComponent(this.cookie.rawValue);
+
         this.domainNode.value = this.cookie.host;
         this.pathNode.value = this.cookie.path;
         this.secureNode.checked = this.cookie.isSecure;
