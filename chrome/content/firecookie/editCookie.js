@@ -44,8 +44,11 @@ var EditCookie =
 
         // Fix for issue 39: decode cookie name and value for usage in the dialog.
         // It'll be encoded again when OK is pressed.
-        this.nameNode.value = decodeURIComponent(this.cookie.name);
-        this.valueNode.value = decodeURIComponent(this.cookie.rawValue);
+        // Don't escape using encodeURIComponent sinc "+" would be changed, but 
+        // it's valid replacement for space.
+        // This is also necessary for issue 45.
+        this.nameNode.value = unescape(this.cookie.name);
+        this.valueNode.value = unescape(this.cookie.rawValue);
 
         this.domainNode.value = this.cookie.host;
         this.pathNode.value = this.cookie.path;
@@ -90,10 +93,10 @@ var EditCookie =
         var isSession = this.sessionNode.checked;
         var host = this.domainNode.value;
 
-        // Fix for issue 39: Can't create cookies with ';' in it
-        // According to the spec cookie name and cookie value must be encoded.
-        var cookieName = encodeURIComponent(this.nameNode.value);
-        var cookieValue = encodeURIComponent(this.valueNode.value);
+        // Fix for issue 39: Can't create cookies with ';' in the name
+        // According to the spec cookie name and cookie value must be escaped.
+        var cookieName = escape(this.nameNode.value);
+        var cookieValue = escape(this.valueNode.value);
 
         // Create a helper cookie object from the provided data.
         var values = {

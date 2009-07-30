@@ -680,7 +680,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         var cookie = new Object();
         cookie.name = this.getDefaultCookieName(context);
         cookie.host = host;
-        cookie.value = $FC_STR("firecookie.createcookie.defaultvalue");
+
+        // The edit dialog uses raw value.
+        cookie.rawValue = $FC_STR("firecookie.createcookie.defaultvalue");
 
         // Default path
         var path = context.window.location.pathname || "/";
