@@ -203,6 +203,7 @@
 
 /* This style makes sure that only portion of text is visible
  depending on current size (width) of the parent column */
+.cookiePathLabel,
 .cookieValueLabel {
     overflow: hidden;
     display: -moz-box;
@@ -211,6 +212,7 @@
 /* This style is to avoid warning: XUL box for div element contained 
  an inline span child, forcing all its children to be wrapped in a block, 
  which is caused by the previous style */
+.cookiePathLabel span,
 .cookieValueLabel span {
     display: inline-block;
 }

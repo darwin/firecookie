@@ -1608,7 +1608,9 @@ Templates.CookieRow = domplate(Templates.Rep,
                     DIV({"class": "cookieSizeLabel cookieLabel"}, "$cookie|getSize")
                 ),
                 TD({"class": "cookiePathCol cookieCol"},
-                    DIV({"class": "cookiePathLabel cookieLabel"}, "$cookie|getPath")
+                    DIV({"class": "cookiePathLabel cookieLabel", "title": "$cookie|getPath"},
+                        "$cookie|getPath"
+                    )
                 ),
                 TD({"class": "cookieExpiresCol cookieCol"},
                     DIV({"class": "cookieExpiresLabel cookieLabel"}, "$cookie|getExpires")
@@ -1753,12 +1755,10 @@ Templates.CookieRow = domplate(Templates.Rep,
     },
 
     getPath: function(cookie) {
-        if (!cookie.cookie.path)
-            return "";
-
-        return cookie.cookie.path;
+        var path = cookie.cookie.path;
+        return path ? path : "";
     },
-    
+
     isDomainCookie: function(cookie) {
         return cookie.cookie.isDomain ? $FC_STR("firecookie.domain.label") : "";
     },
