@@ -2417,7 +2417,7 @@ Templates.CookieTable = domplate(Templates.Rep,
                         DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.path.tooltip")}, 
                         $FC_STR("firecookie.header.path"))
                     ),
-                    TD({id: "colExpires", "class": "cookieHeaderCell alphaValue"},
+                    TD({id: "colExpires", "class": "cookieHeaderCell"},
                         DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.expires.tooltip")}, 
                         $FC_STR("firecookie.header.expires"))
                     ),
@@ -2458,7 +2458,7 @@ Templates.CookieTable = domplate(Templates.Rep,
         if (!col)
             return;
 
-        if (typeof col == "string")
+        if (typeof(col) == "string")
         {
             var doc = table.ownerDocument;
             col = doc.getElementById(col);
@@ -2485,6 +2485,11 @@ Templates.CookieTable = domplate(Templates.Rep,
         {
             var cell = row.childNodes[colIndex];
             var value = numerical ? parseFloat(cell.textContent) : cell.textContent;
+
+            // Issue 43, expires date is formatted in the UI, so use the original cookie
+            // value instead.
+            if (hasClass(cell, "cookieExpiresCol"))
+                value = row.repObject.cookie.expires;
 
             if (hasClass(row, "opened"))
             {
