@@ -87,10 +87,15 @@ var EditCookie =
         var isSession = this.sessionNode.checked;
         var host = this.domainNode.value;
 
+        // Fix for issue 39: Can't create cookies with ';' in it
+        // According to the spec cookie name and cookie value must be encoded.
+        var cookieName = encodeURIComponent(this.nameNode.value);
+        var cookieValue = encodeURIComponent(this.valueNode.value);
+
         // Create a helper cookie object from the provided data.
         var values = {
-            name: this.nameNode.value,
-            value: this.valueNode.value,
+            name: cookieName,
+            value: cookieValue,
             path: this.pathNode.value,
             host: host,
             isSecure: this.secureNode.checked,
