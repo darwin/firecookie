@@ -766,7 +766,7 @@ Firebug.FireCookieModel = extend(BaseModule,
                     var cookie = e.getNext();
                     cookie = cookie.QueryInterface(nsICookie2);
                     var cookieWrapper = new Cookie(makeCookieObject(cookie));
-                    var cookieInfo = cookieWrapper.toTxt();
+                    var cookieInfo = cookieWrapper.toText();
                     foStream.write(cookieInfo, cookieInfo.length);
                 }
 
@@ -809,7 +809,7 @@ Firebug.FireCookieModel = extend(BaseModule,
                 for (var row = tbody.firstChild; row; row = row.nextSibling) {
                     if (hasClass(row, "cookieRow") && row.repObject)
                     {
-                        var cookieInfo = row.repObject.toTxt();
+                        var cookieInfo = row.repObject.toText();
                         foStream.write(cookieInfo, cookieInfo.length);
                     }
                 }
@@ -1639,16 +1639,36 @@ Templates.CookieRow = domplate(Templates.Rep,
                 ),
                 A({"class": "cookieInfoRawValueTab cookieInfoTab", onclick: "$onClickTab",
                     view: "RawValue",
-                    $collapsed: "$cookie|hideRawValue"},
+                    $collapsed: "$cookie|hideRawValueTab"},
                     $FC_STR("firecookie.info.rawdatatab.Raw Data")
+                ),
+                A({"class": "cookieInfoJsonTab cookieInfoTab", onclick: "$onClickTab",
+                    view: "Json",
+                    $collapsed: "$cookie|hideJsonTab"},
+                    $FC_STR("firecookie.info.jsontab.JSON")
+                ),
+                A({"class": "cookieInfoXmlTab cookieInfoTab", onclick: "$onClickTab",
+                    view: "Xml",
+                    $collapsed: "$cookie|hideXmlTab"},
+                    $FC_STR("firecookie.info.xmltab.XML")
                 )
             ),
             DIV({"class": "cookieInfoValueText cookieInfoText"}),
-            DIV({"class": "cookieInfoRawValueText cookieInfoText"})
+            DIV({"class": "cookieInfoRawValueText cookieInfoText"}),
+            DIV({"class": "cookieInfoJsonText cookieInfoText"}),
+            DIV({"class": "cookieInfoXmlText cookieInfoText"})
         ),
 
-    hideRawValue: function(cookie) {
+    hideRawValueTab: function(cookie) {
         return (cookie.cookie.value == cookie.cookie.rawValue);
+    },
+
+    hideJsonTab: function(cookie) {
+        return cookie.getJsonValue() ? false : true;
+    },
+
+    hideXmlTab: function(cookie) {
+        return cookie.getXmlValue() ? false : true;
     },
 
     getAction: function(cookie) {
@@ -1983,6 +2003,14 @@ Templates.CookieRow = domplate(Templates.Rep,
         {
             var bodyRow = this.bodyRow.insertRows({}, row)[0];
             var cookieInfo = this.bodyTag.replace({cookie: row.repObject}, bodyRow.firstChild);
+
+            // If JSON or XML tabs are availabel select them by default.
+            if (this.selectTabByName(cookieInfo, "Json"))
+                return;
+
+            if (this.selectTabByName(cookieInfo, "Xml"))
+                return;
+
             this.selectTabByName(cookieInfo, "Value");
         }
         else
@@ -1993,9 +2021,14 @@ Templates.CookieRow = domplate(Templates.Rep,
 
     selectTabByName: function(cookieInfoBody, tabName)
     {
-        var tab = getChildByClass(cookieInfoBody, "cookieInfoTabs", "cookieInfo" + tabName + "Tab");
-        if (tab)
-            this.selectTab(tab);
+        var tab = getChildByClass(cookieInfoBody, "cookieInfoTabs", 
+            "cookieInfo" + tabName + "Tab");
+
+        // Don't select collapsed tabs. 
+        if (tab && !hasClass(tab, "collapsed"))
+            return this.selectTab(tab);
+
+        return false;
     },
 
     onClickTab: function(event)
@@ -2023,9 +2056,10 @@ Templates.CookieRow = domplate(Templates.Rep,
         cookieInfoBody.selectedText.setAttribute("selected", "true");
 
         var cookie = Firebug.getRepObject(cookieInfoBody);
-        
         var context = Firebug.getElementPanel(cookieInfoBody).context;
         this.updateInfo(cookieInfoBody, cookie, context);
+
+        return true;
     },
 
     updateRow: function(cookie, context)
@@ -2051,7 +2085,7 @@ Templates.CookieRow = domplate(Templates.Rep,
             parent.removeChild(cookie.row);
             parent.insertBefore(row, nextSibling);
         }
-        
+
         if (opened)
             setClass(row, "opened");
     },
@@ -2083,7 +2117,34 @@ Templates.CookieRow = domplate(Templates.Rep,
                     insertWrappedText(text, valueBox);
             }
         }
+        else if (hasClass(tab, "cookieInfoJsonTab"))
+        {
+            var valueBox = getChildByClass(cookieInfoBody, "cookieInfoJsonText");
+            if (!cookieInfoBody.jsonPresented)
+            {
+                cookieInfoBody.jsonPresented = true;
 
+                var jsonObject = cookie.getJsonValue();
+                if (jsonObject) {
+                    Firebug.DOMPanel.DirTable.tag.replace(
+                        {object: jsonObject, toggles: this.toggles}, valueBox);
+                }
+            }
+        }
+        else if (hasClass(tab, "cookieInfoXmlTab"))
+        {
+            var valueBox = getChildByClass(cookieInfoBody, "cookieInfoXmlText");
+            if (!cookieInfoBody.xmlPresented)
+            {
+                cookieInfoBody.xmlPresented = true;
+
+                var docElem = cookie.getXmlValue();
+                if (docElem) {
+                    var tag = Firebug.HTMLPanel.CompleteElement.getNodeTag(docElem);
+                    tag.append({object: docElem}, valueBox);
+                }
+            }
+        }
     }
 });
 
@@ -2724,7 +2785,7 @@ var HeaderColumnResizer =
         {
             var colId = this.currColumn.getAttribute("id");
             FBTrace.sysout("cookies.End resizing column (id): " + colId +
-                ", new width: " + maxWidth + "\n");
+                ", new width: " + newWidth + "\n");
         }
     }
 };
@@ -2928,7 +2989,7 @@ Cookie.prototype =
             "isSecure: " + (this.cookie.secure ? "true" : "false") + "})";
     },
 
-    toTxt: function()
+    toText: function()
     {
         return this.cookie.host + "\t" + 
             new String(this.cookie.isDomain).toUpperCase() + "\t" + 
@@ -2937,6 +2998,50 @@ Cookie.prototype =
             this.cookie.expires + "\t" + 
             this.cookie.name+ "\t" + 
             this.cookie.value+ "\r\n";
+    },
+
+    getJsonValue: function()
+    {
+        if (this.json)
+            return this.json;
+
+        var jsonString = new String(this.cookie.value);
+        if (jsonString.indexOf("{") != 0)
+            return null;
+
+        // parseJSONString is introduced in Firebug 1.4
+        if (typeof(parseJSONString) == "undefined")
+            return null;
+
+        var currentURI = FirebugChrome.getCurrentURI();
+        var jsonObject = parseJSONString(jsonString, currentURI.spec);
+        if (typeof (jsonObject) != "object")
+            return null;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.getJsonValue for: " + this.cookie.name, jsonObject);
+
+        return (this.json = jsonObject);
+    },
+
+    getXmlValue: function()
+    {
+        if (this.xml)
+            return this.xml;
+
+        var parser = CCIN("@mozilla.org/xmlextras/domparser;1", "nsIDOMParser");
+        var doc = parser.parseFromString(this.cookie.value, "text/xml");
+        var docElem = doc.documentElement;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.getXmlValue for: " + this.cookie.name, docElem);
+
+        // Error handling
+        var nsURI = "http://www.mozilla.org/newlayout/xml/parsererror.xml";
+        if (docElem.namespaceURI == nsURI && docElem.nodeName == "parsererror")
+            return null; 
+
+        return (this.xml = docElem);
     }
 };
 
