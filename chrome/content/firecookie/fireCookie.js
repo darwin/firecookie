@@ -453,15 +453,30 @@ Firebug.FireCookieModel = extend(BaseModule,
         var httpProtocol = cookie.cookie.isSecure ? "https://" : "http://";
         var uri = ioService.newURI(httpProtocol + host + cookie.cookie.path, null, null);
 
-        // Fix for issue 34. The domain must be included in the cookieString if it 
-        // starts with "." But don't include it otherwise, since the "." would be 
-        // appended by the service.
-        var cookieString = cookie.toString(!(host.charAt(0) == "."));
-        cookieService.setCookieString(uri, null, cookieString, null);
+        try
+        {
+            // Fix for issue 34. The domain must be included in the cookieString if it 
+            // starts with "." But don't include it otherwise, since the "." would be 
+            // appended by the service.
+            var cookieString = cookie.toString(!(host.charAt(0) == "."));
 
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.createNewCookie: set cookie string: " + cookieString,
-                [cookie, uri]);
+            // Fix for issue 37: httpOnly cookies, and issue 47: Cannot change the HttpOnly flag
+            // HttpOnly cookies can't be changed by setCookie string
+            // See also: https://bugzilla.mozilla.org/show_bug.cgi?id=178993
+            //cookieService.setCookieString(uri, null, cookieString, null);
+            cookieService.setCookieStringFromHttp(uri, uri, null, cookieString,
+                cookie.cookie.expires, null);
+
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.createNewCookie: set cookie string: " + cookieString,
+                    [cookie, uri]);
+        }
+        catch (e)
+        {
+            if (FBTrace.DBG_ERRORS)
+                FBTrace.sysout("cookies.createNewCookie: set cookie string ERROR " +
+                    cookieString, e);
+        }
     },
 
     /**
@@ -3046,19 +3061,35 @@ Cookie.prototype =
         if (this.xml)
             return this.xml;
 
-        var parser = CCIN("@mozilla.org/xmlextras/domparser;1", "nsIDOMParser");
-        var doc = parser.parseFromString(this.cookie.value, "text/xml");
-        var docElem = doc.documentElement;
+        try
+        {
+            var value = this.cookie.value;
 
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.getXmlValue for: " + this.cookie.name, docElem);
+            // Simple test if the source is XML (to avoid errors in the Firefox Error console)
+            if (value.indexOf("<") != 0)
+                return null; 
 
-        // Error handling
-        var nsURI = "http://www.mozilla.org/newlayout/xml/parsererror.xml";
-        if (docElem.namespaceURI == nsURI && docElem.nodeName == "parsererror")
-            return null; 
+            var parser = CCIN("@mozilla.org/xmlextras/domparser;1", "nsIDOMParser");
+            var doc = parser.parseFromString(value, "text/xml");
+            var docElem = doc.documentElement;
 
-        return (this.xml = docElem);
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.getXmlValue for: " + this.cookie.name, docElem);
+
+            // Error handling
+            var nsURI = "http://www.mozilla.org/newlayout/xml/parsererror.xml";
+            if (docElem.namespaceURI == nsURI && docElem.nodeName == "parsererror")
+                return null; 
+
+            return (this.xml = docElem);
+        }
+        catch (e)
+        {
+            if (FBTrace.DBG_ERRORS)
+                FBTrace.sysout("cookies.getXmlValue ERROR " + this.cookie.name, e);
+        }
+
+        return null;
     }
 };
 
