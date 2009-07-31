@@ -12,5 +12,6 @@ locale  firecookie  ja-JP       chrome/locale/ja-JP/
 locale  firecookie  tr-TR       chrome/locale/tr-TR/
 locale  firecookie  ro-RO       chrome/locale/ro-RO/
 locale  firecookie  ru-RU       chrome/locale/ru-RU/
+locale  firecookie  zh-CN       chrome/locale/zh-CN/
 
 overlay chrome://firebug/content/firebugOverlay.xul         chrome://firecookie/content/fireCookie.xul
