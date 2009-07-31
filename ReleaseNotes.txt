@@ -14,6 +14,7 @@ Release Notes for Firecookie 0.9
     * New ja-JP locale.
 
 == Bug Fixes ==
+    Issue 23: httpOnly cookies
     Issue 34: firecookie 0.8 cookies with .domain.com the first period gets erased on editing any attribute
     Issue 37: Cookies sort order remember? (Enhancement/UI)
     Issue 39: Can't create cookies with ';' in it
@@ -23,7 +24,8 @@ Release Notes for Firecookie 0.9
     Issue 45: When I copy and paste or edit a cookie contents + (plus) signs get converted to spaces.
     Issue 46: Last character of cookie name is missing on Net panel in Sent cookies
     Issue 49: Firecookie incompatible with Firefox 3.5.1
-    
+    Issue 47: Cannot change the HttpOnly flag
+
 Release Notes for Firecookie 0.8
 --------------------------------
 
