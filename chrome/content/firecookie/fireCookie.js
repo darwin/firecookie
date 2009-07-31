@@ -1172,9 +1172,14 @@ FireCookiePanel.prototype = extend(BasePanel,
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.Cookie list refreshed.\n", cookies);
 
-        // Sort automaticaly the last sorted column.
-        var column = getPref(FirebugPrefDomain, lastSortedColumn);
-        Templates.CookieTable.sortColumn(this.table, column);
+        // Sort automaticaly the last sorted column. The preference stores
+        // two things: name of the sorted column and sort direction asc|desc.
+        // Example: colExpires asc
+        var prefValue = getPref(FirebugPrefDomain, lastSortedColumn);
+        if (prefValue) {
+            var values = prefValue.split(" ");
+            Templates.CookieTable.sortColumn(this.table, values[0], values[1]);
+        }
     },
 
     initializeNode: function(oldPanelNode)
@@ -2451,12 +2456,9 @@ Templates.CookieTable = domplate(Templates.Rep,
         var table = getAncestorByClass(event.target, "cookieTable");
         var column = getAncestorByClass(event.target, "cookieHeaderCell");
         this.sortColumn(table, column);
-
-        // Remember last sorted column in preferences.
-        setPref(FirebugPrefDomain, lastSortedColumn, column.getAttribute("id"));
     },
 
-    sortColumn: function(table, col)
+    sortColumn: function(table, col, direction)
     {
         if (!col)
             return;
@@ -2476,12 +2478,26 @@ Templates.CookieTable = domplate(Templates.Rep,
         for (col = col.previousSibling; col; col = col.previousSibling)
             ++colIndex;
 
-        this.sort(table, colIndex, numerical);
+        this.sort(table, colIndex, numerical, direction);
     },
 
-    sort: function(table, colIndex, numerical)
+    sort: function(table, colIndex, numerical, direction)
     {
         var tbody = table.lastChild;
+        var headerRow = tbody.firstChild;
+
+        // Remove class from the currently sorted column
+        var headerSorted = getChildByClass(headerRow, "cookieHeaderSorted");
+        removeClass(headerSorted, "cookieHeaderSorted");
+
+        // Mark new column as sorted.
+        var header = headerRow.childNodes[colIndex];
+        setClass(header, "cookieHeaderSorted");
+
+        // If the column is already using required sort direction, bubble out.
+        if ((direction == "desc" && header.sorted == 1) ||
+            (direction == "asc" && header.sorted == -1))
+            return;
 
         var values = [];
         for (var row = tbody.childNodes[1]; row; row = row.nextSibling)
@@ -2508,14 +2524,7 @@ Templates.CookieTable = domplate(Templates.Rep,
 
         values.sort(function(a, b) { return a.value < b.value ? -1 : 1; });
 
-        var headerRow = tbody.firstChild;
-        var headerSorted = getChildByClass(headerRow, "cookieHeaderSorted");
-        removeClass(headerSorted, "cookieHeaderSorted");
-
-        var header = headerRow.childNodes[colIndex];
-        setClass(header, "cookieHeaderSorted");
-
-        if (!header.sorted || header.sorted == 1)
+        if ((header.sorted && header.sorted == 1) || (!header.sorted && direction == "asc"))
         {
             removeClass(header, "sortedDescending");
             setClass(header, "sortedAscending");
@@ -2543,6 +2552,10 @@ Templates.CookieTable = domplate(Templates.Rep,
                     tbody.appendChild(values[i].info);
             }
         }
+
+        // Remember last sorted column & direction in preferences.
+        var prefValue = header.getAttribute("id") + " " + (header.sorted > 0 ? "desc" : "asc");
+        setPref(FirebugPrefDomain, lastSortedColumn, prefValue);
     },
 
     supportsObject: function(object)
@@ -2594,7 +2607,7 @@ Templates.CookieTable = domplate(Templates.Rep,
             var colId = col.getAttribute("id");
             if (!colId || !col.style)
                 continue;
-                
+
             var width = getPref(FirebugPrefDomain, "firecookie." + colId + ".width");
             if (width)
                 col.style.width = width + "px";
@@ -2623,7 +2636,7 @@ var HeaderColumnResizer =
         // Avoid click event for sorting, if the resizing has been just finished.
         var rightNow = now();
         if ((rightNow - this.lastMouseUp) < 1000)
-            cancelEvent(event);        
+            cancelEvent(event);
     },
 
     onMouseDown: function(event)
