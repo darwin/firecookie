@@ -1632,7 +1632,7 @@ Templates.CookieRow = domplate(Templates.Rep,
                 ),
                 TD({"class": "cookiePathCol cookieCol"},
                     DIV({"class": "cookiePathLabel cookieLabel", "title": "$cookie|getPath"},
-                        "$cookie|getPath"
+                        SPAN("$cookie|getPath")
                     )
                 ),
                 TD({"class": "cookieExpiresCol cookieCol"},
