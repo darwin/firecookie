@@ -75,6 +75,7 @@
     padding: 0 !important;
     font-weight: bold;
     background: #BBBBBB url(chrome://firecookie/skin/tableHeader.gif) repeat-x;
+    white-space: nowrap;
 }
 
 .cookieHeaderRow > .cookieHeaderCell:first-child > .cookieHeaderCellBox {
