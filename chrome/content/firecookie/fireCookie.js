@@ -154,6 +154,10 @@ Firebug.FireCookieModel = extend(BaseModule,
         if ("addListener" in netInfoBody)
             netInfoBody.addListener(this.NetInfoBody);
 
+        // Register listener within the Console panel. If document.cookie property
+        // is logged, formatted output is used.
+        Firebug.Console.addListener(this.ConsoleListener);
+
         // Localize UI (use firecookie.properties instead of firecookie.dtd)
         // Firebu 1.5 dispatch "internationalizeUI" message so, don't use the name.
         this.fcInternationalizeUI();
@@ -170,6 +174,8 @@ Firebug.FireCookieModel = extend(BaseModule,
         var netInfoBody = Firebug.NetMonitor.NetInfoBody;
         if ("removeListener" in netInfoBody)
             netInfoBody.removeListener(this.NetInfoBody);
+
+        Firebug.Console.removeListener(this.ConsoleListener);
     },
 
     fcInternationalizeUI: function()
@@ -3207,7 +3213,7 @@ function parseSentCookiesFromString(header)
         if (index > 0) {
             var name = pair.substring(0, index);
             var value = pair.substr(index+1);
-            if (name.length & value.length)
+            if (name.length && value.length)
                 cookies.push(new Cookie(makeCookieObject({name: name, value: value})));
         }
     }
@@ -4217,6 +4223,46 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
         return null;
     }
 });
+
+// Custom output in the Console panel for: document.cookie
+//-----------------------------------------------------------------------------
+
+Firebug.FireCookieModel.ConsoleListener =
+{
+    tag:
+        DIV({_repObject: "$object"},
+            DIV({"class": "docCookieBody"})
+        ),
+
+    log: function(context, object, className, sourceLink)
+    {
+        if (object !== context.window.document.cookie)
+            return;
+
+        // Parse "document.cookie" string.
+        var cookies = parseSentCookiesFromString(object);
+        if (!cookies || !cookies.length)
+            return;
+
+        // Create empty log row that serves as a container for list of cookies
+        // crated from the document.cookie property.
+        var appendObject = Firebug.ConsolePanel.prototype.appendObject;
+        var row = Firebug.ConsoleBase.logRow(appendObject, object, context,
+            "documentCookie", this, null, true);
+
+        // Create basic cookie-list structure.
+        var rowBody = getElementByClass(row, "docCookieBody");
+        var table = Templates.CookieTable.createTable(rowBody);
+        var header = getElementByClass(table, "cookieHeaderRow");
+
+        var tag = Templates.CookieRow.cookieTag;
+        tag.insertRows({cookies: cookies}, header);
+    },
+
+    logFormatted: function(context, objects, className, sourceLink)
+    {
+    }
+};
 
 // Firebug Registration
 //-----------------------------------------------------------------------------

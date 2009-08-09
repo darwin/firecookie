@@ -9,8 +9,8 @@
 }
 
 /************************************************************************************************/
-
 /* Support for console */
+
 .cookieEvent .cookieDomainLabel {
     font-family: Lucida Grande, sans-serif;
     font-weight: bold;
@@ -62,7 +62,13 @@
     padding: 1px 0 2px 0 !important;
 }
 
+/* Container for document.cookie log within the Console panel */
+.logRow-documentCookie {
+    padding: 0;
+}
+
 /************************************************************************************************/
+/* Header for cookie list */
 
 .cookieHeaderRow {
     height: 16px;
