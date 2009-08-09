@@ -2100,7 +2100,7 @@ Templates.CookieRow = domplate(Templates.Rep,
         var parent = cookie.row.parentNode;
         var nextSibling = cookie.row.nextSibling;
         parent.removeChild(cookie.row);
-        
+
         var row = Templates.CookieRow.cookieTag.insertRows({cookies: [cookie]}, 
             panel.table.lastChild.lastChild)[0];
 
@@ -2635,6 +2635,16 @@ Templates.CookieTable = domplate(Templates.Rep,
         }
 
         return table;
+    },
+
+    render: function(cookies, parentNode)
+    {
+        // Create basic cookie-list structure.
+        var table = this.createTable(parentNode);
+        var header = getElementByClass(table, "cookieHeaderRow");
+
+        var tag = Templates.CookieRow.cookieTag;
+        return tag.insertRows({cookies: cookies}, header);
     }
 });
 
@@ -3479,7 +3489,7 @@ var CookieObserver = extend(BaseObserver,
         if (!logEvents())
             return;
 
-        // The "cookies-rejected" event is send even if no cookies
+        // The "cookies-rejected" event is sent even if no cookies
         // from the blocked site have been actually received.
         // So, the receivedCookies array can be null.
         // Don't display anything in the console in that case,
@@ -3501,23 +3511,8 @@ var CookieObserver = extend(BaseObserver,
         removeClass(groupRow, "opened");
         Firebug.Console.closeGroup(context, true);
 
-        if (!receivedCookies)
-        {
-            // Never called due to the condition above.
-            // Remove the twisty button.
-            removeClass(groupRow, "logGroup");
-        }
-        else
-        {
-            // Create embedded table.
-            var groupBody = groupRow.lastChild;
-            var table = Templates.CookieTable.createTable(groupBody);
-
-            // Insert all rejected cookies.
-            var header = getElementByClass(table, "cookieHeaderRow");
-            var tag = Templates.CookieRow.cookieTag;
-            context.throttle(tag.insertRows, tag, [{cookies: receivedCookies}, header]);
-        }
+        // Create embedded table.
+        Templates.CookieTable.render(receivedCookies, groupRow.lastChild);
     },
 
     onAddCookie: function(context, cookie)
@@ -4190,22 +4185,16 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
             sentCookies: sentCookies,
         }}, tabBody);
 
-        var tag = Templates.CookieRow.cookieTag;
-
         // Generate UI for received cookies.
         if (receivedCookies.length) {
-            var receivedCookiesBody = getElementByClass(tabBody, "netInfoReceivedCookies");
-            var table = Templates.CookieTable.createTable(receivedCookiesBody);
-            var header = getElementByClass(table, "cookieHeaderRow");
-            context.throttle(tag.insertRows, tag, [{cookies: receivedCookies}, header]);
+            Templates.CookieTable.render(receivedCookies,
+                getElementByClass(tabBody, "netInfoReceivedCookies"));
         }
 
         // Generate UI for sent cookies.
         if (sentCookies.length) {
-            var sentCookiesBody = getElementByClass(tabBody, "netInfoSentCookies");
-            table = Templates.CookieTable.createTable(sentCookiesBody);
-            header = getElementByClass(table, "cookieHeaderRow");
-            context.throttle(tag.insertRows, tag, [{cookies: sentCookies}, header]);
+            Templates.CookieTable.render(sentCookies,
+                getElementByClass(tabBody, "netInfoSentCookies"));
         }
     },
 
@@ -4231,7 +4220,7 @@ Firebug.FireCookieModel.ConsoleListener =
 {
     tag:
         DIV({_repObject: "$object"},
-            DIV({"class": "docCookieBody"})
+            DIV({"class": "documentCookieBody"})
         ),
 
     log: function(context, object, className, sourceLink)
@@ -4250,13 +4239,8 @@ Firebug.FireCookieModel.ConsoleListener =
         var row = Firebug.ConsoleBase.logRow(appendObject, object, context,
             "documentCookie", this, null, true);
 
-        // Create basic cookie-list structure.
-        var rowBody = getElementByClass(row, "docCookieBody");
-        var table = Templates.CookieTable.createTable(rowBody);
-        var header = getElementByClass(table, "cookieHeaderRow");
-
-        var tag = Templates.CookieRow.cookieTag;
-        tag.insertRows({cookies: cookies}, header);
+        var rowBody = getElementByClass(row, "documentCookieBody");
+        Templates.CookieTable.render(cookies, rowBody);
     },
 
     logFormatted: function(context, objects, className, sourceLink)
