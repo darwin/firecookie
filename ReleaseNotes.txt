@@ -11,6 +11,8 @@ Release Notes for Firecookie 0.9
     * If cookie value is in JSON or XML format there is an additional tab
       displaying JSON as exapandable tree or pretty printed XML (issue 44).
     * Column sorting is now remembered across Firefox sessions (issue 37).
+    * Support for better formatting of document.cookie property when used
+      on the Firebug's command line (the Console panel).
 
 == Localization ==
     * ja-JP localization - contribution by Hisateru Tanaka
