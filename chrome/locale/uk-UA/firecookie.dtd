@@ -1,0 +1,28 @@
+<!ENTITY firecookie.RemoveAll "Вилучити куки">
+<!ENTITY firecookie.Create "Створити кукі">
+<!ENTITY firecookie.ViewAll "Показати всі куки...">
+<!ENTITY firecookie.ViewAllTooltip "Відкрити Менеджер кук">
+<!ENTITY firecookie.ViewExceptions "Дозволи веб-сайтів">
+<!ENTITY firecookie.ViewExceptionsTooltip "Показати список дозволених та заборонених веб-сайтів">
+<!ENTITY firecookie.Tools "Інструменти">
+<!ENTITY firecookie.ToolsTooltip "Інструменти">
+<!ENTITY firecookie.Help "Допомога">
+<!ENTITY firecookie.HelpTooltip "Допомога щодо Firecookie">
+<!ENTITY firecookie.About "Про...">
+<!ENTITY firecookie.AboutTooltip "Про Firecookie">
+<!ENTITY firecookie.edit.title "Змінити куку">
+<!ENTITY firecookie.edit.group.title "Деталі куки">
+<!ENTITY firecookie.edit.name.label "Назва:">
+<!ENTITY firecookie.edit.value.label "Значення:">
+<!ENTITY firecookie.edit.domain.label "Хост:">
+<!ENTITY firecookie.edit.path.label "Шлях:">
+<!ENTITY firecookie.edit.expire.label "Дійсна до:">
+<!ENTITY firecookie.edit.session.label "Сеанс">
+<!ENTITY firecookie.edit.secure.label "Захищена кука">
+<!ENTITY firecookie.edit.httponly.label "Лише HTTP">
+<!ENTITY firecookie.Filter "Фільтр">
+<!ENTITY firecookie.FilterTooltip "Використовувати наступні опції для фільтрації списку кук">
+<!ENTITY firecookie.filter.byPath "Фільтрувати куки за поточним шляхом">
+<!ENTITY firecookie.filter.byPathTooltip "Показувати лише ті куки, що відповідають поточному шляху">
+<!ENTITY firecookie.filter.showRejectedCookies "Показати відкинуті куки">
+<!ENTITY firecookie.filter.showRejectedCookiesTooltip "Показувати також відкинуті куки в списку">
