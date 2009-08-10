@@ -4,6 +4,7 @@ skin    firecookie  classic/1.0 chrome/skin/classic/
 locale  firecookie  cs-CZ       chrome/locale/cs-CZ/
 locale  firecookie  de-DE       chrome/locale/de-DE/
 locale  firecookie  en-US       chrome/locale/en-US/
+locale  firecookie  es-AR       chrome/locale/es-AR/
 locale  firecookie  es-ES       chrome/locale/es-ES/
 locale  firecookie  fr-FR       chrome/locale/fr-FR/
 locale  firecookie  hu-HU       chrome/locale/hu-HU/
