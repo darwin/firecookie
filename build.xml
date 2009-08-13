@@ -6,7 +6,7 @@
 
     <!-- Directories -->
     <property name="build.dir" value="release"/>
-    <property name="doc.dir" value="doc"/>
+    <property name="doc.dir" value="docs"/>
 
     <!-- xxxHonza: The JS Doc Toolkit should not be hardcoded -->
     <property name="jsdoctoolkit.dir" value="C:/www/jsdoc-toolkit/jsdoc-toolkit-2.3.0/"/>
@@ -38,7 +38,7 @@
 
         <!-- Copy files into www directory
             xxxHonza: this should not be hardcoded -->
-        <copy todir="C://www/firecookie/doc">
+        <copy todir="C://www/firecookie/docs">
             <fileset dir="${doc.dir}"/>
         </copy>
     </target>
