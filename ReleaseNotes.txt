@@ -23,6 +23,7 @@ Release Notes for Firecookie 0.9
     * es-AR localization - contribution by eternoendless
     * uk-UA localization - contribution by Andriy Zhouck
     * it-IT localization - contribution by l0stintranslation
+    * sv-SE localization - contribution by peter3
 
 == Bug Fixes ==
     Issue 23: httpOnly cookies

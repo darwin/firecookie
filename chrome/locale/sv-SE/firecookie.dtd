@@ -1,0 +1,28 @@
+<!ENTITY firecookie.RemoveAll "Ta bort kakor">
+<!ENTITY firecookie.Create "Ny kaka">
+<!ENTITY firecookie.ViewAll "VIsa alla kakor...">
+<!ENTITY firecookie.ViewAllTooltip "Öppna kakburken">
+<!ENTITY firecookie.ViewExceptions "Websidetillstånd">
+<!ENTITY firecookie.ViewExceptionsTooltip "Visa lista av tillåtna och begränsade webplatser">
+<!ENTITY firecookie.Tools "Verktyg">
+<!ENTITY firecookie.ToolsTooltip "Verktyg">
+<!ENTITY firecookie.Help "Hjälp">
+<!ENTITY firecookie.HelpTooltip "Hjälp för Firecookie">
+<!ENTITY firecookie.About "Om...">
+<!ENTITY firecookie.AboutTooltip "Om Firecookie">
+<!ENTITY firecookie.edit.title "Redigera kaka">
+<!ENTITY firecookie.edit.group.title "Kakdetaljer">
+<!ENTITY firecookie.edit.name.label "Namn:">
+<!ENTITY firecookie.edit.value.label "Värde:">
+<!ENTITY firecookie.edit.domain.label "Värd:">
+<!ENTITY firecookie.edit.path.label "Sökväg:">
+<!ENTITY firecookie.edit.expire.label "Förfaller:">
+<!ENTITY firecookie.edit.session.label "Session">
+<!ENTITY firecookie.edit.secure.label "Söker kaka">
+<!ENTITY firecookie.edit.httponly.label "Endast HTTP">
+<!ENTITY firecookie.Filter "Filter">
+<!ENTITY firecookie.FilterTooltip "Använd angivna inställningar för att filtrera listan.">
+<!ENTITY firecookie.filter.byPath "Filtrera kakor efter aktuell sökväg">
+<!ENTITY firecookie.filter.byPathTooltip "Visa endast kakor som matchar aktuell sökväg.">
+<!ENTITY firecookie.filter.showRejectedCookies "Visa avvisade kakor">
+<!ENTITY firecookie.filter.showRejectedCookiesTooltip "Visa även avvisade kakor i listan.">
