@@ -6,16 +6,49 @@
 
     <!-- Directories -->
     <property name="build.dir" value="release"/>
+    <property name="doc.dir" value="doc"/>
+
+    <!-- xxxHonza: The JS Doc Toolkit should not be hardcoded -->
+    <property name="jsdoctoolkit.dir" value="C:/www/jsdoc-toolkit/jsdoc-toolkit-2.3.0/"/>
+    <property name="jsdoctoolkitant.dir" value="C:/www/jsdoc-toolkit"/>
 
     <!-- Properties -->
     <property file="ant.properties"/>
 
-    <!-- Clean -->
+    <!-- Paths -->
+    <path id="jsdoctoolkit">
+        <!-- xxxHonza: Rhino js.jar 1.7.R2 must be used with jsdoctoolkit-ant-task-1.0.1.jar
+            not the one that is part of jsdoc-toolkit-2.3.0 distribution 
+            this is why subdirectoris of C:/www/jsdoc-toolkit are not specified -->
+        <fileset dir="${jsdoctoolkitant.dir}" includes="*.jar"/>
+    </path>
+
+    <!-- JS Doc toolkit -->
+    <taskdef name="jsdoctoolkit"
+        classpathref="jsdoctoolkit"
+        classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit"/>
+
+    <!-- Target: Generate Doc --> 
+    <target name="doc">
+        <jsdoctoolkit jsdochome="${jsdoctoolkit.dir}" template="jsdoc" outputdir="${doc.dir}">
+            <fileset dir="chrome/content/firecookie">
+                <include name="*.js"/>
+            </fileset>
+        </jsdoctoolkit>
+
+        <!-- Copy files into www directory
+            xxxHonza: this should not be hardcoded -->
+        <copy todir="C://www/firecookie/doc">
+            <fileset dir="${doc.dir}"/>
+        </copy>
+    </target>
+
+    <!-- Target: Clean Release directory -->
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
 
-    <!-- Build -->
+    <!-- Target: Build Firecookie XPI package -->
     <target name="build" depends="clean">
 
         <!-- Copy defaults directory -->

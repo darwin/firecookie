@@ -1,5 +1,11 @@
 /* See license.txt for terms of usage */
 
+/**
+ * @author <a href="mailto:odvarko@gmail.com">Jan Odvarko</a>
+ * @namespace Hold all functionality related to the Firecookie etension.
+ *      There are no global objects defined to avoid collisions with other
+ *      extensions.
+ */
 FBL.ns(function() { with (FBL) {
 
 // Constants
@@ -117,17 +123,28 @@ if (Firebug.registerStringBundle)
  * This new functionality has been introduced in Firebug 1.2 and makes possible
  * to control activity of Firebug panels in order to avoid (performance) expensive 
  * features.
- */ 
+ */
 var BaseModule = Firebug.ActivableModule ? Firebug.ActivableModule : Firebug.Module;
 
-// Firecookie module object
-Firebug.FireCookieModel = extend(BaseModule, 
+/**
+ * @class This class represents Firebug.module for Firecookie extension.
+ */
+Firebug.FireCookieModel = extend(BaseModule,
+/** @lends Firebug.FireCookieModel */
 { 
+
     // Set to true if all hooks for monitoring cookies are registered; otherwise false.
     observersRegistered: false,
 
-    // Module life-cycle
-    initialize: function() 
+    /**
+     * Initialization of the module.
+     * Firefox window. There is a new instance of the module for each Firefox
+     * winodow that has Firebug embedded.
+     *
+     * @param {String} prefDomain Preference domain (e.g. extensions.firebug)
+     * @param {String} prefNames Default Firebug preference array.
+     */
+    initialize: function(prefDomain, prefNames) 
     {
         // Support for trace-console customization in Firebug 1.3
         if (Firebug.TraceModule && Firebug.TraceModule.addListener)
@@ -163,6 +180,10 @@ Firebug.FireCookieModel = extend(BaseModule,
         this.fcInternationalizeUI();
     },
 
+    /**
+     * Peforms clean up when Firebug is destroyed.
+     * Called by the framework when Firebug is closed for an existing Firefox window.
+     */
     shutdown: function() 
     {
         this.unregisterObservers(null);
@@ -284,7 +305,11 @@ Firebug.FireCookieModel = extend(BaseModule,
         tempContext.cookieTempObserver = unregisterCookieObserver(tempContext.cookieTempObserver);
     },
 
-    // Context life-cycle
+    /**
+     * Called by the framework when a context is created for Firefox tab.
+     * 
+     *  @param {Firebug.TabContext} Context for the current Firefox tab.
+     */
     initContext: function(context)
     {
         var tabId = getTabIdForWindow(context.window);
@@ -449,8 +474,11 @@ Firebug.FireCookieModel = extend(BaseModule,
     },
 
     /**
-     * Helper for creating a new cookie in Firefox. Used by the editCookie 
-     * dialog and the clipboard (onPaste).
+     * Creates a new cookie in the browser.
+     * This method is used by {@link EditCookie} dialog and also when a cookie is
+     * pasted from the clipboard.
+     *
+     * @param {Cookie} Cookie object with appropriate properties. See {@link Cookie} object.
      */
     createNewCookie: function(cookie)
     {
@@ -485,9 +513,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         }
     },
 
-    /**
-     * Support for ActivableModule
-     */
+    // Support for ActivableModule
     onPanelActivate: function(context, init, activatedPanelName)
     {
         if (activatedPanelName != panelName)
@@ -632,9 +658,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             "", params);
     },
 
-    /**
-     * UI Commands
-     */
+    // UI Commands
     onRemoveAllShowTooltip: function(tooltip, context)
     {
         tooltip.label = $FC_STR("firecookie.removeall.tooltip");
@@ -1004,6 +1028,10 @@ Firebug.FireCookieModel = extend(BaseModule,
 // Localization
 //-----------------------------------------------------------------------------
 
+/**
+ * Use this function to translate a string.
+ * @param {String} name Specifies a string key within firecookie.properties file.
+ */
 function $FC_STR(name)
 {
     if (Firebug.registerStringBundle)
@@ -1077,12 +1105,17 @@ function fcInternationalize(element, attr, args)
 // Panel Implementation
 //-----------------------------------------------------------------------------
 
+/**
+ * @class This class represents Firecookie panel that is displayed within
+ *      Firebug UI.
+ */
 function FireCookiePanel() {}
 
 // Firebug.AblePanel has been renamed in Firebug 1.4 to ActivablePanel.
 var BasePanel = Firebug.AblePanel ? Firebug.AblePanel : Firebug.Panel;
 BasePanel = Firebug.ActivablePanel ? Firebug.ActivablePanel : BasePanel;
 FireCookiePanel.prototype = extend(BasePanel,
+/** @lends FireCookiePanel */
 {
     name: panelName,
     title: $FC_STR("firecookie.Panel"),
@@ -1447,7 +1480,11 @@ var MenuUtils =
 // Cookie Permissions
 //-----------------------------------------------------------------------------
 
+/**
+ * @class This class is responsible for managing cookie permisssions. 
+ */
 Firebug.FireCookieModel.Perm = extend(Object,
+/** @lends Firebug.FireCookieModel.Perm */
 {
     onCommand: function(event, context)
     {
@@ -1613,7 +1650,11 @@ Templates.Rep = domplate(Firebug.Rep,
 // Cookie Template (domplate)
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Represents a domplate template for cookie entry in the cookie list.
+ */
 Templates.CookieRow = domplate(Templates.Rep,
+/** @lends Templates.CookieRow */
 {
     inspectable: false,
 
@@ -2325,7 +2366,11 @@ Templates.CookieChanged = domplate(Templates.Rep,
 
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Represents a domplate template for displaying rejected cookies.
+ */
 Templates.CookieRejected = domplate(Templates.Rep,
+/** @lends Templates.CookieRejected */
 {
     inspectable: false,
 
@@ -2389,7 +2434,12 @@ Templates.CookieRejected = domplate(Templates.Rep,
 
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Represents a domplate template for cookie cleared event that is
+ *      visualised in Firebug Console panel.
+ */
 Templates.CookieCleared = domplate(Templates.Rep,
+/** @lends Templates.CookieCleared */
 {
     inspectable: false,
 
@@ -2418,7 +2468,12 @@ Templates.CookieCleared = domplate(Templates.Rep,
 // Header Template (domplate)
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Represents a domplate template for basic cookie list layout. This
+ *      template also included a header functionality (such a sorting).
+ */
 Templates.CookieTable = domplate(Templates.Rep,
+/** @lends Templates.CookieTable */
 {
     inspectable: false,
 
@@ -2845,7 +2900,11 @@ var HeaderColumnResizer =
 // Clipboard helper
 //-----------------------------------------------------------------------------
 
+/**
+ * @class This class implements clibpoard functionality.
+ */
 Firebug.FireCookieModel.CookieClipboard = extend(Object,
+/** @lends Firebug.FireCookieModel.CookieClipboard */
 {
     cookieFlavour: "text/firecookie-cookie",
     unicodeFlavour: "text/unicode",
@@ -3000,7 +3059,8 @@ function insertWrappedText(text, textBox)
 //-----------------------------------------------------------------------------
 
 /**
- * This object represents a Cookie (repObject).
+ * @class Represents a cookie object that is created as a representation of
+ *      nsICookie component in the browser.
  */
 function Cookie(cookie, action)
 {
@@ -3009,7 +3069,8 @@ function Cookie(cookie, action)
     this.rawHost = makeStrippedHost(cookie.host);
 }
 
-Cookie.prototype = 
+Cookie.prototype =
+/** @lends Cookie */
 {
     cookie: null,
     action: null,
@@ -3287,7 +3348,13 @@ var BaseObserver =
 // Cookie observer
 //-----------------------------------------------------------------------------
 
+/**
+ * @class This class represents an observer (nsIObserver) for cookie-changed
+ *      and cookie-rejected events. These events are dispatche by Firefox
+ *      see https://developer.mozilla.org/En/Observer_Notifications.
+ */
 var CookieObserver = extend(BaseObserver,
+/** @lends CookieObserver */
 {
     // nsIObserver
     observe: function(aSubject, aTopic, aData) 
@@ -3318,17 +3385,21 @@ var CookieObserver = extend(BaseObserver,
     },
 
     /**
-     * activeUri:  this object represents currently active host. Notice that there
-     *             can be more active hosts (activeHosts map) on one page in case 
-     *             of embedded iframes or/and previous redirects.
-     *             Properties:
-     *             host: www.example.com
-     *             path: /subdir/
+     * @param {String} activeUri This object represents currently active host. Notice that there
+     *      can be more active hosts (activeHosts map) on one page in case 
+     *      of embedded iframes or/and previous redirects.
+     *      Properties:
+     *      host: www.example.com
+     *      path: /subdir/
      *
-     * host, path: these parameters represents a host/path of an cookie for which
-     *             we are checking if it should be displayed for the active URI.
-     *
-     * If the method returns true the host/path belongs to the activeUri.
+     * @param {String} host: Represents the host of a cookie for which
+     *      we are checking if it should be displayed for the active URI.
+     * 
+     * @param {String} path: Represents the path of a cookie for which
+     *      we are checking if it should be displayed for the active URI.
+     * 
+     * @returns {Boolean} If the method returns true the host/path belongs
+     *      to the activeUri.
      */
     isHostFromURI: function(activeUri, host, path)
     {
@@ -3641,7 +3712,12 @@ TempContext.prototype.appendCookieEvent = function(subject, topic, data)
 // Preference observer
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Represents an observer for nsPref:changed event dispatched when 
+ *      an user preference is changed (e.g. using about:config)
+ */
 var PrefObserver = extend(BaseObserver,
+/** @lends PrefObserver */
 {
     observe: function(aSubject, aTopic, aData) 
     {
@@ -3662,7 +3738,12 @@ var PrefObserver = extend(BaseObserver,
 // Permission observer
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Represents an observer for perm-changed event that is dispatched
+ *      by Firefox is cookie permissions are changed.
+ */
 var PermissionObserver = extend(BaseObserver,
+/** @lends PermissionObserver */
 {
     observe: function(aSubject, aTopic, aData) 
     {
@@ -3680,7 +3761,13 @@ var PermissionObserver = extend(BaseObserver,
 // HTTP observer
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Represents an observer for http-on-modify-request and
+ *      http-on-examine-response events that are dispatched
+ *      by Firefox when network request is executed and returned. 
+ */
 var HttpObserver = extend(BaseObserver,
+/** @lends HttpObserver */
 {
     // nsIObserver
     observe: function(aSubject, aTopic, aData) 
@@ -4105,7 +4192,12 @@ Firebug.FireCookieModel.$FC_STRF = $FC_STRF;
 // Custom info tab within Net panel
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Represents domplate template for cookie body that is displayed if 
+ *      a cookie entry in the cookie list is expanded.
+ */
 Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
+/** @lends Firebug.FireCookieModel.NetInfoBody */
 {
     tag:
         UL({"class": "netInfoCookiesList"},
