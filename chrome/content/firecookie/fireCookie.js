@@ -769,7 +769,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             while (row)
             {
                 var rep = row.repObject;
-                
+
                 // If the cookie is expanded, there is a row without the repObject
                 if (rep && rep.cookie.name == cookieName)
                 {
@@ -1784,14 +1784,7 @@ Templates.CookieRow = domplate(Templates.Rep,
         try {
             // Format the expires date using the current locale.
             var date = new Date(cookie.cookie.expires * 1000);
-            return dateFormat.FormatDateTime("", dateFormat.dateFormatLong,
-                dateFormat.timeFormatSeconds,
-                date.getFullYear(),
-                date.getMonth() + 1,
-                date.getDate(),
-                date.getHours(),
-                date.getMinutes(),
-                date.getSeconds());
+            return date.toLocaleString();
         }
         catch (err) {
             ERROR(err);
