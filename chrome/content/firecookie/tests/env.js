@@ -2,6 +2,10 @@
 
 var FBTestFireCookie = FBTest.FireCookie = {};
 
+// Performed in every test when this file is loaded.
+Components.classes["@mozilla.org/cookiemanager;1"]
+    .getService(Components.interfaces.nsICookieManager).removeAll();
+
 (function() {
 
 // ************************************************************************************************
