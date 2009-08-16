@@ -2,9 +2,9 @@
 
 /**
  * @author <a href="mailto:odvarko@gmail.com">Jan Odvarko</a>
- * @namespace Hold all functionality related to the Firecookie etension.
- *      There are no global objects defined to avoid collisions with other
- *      extensions.
+ * @namespace Holds all functionality related to the Firecookie etension.
+ * There are no global objects defined to avoid collisions with other
+ * extensions.
  */
 FBL.ns(function() { with (FBL) {
 
@@ -127,7 +127,7 @@ if (Firebug.registerStringBundle)
 var BaseModule = Firebug.ActivableModule ? Firebug.ActivableModule : Firebug.Module;
 
 /**
- * @class This class represents Firebug.module for Firecookie extension.
+ * @class This class represents the <i>module</i> for Firecookie extension.
  */
 Firebug.FireCookieModel = extend(BaseModule,
 /** @lends Firebug.FireCookieModel */
