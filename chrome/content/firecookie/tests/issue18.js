@@ -4,7 +4,7 @@ function runTest()
     FBTest.loadScript("env.js", this);
 
     // Server side handler.
-    FBTest.registerPathHandler("/issue18.html", function (metadata, response) 
+    FBTest.registerPathHandler("/issue18.php", function (metadata, response) 
     {
         FBTest.sysout("cookies.test.issue18; Server side handler executed.");
         response.setHeader("Set-Cookie", 
@@ -18,7 +18,7 @@ function runTest()
             "</body></html>");
     });
 
-    FBTestFirebug.openNewTab(basePath + "issue18.html", function(win)
+    FBTestFirebug.openNewTab(basePath + "issue18.php", function(win)
     {
         // Open Firebug UI and enable Net panel.
         FBTestFireCookie.enableCookiePanel(function(win) 
@@ -29,7 +29,9 @@ function runTest()
             FBTestFirebug.openFirebug();
             var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
 
-            var value = FW.FBL.getElementByClass(panelNode, "cookieValueLabel", "cookieLabel");
+            var row = FBTestFireCookie.getCookieRowByName(panelNode, "TestCookie18");
+            var value = FW.FBL.getElementByClass(row, "cookieValueLabel", "cookieLabel");
+
             FBTest.compare("1 + 2 = 3", value.textContent, "Value of the cookie validation");
 
             FBTestFirebug.expandElements(panelNode, "cookieRow");
@@ -43,7 +45,7 @@ function runTest()
 
             var rawInfoValue = FW.FBL.getElementByClass(cookieInfo, 
                 "cookieInfoRawValueText", "cookieInfoText");
-            FBTest.compare("1 %2B 2 = 3", rawInfoValue.textContent, 
+            FBTest.compare("1+%2B+2+%3D+3", rawInfoValue.textContent, 
                 "Raw value of the cookie (in the body) validation");
 
             // Finish test
