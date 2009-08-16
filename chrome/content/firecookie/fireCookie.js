@@ -579,7 +579,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         $("fbStatusIcon").removeAttribute(panelName);
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.onSuspendFirebug", context);
+            FBTrace.sysout("cookies.onSuspendFirebug");
     },
 
     onResumeFirebug: function(context)
@@ -602,7 +602,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         }
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.onResumeFirebug", context);
+            FBTrace.sysout("cookies.onResumeFirebug");
     },
 
     isEnabled: function(context)
@@ -942,7 +942,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         var filterPanel = $("fcCustomPathFilterPanel");
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.onApplyPathFilter, filter: " + filterPanel.value, 
+            FBTrace.sysout("cookies.onApplyPathFilter, filter: " + filterPanel.value,
                 filterPanel);
 
         // Use the filter from panel.
@@ -1195,7 +1195,7 @@ FireCookiePanel.prototype = extend(BasePanel,
                 {
                     FBTrace.sysout(
                         "cookies.Cookie context isn't properly initialized - ERROR: " +
-                        this.context.window.location.href, this.context);
+                        this.context.window.location.href);
                 }
                 return;
             }
@@ -1244,8 +1244,7 @@ FireCookiePanel.prototype = extend(BasePanel,
     initializeNode: function(oldPanelNode)
     {
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.FireCookiePanel.initializeNode\n",
-                oldPanelNode);
+            FBTrace.sysout("cookies.FireCookiePanel.initializeNode\n");
 
         // xxxHonza 
         // This method isn't called when FB UI is detached. So, the columns
@@ -3149,7 +3148,7 @@ Cookie.prototype =
             var docElem = doc.documentElement;
 
             if (FBTrace.DBG_COOKIES)
-                FBTrace.sysout("cookies.getXmlValue for: " + this.cookie.name, docElem);
+                FBTrace.sysout("cookies.getXmlValue for: " + this.cookie.name);
 
             // Error handling
             var nsURI = "http://www.mozilla.org/newlayout/xml/parsererror.xml";
@@ -3496,9 +3495,9 @@ var CookieObserver = extend(BaseObserver,
 
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.sysout("cookies.onCookieChanged: " +
+            FBTrace.sysout("cookies.onCookieChanged: '" +
                 (cookie ? cookie.name : "null") +
-                ", " + action + "\n", cookie);
+                "', " + action + "\n");
         }
 
         switch(action)
@@ -3798,7 +3797,7 @@ var HttpObserver = extend(BaseObserver,
         // Dump debug information to the console.
         if (FBTrace.DBG_COOKIES)
         {
-            FBTrace.sysout("cookies.onModifyRequest: " + request.name, request);
+            FBTrace.sysout("cookies.onModifyRequest: " + request.name);
             FBTrace.sysout("cookies.Cookies sent: " +
                 cookieService.getCookieString(request.URI, request) + "\n");
         }
@@ -3822,8 +3821,7 @@ var HttpObserver = extend(BaseObserver,
                 contexts[tabId] = tempContext;
 
                 if (FBTrace.DBG_COOKIES)
-                    FBTrace.sysout("cookies.INIT temporary context for: " +
-                        tempContext.tabId, request);
+                    FBTrace.sysout("cookies.INIT temporary context for: " + tempContext.tabId);
 
                 Firebug.FireCookieModel.initTempContext(tempContext);
             }
@@ -3868,8 +3866,7 @@ var HttpObserver = extend(BaseObserver,
             return;
 
         if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.onExamineResponse: " + request.name,
-                request);
+            FBTrace.sysout("cookies.onExamineResponse: " + request.name);
 
         if (!logEvents())
             return;

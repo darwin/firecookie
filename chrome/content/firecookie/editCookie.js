@@ -66,7 +66,7 @@ var EditCookie =
 
             if (FBTrace.DBG_COOKIES)
                 FBTrace.sysout("cookies.EditCookie.onLoad; default expire time: " +
-                    this.expireNode.value, this.expireNode.value);
+                    this.expireNode.value);
 
             // Set default value for expire time (current time + some time, see prefs 
             // defaultInterval) so, the cookie doesn't disappear if the session box 
