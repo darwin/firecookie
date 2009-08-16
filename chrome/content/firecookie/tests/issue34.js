@@ -3,10 +3,9 @@ function runTest()
     FBTest.sysout("cookies.test.issue34; START");
     FBTest.loadScript("env.js", this);
 
-    var baseRemotePath = "http://www.janodvarko.cz/firecookie/tests/issue34/";
-    FBTestFirebug.openNewTab(baseRemotePath + "issue34.php", function(win)
+    FBTestFirebug.openNewTab(basePath + "issue34/issue34.php", function(win)
     {
-        FBTestFireCookie.enableCookiePanel(function(win) 
+        FBTestFireCookie.enableCookiePanel(function(win)
         {
             var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
             var cookie = FBTestFireCookie.getCookieByName(panelNode, "TestCookie34");
@@ -25,8 +24,11 @@ function editCookie(cookie)
     if (!cookie)
         return;
 
+    var uri = FW.FBL.makeURI(basePath);
+    var host = uri.host;
+
     FBTest.sysout("cookies.test.issue34; this is our cookie", cookie);
-    FBTest.compare(".janodvarko.cz", cookie.cookie.host, "Check cookie host.");
+    FBTest.compare(host, cookie.cookie.host, "Check cookie host.");
 
     // Open editCookie.xul dialog and edit the value.
     FBTest.sysout("cookies.test.issue34; let's edit an existing cookie");

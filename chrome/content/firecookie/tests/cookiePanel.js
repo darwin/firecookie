@@ -3,7 +3,7 @@ function runTest()
     FBTest.sysout("cookies.test.cookiePanel.START " + basePath);
     FBTest.loadScript("env.js", this);
 
-    FBTestFirebug.openNewTab(basePath + "cookiePanel.html", function(win)
+    FBTestFirebug.openNewTab(basePath + "general/cookiePanel.php", function(win)
     {
         FBTestFireCookie.enableCookiePanel(function(win) 
         {
