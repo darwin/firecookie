@@ -30,7 +30,7 @@ function runTest()
             var newCookie = FBTestFireCookie.getCookieByName(panelNode, "CopyPasteCookie-1");
             FBTest.ok(newCookie, "There must be 'CopyPasteCookie-1'.");
             if (!originalCookie || !newCookie)
-                return ;//FBTestFirebug.testDone();
+                return FBTestFirebug.testDone();
 
             FBTest.compare(originalCookie.value, newCookie.value, "The value must be the same.");
             FBTest.compare(originalCookie.isDomain, newCookie.isDomain, "The isDomain must be the same.");
