@@ -480,7 +480,7 @@ Firebug.FireCookieModel = extend(BaseModule,
      *
      * @param {Cookie} Cookie object with appropriate properties. See {@link Cookie} object.
      */
-    createNewCookie: function(cookie)
+    createCookie: function(cookie)
     {
         // Create URI
         var host = cookie.cookie.host;
@@ -502,15 +502,20 @@ Firebug.FireCookieModel = extend(BaseModule,
                 cookie.cookie.expires, null);
 
             if (FBTrace.DBG_COOKIES)
-                FBTrace.sysout("cookies.createNewCookie: set cookie string: " + cookieString,
+                FBTrace.sysout("cookies.createCookie: set cookie string: " + cookieString,
                     [cookie, uri]);
         }
         catch (e)
         {
             if (FBTrace.DBG_ERRORS)
-                FBTrace.sysout("cookies.createNewCookie: set cookie string ERROR " +
+                FBTrace.sysout("cookies.createCookie: set cookie string ERROR " +
                     cookieString, e);
         }
+    },
+
+    removeCookie: function(host, name, path)
+    {
+        cookieManager.remove(host, name, path, false);
     },
 
     // Support for ActivableModule
@@ -2001,7 +2006,7 @@ Templates.CookieRow = domplate(Templates.Rep,
 
         // Create/modify cookie.
         var cookie = new Cookie(values);
-        Firebug.FireCookieModel.createNewCookie(cookie);
+        Firebug.FireCookieModel.createCookie(cookie);
 
         if (FBTrace.DBG_COOKIES)
             checkList(context.getPanel(panelName, true));
@@ -2010,9 +2015,9 @@ Templates.CookieRow = domplate(Templates.Rep,
     onRemove: function(cookie)
     {
         // Get the real XPCOM cookie object and remove it.
-        var realCookie = cookie.cookie;        
+        var realCookie = cookie.cookie;
         if (!cookie.cookie.rejected)
-            cookieManager.remove(realCookie.host, realCookie.name, realCookie.path, false);
+            Firebug.FireCookieModel.removeCookie(realCookie.host, realCookie.name, realCookie.path);
     },
 
     onEdit: function(cookie)
@@ -2025,7 +2030,7 @@ Templates.CookieRow = domplate(Templates.Rep,
 
         var parent = FirebugContext.chrome.window;
         return parent.openDialog("chrome://firecookie/content/editCookie.xul",
-            "_blank", "chrome,centerscreen,resizable=yes,modal=yes", 
+            "_blank", "chrome,centerscreen,resizable=yes,modal=yes",
             params);
     },
 
@@ -2091,7 +2096,7 @@ Templates.CookieRow = domplate(Templates.Rep,
 
     selectTabByName: function(cookieInfoBody, tabName)
     {
-        var tab = getChildByClass(cookieInfoBody, "cookieInfoTabs", 
+        var tab = getChildByClass(cookieInfoBody, "cookieInfoTabs",
             "cookieInfo" + tabName + "Tab");
 
         // Don't select collapsed tabs. 

@@ -121,7 +121,7 @@ var EditCookie =
 
         // Create/modify cookie.
         var cookie = new Firebug.FireCookieModel.Cookie(values);
-        Firebug.FireCookieModel.createNewCookie(cookie);
+        Firebug.FireCookieModel.createCookie(cookie);
 
         // Close dialog.
         window.close();

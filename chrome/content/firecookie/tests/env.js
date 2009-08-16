@@ -40,6 +40,15 @@ this.getCookieByName = function(panelNode, cookieName)
 };
 
 /**
+ * Remove specified cookie by name.
+ * @param {String} Name of the cookie to be removed.
+ */
+this.removeCookie = function(host, name, path)
+{
+    FW.Firebug.FireCookieModel.removeCookie(host, name, path);
+}
+
+/**
  * Opens editCookie.xul dialog. Since the dialog is modal, the method returns
  * after its closed. Use callback to close the dialog.
  * 
