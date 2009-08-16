@@ -89,7 +89,7 @@
             basedir="${build.dir}" update="true" />
 
         <!-- Final version message -->
-        <echo message="HARViewer version: ${VERSION}${RELEASE}"/>
+        <echo message="Firecookie version: ${VERSION}${RELEASE}"/>
     </target>
 
 </project>
