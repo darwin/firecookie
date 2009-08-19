@@ -115,6 +115,18 @@ if (typeof FBTrace == "undefined")
 if (Firebug.registerStringBundle)
     Firebug.registerStringBundle("chrome://firecookie/locale/firecookie.properties");
 
+/*
+[b]English variable / German translation[/b]
+firecookie.console.cleared / Geleert
+firecookie.info.rawdatatab.Raw_Data / Rohdaten
+firecookie.SystemPages / Systemseiten
+firecookie.LocalFiles / Lokale Dateien
+firecookie.netinfo.Sent_Cookies / Versendete Cookies
+firecookie.Path_Filter / Pfadfilter
+firecookie.export.Export_All_Cookies_Tooltip / Alle Browser-Cookies in die Datei cookies.txt exportieren
+firecookie.export.Export_For_Site_Tooltip / Cookies für %S in die Datei cookies.txt exportieren
+*/
+
 // Module Implementation
 //-----------------------------------------------------------------------------
 
@@ -216,7 +228,12 @@ Firebug.FireCookieModel = extend(BaseModule,
     registerObservers: function(context)
     {
         if (this.observersRegistered)
+        {
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.registerObservers; Observers ALREADY registered for: " +
+                    (context ? context.window.location.href : ""));
             return;
+        }
 
         observerService.addObserver(HttpObserver, "http-on-modify-request", false);
         observerService.addObserver(HttpObserver, "http-on-examine-response", false);
@@ -234,7 +251,12 @@ Firebug.FireCookieModel = extend(BaseModule,
     unregisterObservers: function(context)
     {
         if (!this.observersRegistered)
+        {
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.registerObservers; Observers ALREADY un-registered for: " +
+                    (context ? context.window.location.href : ""));
             return;
+        }
 
         observerService.removeObserver(HttpObserver, "http-on-modify-request");
         observerService.removeObserver(HttpObserver, "http-on-examine-response");
@@ -502,8 +524,7 @@ Firebug.FireCookieModel = extend(BaseModule,
                 cookie.cookie.expires, null);
 
             if (FBTrace.DBG_COOKIES)
-                FBTrace.sysout("cookies.createCookie: set cookie string: " + cookieString,
-                    [cookie, uri]);
+                FBTrace.sysout("cookies.createCookie: set cookie string: " + cookieString);
         }
         catch (e)
         {
@@ -572,6 +593,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         else
         {
             // Firebug 1.4 (context parameter doesn't exist since 1.4)
+            // Suspend only if enabled.
             if (Firebug.FireCookieModel.isAlwaysEnabled())
                 TabWatcher.iterateContexts(Firebug.FireCookieModel.unregisterObservers);
         }
@@ -605,6 +627,22 @@ Firebug.FireCookieModel = extend(BaseModule,
             FBTrace.sysout("cookies.onResumeFirebug");
     },
 
+    onEnabled: function(context)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onEnabled; " + context.getName());
+
+        this.registerObservers(context);
+    },
+
+    onDisabled: function(context)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onDisabled; " + context.getName());
+
+        this.unregisterObservers(context);
+    },
+
     isEnabled: function(context)
     {
         // For backward compatibility with Firebug 1.1. ActivableModule has been
@@ -613,6 +651,14 @@ Firebug.FireCookieModel = extend(BaseModule,
             return true;
 
         return BaseModule.isEnabled.apply(this, arguments);
+    },
+
+    onEnablePrefChange: function(pref)
+    {
+        BaseModule.onEnablePrefChange.apply(this, arguments);
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onEnablePrefChange; " + this.isAlwaysEnabled());
     },
 
     getMenuLabel: function(option, location)
