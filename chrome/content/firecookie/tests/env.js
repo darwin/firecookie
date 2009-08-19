@@ -11,7 +11,8 @@ Components.classes["@mozilla.org/cookiemanager;1"]
 // ************************************************************************************************
 // Constants
 
-var winWatcher = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher);
+var winWatcher = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
+    .getService(Components.interfaces.nsIWindowWatcher);
 
 // ************************************************************************************************
 // Firecookie testing APIs
