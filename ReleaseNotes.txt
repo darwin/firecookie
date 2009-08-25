@@ -13,6 +13,9 @@ Release Notes for Firecookie 0.9
     * Column sorting is now remembered across Firefox sessions (issue 37).
     * Support for better formatting of document.cookie property when used
       on the Firebug's command line (the Console panel).
+    * Permissions of third-party cookies can be set using cookie context menu.
+    * Managing visibility of individual columns (using header context menu).
+      Hidden columns are stored in preferences.
 
 == Localization ==
     * ja-JP localization - contribution by Hisateru Tanaka

@@ -9,6 +9,7 @@ pref("extensions.firebug.firecookie.showRejectedCookies", true);
 pref("extensions.firebug.firecookie.showRejectedCookies", true);
 pref("extensions.firebug.firecookie.defaultExpireTime", 3600);
 pref("extensions.firebug.firecookie.lastSortedColumn", "");
+pref("extensions.firebug.firecookie.hiddenColumns", "colStatus");
 
 // Activation
 pref("extensions.firebug.cookies.enableSites", false);

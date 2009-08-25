@@ -50,6 +50,7 @@ const filterByPath = "firecookie.filterByPath";
 const showRejectedCookies = "firecookie.showRejectedCookies";
 const defaultExpireTime = "firecookie.defaultExpireTime";
 const lastSortedColumn = "firecookie.lastSortedColumn";
+const hiddenColsPref = "firecookie.hiddenColumns";
 
 // Services
 const cookieManager = CCSV("@mozilla.org/cookiemanager;1", "nsICookieManager2");
@@ -139,7 +140,7 @@ firecookie.export.Export_For_Site_Tooltip / Cookies für %S in die Datei cookies
 var BaseModule = Firebug.ActivableModule ? Firebug.ActivableModule : Firebug.Module;
 
 /**
- * @class This class represents the <i>module</i> for Firecookie extension.
+ * @module This class represents the <i>module</i> for Firecookie extension.
  */
 Firebug.FireCookieModel = extend(BaseModule,
 /** @lends Firebug.FireCookieModel */
@@ -149,12 +150,10 @@ Firebug.FireCookieModel = extend(BaseModule,
     observersRegistered: false,
 
     /**
-     * Initialization of the module.
-     * Firefox window. There is a new instance of the module for each Firefox
-     * winodow that has Firebug embedded.
+     * Called by Firebug when Firefox window is opened.
      *
      * @param {String} prefDomain Preference domain (e.g. extensions.firebug)
-     * @param {String} prefNames Default Firebug preference array.
+     * @param {Array} prefNames Default Firebug preference array.
      */
     initialize: function(prefDomain, prefNames) 
     {
@@ -905,7 +904,8 @@ Firebug.FireCookieModel = extend(BaseModule,
 
                 var panel = context.getPanel(panelName, true);
                 var tbody = getElementByClass(panel.panelNode, "cookieTable").firstChild;
-                for (var row = tbody.firstChild; row; row = row.nextSibling) {
+                for (var row = tbody.firstChild; row; row = row.nextSibling)
+                {
                     if (hasClass(row, "cookieRow") && row.repObject)
                     {
                         var cookieInfo = row.repObject.toText();
@@ -1157,8 +1157,8 @@ function fcInternationalize(element, attr, args)
 //-----------------------------------------------------------------------------
 
 /**
- * @class This class represents Firecookie panel that is displayed within
- *      Firebug UI.
+ * @panel This class represents Firecookie panel that is displayed within
+ * Firebug UI.
  */
 function FireCookiePanel() {}
 
@@ -1285,6 +1285,11 @@ FireCookiePanel.prototype = extend(BasePanel,
             var values = prefValue.split(" ");
             Templates.CookieTable.sortColumn(this.table, values[0], values[1]);
         }
+
+        // Update visibility of columns according to the preferences
+        var hiddenCols = getPref(FirebugPrefDomain, hiddenColsPref);
+        if (hiddenCols)
+            this.table.setAttribute("hiddenCols", hiddenCols);
     },
 
     initializeNode: function(oldPanelNode)
@@ -1385,11 +1390,16 @@ FireCookiePanel.prototype = extend(BasePanel,
         if (cookieRow)
             return items;
 
+        // Also bail out if the user clicked on the header.
+        var header = getAncestorByClass(target, "cookieHeaderRow");
+        if (header)
+            return items;
+
         // Make sure default items (cmd_copy) is removed.
         Templates.Rep.getContextMenuItems.apply(this, arguments);
 
-        // Create Paste menu-item so, the a new cookie can be pasted 
-        // even if the user clicks within the panel area (not on a cookie row)
+        // Create Paste menu-item so, a new cookie can be pasted even if the user
+        // clicks within the panel area (not on a cookie row)
         items.push({
             label: $FC_STR("firecookie.Paste"),
             nol10n: true,
@@ -1435,7 +1445,7 @@ FireCookiePanel.prototype = extend(BasePanel,
         var header = getAncestorByClass(target, "cookieHeaderRow");
         if (header)
             return Templates.CookieTable;
-            
+
         return BasePanel.getPopupObject.apply(this, arguments);
     },
 
@@ -1721,10 +1731,11 @@ Templates.Rep = domplate(Firebug.Rep,
 {
     getContextMenuItems: function(cookie, target, context)
     {
-        // xxxHonza not sure how to do this better if the "copy"
-        // command shouldn't be there.
+        // xxxHonza not sure how to do this better if the default Firebug's "Copy"
+        // command (cmd_copy) shouldn't be there.
         var popup = $("fbContextMenu");
-        FBL.eraseNode(popup);
+        if (popup.firstChild.getAttribute("command") == "cmd_copy")
+            popup.removeChild(popup.firstChild);
     }
 });
 
@@ -1732,7 +1743,7 @@ Templates.Rep = domplate(Firebug.Rep,
 //-----------------------------------------------------------------------------
 
 /**
- * @class Represents a domplate template for cookie entry in the cookie list.
+ * @domplate Represents a domplate template for cookie entry in the cookie list.
  */
 Templates.CookieRow = domplate(Templates.Rep,
 /** @lends Templates.CookieRow */
@@ -2463,7 +2474,7 @@ Templates.CookieChanged = domplate(Templates.Rep,
 //-----------------------------------------------------------------------------
 
 /**
- * @class Represents a domplate template for displaying rejected cookies.
+ * @domplate Represents a domplate template for displaying rejected cookies.
  */
 Templates.CookieRejected = domplate(Templates.Rep,
 /** @lends Templates.CookieRejected */
@@ -2531,8 +2542,8 @@ Templates.CookieRejected = domplate(Templates.Rep,
 //-----------------------------------------------------------------------------
 
 /**
- * @class Represents a domplate template for cookie cleared event that is
- *      visualised in Firebug Console panel.
+ * @domplate Represents a domplate template for cookie cleared event that is
+ * visualised in Firebug Console panel.
  */
 Templates.CookieCleared = domplate(Templates.Rep,
 /** @lends Templates.CookieCleared */
@@ -2565,8 +2576,8 @@ Templates.CookieCleared = domplate(Templates.Rep,
 //-----------------------------------------------------------------------------
 
 /**
- * @class Represents a domplate template for basic cookie list layout. This
- *      template also included a header functionality (such a sorting).
+ * @domplate Represents a template for basic cookie list layout. This
+ * template also includes a header and related functionality (such as sorting).
  */
 Templates.CookieTable = domplate(Templates.Rep,
 /** @lends Templates.CookieTable */
@@ -2732,23 +2743,66 @@ Templates.CookieTable = domplate(Templates.Rep,
 
     supportsObject: function(object)
     {
-        return (object == this) ? this : null;
+        return (object == this);
     },
 
-    // Context menu
+    /**
+     * Provides menu items for header context menu.
+     */
     getContextMenuItems: function(object, target, context)
     {
         Templates.Rep.getContextMenuItems.apply(this, arguments);
 
-        var items = [
-            { 
-              label: $FC_STR("firecookie.header.ResetColumns"),
-              nol10n: true, 
-              command: bindFixed(this.onResetColumns, this, context)
-            }
-        ];
+        var items = [];
+
+        // Iterate over all columns and create a menu item for each.
+        var table = context.getPanel(panelName, true).table;
+        var hiddenCols = table.getAttribute("hiddenCols");
+
+        var header = getAncestorByClass(target, "cookieHeaderRow");
+        for (var i=0; i<header.childNodes.length; i++)
+        {
+            var column = header.childNodes[i];
+            var label = column.textContent;
+            items.push({
+                label: label,
+                type: "checkbox",
+                checked: (hiddenCols.indexOf(column.id) == -1),
+                nol10n: true,
+                command: bindFixed(this.onShowColumn, this, context, column.id)
+            });
+        }
+
+        items.push("-");
+        items.push({
+            label: $FC_STR("firecookie.header.Reset_Header"),
+            nol10n: true, 
+            command: bindFixed(this.onResetColumns, this, context)
+        });
 
         return items;
+    },
+
+    onShowColumn: function(context, colId)
+    {
+        var table = context.getPanel(panelName, true).table;
+        var hiddenCols = table.getAttribute("hiddenCols");
+
+        // If the column is already presented in the list of hidden columns,
+        // remove it, otherwise append.
+        var index = hiddenCols.indexOf(colId);
+        if (index >= 0)
+        {
+            table.setAttribute("hiddenCols", hiddenCols.substr(0,index-1) +
+                hiddenCols.substr(index+colId.length));
+        }
+        else
+        {
+            table.setAttribute("hiddenCols", hiddenCols + " " + colId);
+        }
+
+        // Store current state into the preferences.
+        setPref(FirebugPrefDomain, hiddenColsPref, table.getAttribute("hiddenCols"));
     },
 
     onResetColumns: function(context)
@@ -2756,6 +2810,7 @@ Templates.CookieTable = domplate(Templates.Rep,
         var panel = context.getPanel(panelName, true);
         var header = getElementByClass(panel.panelNode, "cookieHeaderRow");
 
+        // Reset widths
         var columns = header.childNodes;
         for (var i=0; i<columns.length; i++)
         {
@@ -2763,6 +2818,9 @@ Templates.CookieTable = domplate(Templates.Rep,
             if (col.style)
                 col.style.width = "";
         }
+
+        // Reset visibility. Only the Status column is hidden by default.
+        panel.table.setAttribute("hiddenCols", "colStatus");
     },
 
     createTable: function(parentNode)
