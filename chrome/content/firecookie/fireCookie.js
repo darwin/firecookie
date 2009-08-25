@@ -1531,7 +1531,7 @@ var MenuUtils =
 //-----------------------------------------------------------------------------
 
 /**
- * @class This class is responsible for managing cookie permisssions. 
+ * @class This class is responsible for managing cookie permisssions.
  */
 Firebug.FireCookieModel.Perm = extend(Object,
 /** @lends Firebug.FireCookieModel.Perm */
@@ -1540,7 +1540,7 @@ Firebug.FireCookieModel.Perm = extend(Object,
     {
         var menu = event.target;
         this.setPermission(context, menu.value);
-    },    
+    },
 
     onTooltipShowing: function(tooltip, context)
     {
@@ -1556,12 +1556,12 @@ Firebug.FireCookieModel.Perm = extend(Object,
     onPopupShowing: function(menu, context)
     {
         permTooltip.fcEnabled = false;
-        
+
         var items = menu.getElementsByTagName("menuitem");
         var location = context.browser.currentURI;
         var value = this.getPermission(location);
         var defaultValue = (value.indexOf("default") == 0) ? value : this.getDefaultPref();
-        
+
         items[0].value = defaultValue;
 
         for (var i=0; i<items.length; i++)
@@ -1569,10 +1569,9 @@ Firebug.FireCookieModel.Perm = extend(Object,
             var option = items[i].value;
             if (option == value)
                 items[i].setAttribute("checked", "true");
-                
             items[i].label = this.getLabel(option, location);
         }
-        
+
         return true;
     },
 
@@ -1969,22 +1968,23 @@ Templates.CookieRow = domplate(Templates.Rep,
             });
             items.push("-");
         }
-        
+
         items.push({
           label: $FC_STR("firecookie.CopyAll"),
           nol10n: true,
           command: bindFixed(this.onCopyAll, this, cookie)
         });
-        items.push("-");
 
         if (!rejected)
         {
+            items.push("-");
+
             items.push({
               label: $FC_STR("firecookie.Delete"),
               nol10n: true,
               command: bindFixed(this.onRemove, this, cookie)
             });
-            
+
             items.push("-");
 
             items.push({
