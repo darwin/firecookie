@@ -504,16 +504,16 @@ Firebug.FireCookieModel = extend(BaseModule,
      */
     createCookie: function(cookie)
     {
-        // Create URI
-        var host = cookie.cookie.host;
-        var httpProtocol = cookie.cookie.isSecure ? "https://" : "http://";
-        var uri = ioService.newURI(httpProtocol + host + cookie.cookie.path, null, null);
-
         try
         {
+            var uri = cookie.getURI();
+            if (!uri)
+                return;
+
             // Fix for issue 34. The domain must be included in the cookieString if it 
             // starts with "." But don't include it otherwise, since the "." would be 
             // appended by the service.
+            var host = cookie.cookie.host;
             var cookieString = cookie.toString(!(host.charAt(0) == "."));
 
             // Fix for issue 37: httpOnly cookies, and issue 47: Cannot change the HttpOnly flag
@@ -1559,6 +1559,7 @@ Firebug.FireCookieModel.Perm = extend(Object,
 
         var items = menu.getElementsByTagName("menuitem");
         var location = context.browser.currentURI;
+
         var value = this.getPermission(location);
         var defaultValue = (value.indexOf("default") == 0) ? value : this.getDefaultPref();
 
@@ -1579,6 +1580,37 @@ Firebug.FireCookieModel.Perm = extend(Object,
     {
         permTooltip.fcEnabled = true;
         return true;
+    },
+
+    getContextMenuItems: function(cookie, target, context)
+    {
+        if (context.browser.currentURI.host == cookie.cookie.host)
+            return null;
+
+        var location = cookie.getURI();
+        var value = this.getPermission(location);
+        var defaultValue = (value.indexOf("default") == 0) ? value : this.getDefaultPref();
+
+        var items = [];
+        items.push("-");
+
+        var menu = $("fcPermMenuPopup");
+        menu.childNodes[0].value = defaultValue;
+        for (var i=0; i<menu.childNodes.length; i++)
+        {
+            var item = menu.childNodes[i];
+            var option = item.value;
+
+            items.push({
+              label: this.getLabel(option, location),
+              type: "radio",
+              checked: (option == value),
+              nol10n: true,
+              command: bindFixed(this.onCommand, this, {target: item}, context),
+            });
+        }
+
+        return items;
     },
 
     getPermission: function(location)
@@ -1780,27 +1812,33 @@ Templates.CookieRow = domplate(Templates.Rep,
             DIV({"class": "cookieInfoXmlText cookieInfoText"})
         ),
 
-    hideRawValueTab: function(cookie) {
+    hideRawValueTab: function(cookie)
+    {
         return (cookie.cookie.value == cookie.cookie.rawValue);
     },
 
-    hideJsonTab: function(cookie) {
+    hideJsonTab: function(cookie)
+    {
         return cookie.getJsonValue() ? false : true;
     },
 
-    hideXmlTab: function(cookie) {
+    hideXmlTab: function(cookie)
+    {
         return cookie.getXmlValue() ? false : true;
     },
 
-    getAction: function(cookie) {
+    getAction: function(cookie)
+    {
         return cookie.action;
     },
 
-    getName: function(cookie) {
+    getName: function(cookie)
+    {
         return cookie.cookie.name;
     },
 
-    getValue: function(cookie) {
+    getValue: function(cookie)
+    {
         var limit = 200;
         var value = cookie.cookie.value;
         if (value.length > limit)
@@ -1809,14 +1847,16 @@ Templates.CookieRow = domplate(Templates.Rep,
             return escapeNewLines(value);
     },
 
-    getDomain: function(cookie) {
+    getDomain: function(cookie)
+    {
         if (!cookie.cookie.host)
             return "";
 
         return cookie.cookie.host;
     },
 
-    getExpires: function(cookie) {
+    getExpires: function(cookie)
+    {
         if (cookie.cookie.expires == undefined)
             return "";
 
@@ -1837,19 +1877,23 @@ Templates.CookieRow = domplate(Templates.Rep,
         return "";
     },
 
-    isHttpOnly: function(cookie) {
+    isHttpOnly: function(cookie)
+    {
         return cookie.cookie.isHttpOnly ? "HttpOnly" : "";
     },
 
-    isSessionCookie: function(cookie) {
+    isSessionCookie: function(cookie)
+    {
         return !cookie.cookie.expires;
     },
 
-    isRejected: function(cookie) {
+    isRejected: function(cookie)
+    {
         return !!cookie.cookie.rejected;
     },
 
-    getSize: function(cookie) {
+    getSize: function(cookie)
+    {
         var size = cookie.cookie.name.length + cookie.cookie.value.length;
         return this.formatSize(size);
     },
@@ -1866,16 +1910,19 @@ Templates.CookieRow = domplate(Templates.Rep,
             return (Math.ceil(bytes/1024)/1024) + " MB";    // OK, this is probable not necessary ;-)
     },
 
-    getPath: function(cookie) {
+    getPath: function(cookie)
+    {
         var path = cookie.cookie.path;
         return path ? path : "";
     },
 
-    isDomainCookie: function(cookie) {
+    isDomainCookie: function(cookie)
+    {
         return cookie.cookie.isDomain ? $FC_STR("firecookie.domain.label") : "";
     },
 
-    isSecure: function(cookie) {
+    isSecure: function(cookie)
+    {
         return cookie.cookie.isSecure ? $FC_STR("firecookie.secure.label") : "";
     },
 
@@ -1901,7 +1948,8 @@ Templates.CookieRow = domplate(Templates.Rep,
         return "";
     },
 
-    getPolicy: function(cookie) {
+    getPolicy: function(cookie)
+    {
         switch (cookie.cookie.policy)
         {
             //xxxHonza localization
@@ -1916,7 +1964,7 @@ Templates.CookieRow = domplate(Templates.Rep,
             case POLICY_NO_II:
                 return "POLICY_NO_II";
         }
-        
+
         return "";
     },
 
@@ -1993,6 +2041,11 @@ Templates.CookieRow = domplate(Templates.Rep,
               command: bindFixed(this.onEdit, this, cookie)
             });
         }
+
+        // Permissions
+        var permItems = Firebug.FireCookieModel.Perm.getContextMenuItems(cookie, target, context);
+        if (permItems)
+            items = items.concat(permItems);
 
         return items;
     },
@@ -3207,6 +3260,23 @@ Cookie.prototype =
         {
             if (FBTrace.DBG_ERRORS)
                 FBTrace.sysout("cookies.getXmlValue ERROR " + this.cookie.name, e);
+        }
+
+        return null;
+    },
+
+    getURI: function()
+    {
+        try
+        {
+            var host = this.cookie.host;
+            var httpProtocol = this.cookie.isSecure ? "https://" : "http://";
+            return ioService.newURI(httpProtocol + host + this.cookie.path, null, null);
+        }
+        catch(exc)
+        {
+            if (FBTrace.DBG_ERRORS || FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.getURI FAILS for " + this.cookie.name);
         }
 
         return null;
