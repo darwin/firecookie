@@ -80,8 +80,8 @@
                 <tooltip id="fcPermTooltip"
                     onpopupshowing="return Firebug.FireCookieModel.Perm.onTooltipShowing(this, FirebugContext)"/>
                 <toolbarbutton id="fcPerm" type="menu" tooltip="fcPermTooltip">
-                    <menupopup
-                        oncommand="return Firebug.FireCookieModel.Perm.onCommand(event, FirebugContext)"
+                    <menupopup id="fcPermMenuPopup"
+                        oncommand="return Firebug.FireCookieModel.Perm.onCommand(event, FirebugContext, null)"
                         onpopupshowing="return Firebug.FireCookieModel.Perm.onPopupShowing(this, FirebugContext)"
                         onpopuphiding="return Firebug.FireCookieModel.Perm.onPopupHiding(this, FirebugContext)">
                         <menuitem type="radio" name="fcPerm" value="default"/>

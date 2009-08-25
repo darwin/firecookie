@@ -1536,10 +1536,10 @@ var MenuUtils =
 Firebug.FireCookieModel.Perm = extend(Object,
 /** @lends Firebug.FireCookieModel.Perm */
 {
-    onCommand: function(event, context)
+    onCommand: function(event, context, location)
     {
         var menu = event.target;
-        this.setPermission(context, menu.value);
+        this.setPermission(context, menu.value, location);
     },
 
     onTooltipShowing: function(tooltip, context)
@@ -1606,7 +1606,7 @@ Firebug.FireCookieModel.Perm = extend(Object,
               type: "radio",
               checked: (option == value),
               nol10n: true,
-              command: bindFixed(this.onCommand, this, {target: item}, context),
+              command: bindFixed(this.onCommand, this, {target: item}, context, location),
             });
         }
 
@@ -1628,9 +1628,9 @@ Firebug.FireCookieModel.Perm = extend(Object,
         }
     },
 
-    setPermission: function(context, option)
+    setPermission: function(context, option, location)
     {
-        var location = context.browser.currentURI;
+        var location = location ? location : context.browser.currentURI;
         permissionManager.remove(location.host, "cookie");
         switch(option)
         {
