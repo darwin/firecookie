@@ -1727,6 +1727,9 @@ Firebug.FireCookieModel.Perm = extend(Object,
 // Object with all rep templates.
 var Templates = Firebug.FireCookieModel.Templates = {};
 
+/**
+ * @domplate Basic template for all Firecookie templates.
+ */
 Templates.Rep = domplate(Firebug.Rep,
 {
     getContextMenuItems: function(cookie, target, context)
@@ -2329,7 +2332,7 @@ Templates.CookieRow = domplate(Templates.Rep,
 //-----------------------------------------------------------------------------
 
 /**
- * This UI template is used for displaying cookie-changed events 
+ * @domplate This template is used for displaying cookie-changed events
  * (except of "clear") in the Console tab.
  */
 Templates.CookieChanged = domplate(Templates.Rep,
@@ -2821,6 +2824,7 @@ Templates.CookieTable = domplate(Templates.Rep,
 
         // Reset visibility. Only the Status column is hidden by default.
         panel.table.setAttribute("hiddenCols", "colStatus");
+        setPref(FirebugPrefDomain, hiddenColsPref, "colStatus");
     },
 
     createTable: function(parentNode)
@@ -3214,7 +3218,7 @@ function insertWrappedText(text, textBox)
 
 /**
  * @class Represents a cookie object that is created as a representation of
- *      nsICookie component in the browser.
+ * nsICookie component in the browser.
  */
 function Cookie(cookie, action)
 {
@@ -3521,8 +3525,8 @@ var BaseObserver =
 
 /**
  * @class This class represents an observer (nsIObserver) for cookie-changed
- *      and cookie-rejected events. These events are dispatche by Firefox
- *      see https://developer.mozilla.org/En/Observer_Notifications.
+ * and cookie-rejected events. These events are dispatche by Firefox
+ * see https://developer.mozilla.org/En/Observer_Notifications.
  */
 var CookieObserver = extend(BaseObserver,
 /** @lends CookieObserver */
@@ -3885,7 +3889,7 @@ TempContext.prototype.appendCookieEvent = function(subject, topic, data)
 
 /**
  * @class Represents an observer for nsPref:changed event dispatched when 
- *      an user preference is changed (e.g. using about:config)
+ * an user preference is changed (e.g. using about:config)
  */
 var PrefObserver = extend(BaseObserver,
 /** @lends PrefObserver */
@@ -3911,7 +3915,7 @@ var PrefObserver = extend(BaseObserver,
 
 /**
  * @class Represents an observer for perm-changed event that is dispatched
- *      by Firefox is cookie permissions are changed.
+ * by Firefox is cookie permissions are changed.
  */
 var PermissionObserver = extend(BaseObserver,
 /** @lends PermissionObserver */
@@ -3934,8 +3938,8 @@ var PermissionObserver = extend(BaseObserver,
 
 /**
  * @class Represents an observer for http-on-modify-request and
- *      http-on-examine-response events that are dispatched
- *      by Firefox when network request is executed and returned. 
+ * http-on-examine-response events that are dispatched
+ * by Firefox when network request is executed and returned. 
  */
 var HttpObserver = extend(BaseObserver,
 /** @lends HttpObserver */
@@ -4362,8 +4366,8 @@ Firebug.FireCookieModel.$FC_STRF = $FC_STRF;
 //-----------------------------------------------------------------------------
 
 /**
- * @class Represents domplate template for cookie body that is displayed if 
- *      a cookie entry in the cookie list is expanded.
+ * @domplate Represents domplate template for cookie body that is displayed if 
+ * a cookie entry in the cookie list is expanded.
  */
 Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
 /** @lends Firebug.FireCookieModel.NetInfoBody */
