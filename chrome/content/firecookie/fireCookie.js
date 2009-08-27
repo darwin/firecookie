@@ -1755,7 +1755,7 @@ Templates.CookieRow = domplate(Templates.Rep,
 
     cookieTag:
         FOR("cookie", "$cookies",
-            TR({"class": "cookieRow", _repObject: "$cookie", onclick: "$onClickRow", 
+            TR({"class": "cookieRow", _repObject: "$cookie", onclick: "$onClickRow",
                 $sessionCookie: "$cookie|isSessionCookie",
                 $rejectedCookie: "$cookie|isRejected"},
                 TD({"class": "cookieNameCol cookieCol"},
@@ -2588,7 +2588,7 @@ Templates.CookieTable = domplate(Templates.Rep,
     inspectable: false,
 
     tableTag:
-        TABLE({"class": "cookieTable", cellpadding: 0, cellspacing: 0},
+        TABLE({"class": "cookieTable", cellpadding: 0, cellspacing: 0, hiddenCols: ""},
             TBODY(
                 TR({"class": "cookieHeaderRow", onclick: "$onClickHeader"},
                     TD({id: "colName", "class": "cookieHeaderCell alphaValue"},
@@ -2762,23 +2762,37 @@ Templates.CookieTable = domplate(Templates.Rep,
         var table = context.getPanel(panelName, true).table;
         var hiddenCols = table.getAttribute("hiddenCols");
 
+        var lastVisibleIndex;
+        var visibleColCount = 0;
+
         var header = getAncestorByClass(target, "cookieHeaderRow");
         for (var i=0; i<header.childNodes.length; i++)
         {
             var column = header.childNodes[i];
-            var label = column.textContent;
+            var visible = (hiddenCols.indexOf(column.id) == -1);
+
             items.push({
-                label: label,
+                label: column.textContent,
                 type: "checkbox",
-                checked: (hiddenCols.indexOf(column.id) == -1),
+                checked: visible,
                 nol10n: true,
                 command: bindFixed(this.onShowColumn, this, context, column.id)
             });
+
+            if (visible)
+            {
+                lastVisibleIndex = i;
+                visibleColCount++;
+            }
         }
+
+        // If the last column is visible, disable its menu item.
+        if (visibleColCount == 1)
+            items[lastVisibleIndex].disabled = true;
 
         items.push("-");
         items.push({
-            label: $FC_STR("firecookie.header.Reset_Header"),
+            label: $STR("net.header.Reset_Header"),
             nol10n: true, 
             command: bindFixed(this.onResetColumns, this, context)
         });
