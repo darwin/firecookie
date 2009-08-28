@@ -17,8 +17,8 @@ const windowMediator = CCSV("@mozilla.org/appshell/window-mediator;1", "nsIWindo
 var FBTrace = { sysout: function() {} };
 
 /**
- * Edit cookie dialog implementation. This dialog is used to create a new cookie
- * and edit an existing cookie.
+ * @dialog Edit cookie dialog implementation. This dialog is used to create a new cookie
+ * and edit an existing cookies.
  */
 var EditCookie = 
 {
@@ -225,15 +225,18 @@ var EditCookie =
 
     initFBTrace: function()
     {
-        try 
+        try
         {
+            // Get tracing service from firebug. Notice that this service doesn't
+            // have to necessarily exist. The wrapped object is used here to access
+            // sysout method implemeted by the service. Firebug doesn't define new
+            // IDL files and so methods are accessed through wrappedJSObject.
             FBTrace = Cc["@joehewitt.com/firebug-trace-service;1"]
                 .getService(Ci.nsISupports)
                 .wrappedJSObject.getTracer("extensions.firebug");
         }
         catch (err)
         {
-            
         }
     }
 }
