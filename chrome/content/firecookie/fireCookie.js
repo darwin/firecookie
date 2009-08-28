@@ -3260,14 +3260,15 @@ Cookie.prototype =
 
     toJSON: function()
     {
-        var expires = this.cookie.expires;
-        return "({name: '" + this.cookie.name + "'," +
-            "value: '" + this.cookie.rawValue + "'," +
-            "expires: " + (expires ? ("'" + expires + "'") : 0) + "," +
-            "path: '" + (this.cookie.path ? this.cookie.path : "/") + "'," +
-            "host: '" + this.cookie.host + "'," +
-            "isHttpOnly: " + (this.cookie.isHttpOnly ? "true" : "false") + "," +
-            "isSecure: " + (this.cookie.secure ? "true" : "false") + "})";
+        return JSON.stringify({
+            name: this.cookie.name,
+            value: this.cookie.rawValue,
+            expires: (this.cookie.expires ? ("'" + this.cookie.expires + "'") : 0),
+            path: (this.cookie.path ? this.cookie.path : "/"),
+            host: this.cookie.host,
+            isHttpOnly: (this.cookie.isHttpOnly),
+            isSecure: (this.cookie.secure)
+        });
     },
 
     toText: function()
@@ -3404,7 +3405,17 @@ function makeCookieObject(cookie)
 
 function parseFromJSON(json)
 {
-    return eval(json);
+    try
+    {
+        // Parse JSON string. In case of Firefox 3.5 the native support is used,
+        // otherwise a parser implemented in json.js is the option.
+        return JSON.parse(json);
+    }
+    catch (err)
+    {
+    }
+
+    return null;
 }
 
 function parseFromString(string)
