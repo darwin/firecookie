@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 
-<!-- In order to build netExport extension run: $ant build
-    The final xpi file should be located in release directory -->
+<!-- Build script for Firecookie extension.
+1) Build beta release xpi including tests: $ant build (default)
+2) Build final release xpi for AMO without tests: $ant release
+3) Clean up the release directory: $ant clean
+4) Generate reference doc using JSDoc-toolkit: $ant doc -->
 <project name="fireCookie" basedir="." default="build">
 
     <!-- Directories -->
@@ -28,9 +31,26 @@
         classpathref="jsdoctoolkit"
         classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit"/>
 
+    <!-- Build docs for firebug.
+        xxxHonza: This is just a test and will be removed. -->
+    <target name="fbdoc">
+        <jsdoctoolkit jsdochome="${jsdoctoolkit.dir}"
+            template="firebug"
+            outputdir="${doc.dir}">
+            <fileset dir="C:\mozilla-dev\extensions\firebug\branches\firebug1.5">
+                <include name="**/*.js"/>
+            </fileset>
+        </jsdoctoolkit>
+
+        <copy todir="C://www/firecookie/docs">
+            <fileset dir="${doc.dir}"/>
+        </copy>
+    </target>
+
     <!-- Target: Generate Doc --> 
     <target name="doc">
-        <jsdoctoolkit jsdochome="${jsdoctoolkit.dir}" template="jsdoc" outputdir="${doc.dir}">
+        <jsdoctoolkit jsdochome="${jsdoctoolkit.dir}" template="firebug"
+            outputdir="${doc.dir}">
             <fileset dir="chrome/content/firecookie">
                 <include name="*.js"/>
             </fileset>
@@ -48,8 +68,8 @@
         <delete dir="${build.dir}"/>
     </target>
 
-    <!-- Target: Build Firecookie XPI package -->
-    <target name="build" depends="clean">
+    <!-- Target: Copy files in to the release directory -->
+    <target name="copy" depends="clean">
 
         <!-- Copy defaults directory -->
         <copy todir="${build.dir}/defaults">
@@ -83,13 +103,31 @@
             <replacefilter token="@VERSION@" property="VERSION"/>
             <replacefilter token="@RELEASE@" property="RELEASE"/>
         </replace>
+    </target>
 
-        <!-- Create final firecookie.xpi file -->
+    <!-- Create final firecookie.xpi file -->
+    <target name="build" depends="copy">
+
+        <!-- Zip content of the release directory into firecookie.xpi file -->
         <zip destfile="${build.dir}/firecookie-${VERSION}${RELEASE}.xpi"
             basedir="${build.dir}" update="true" />
 
         <!-- Final version message -->
         <echo message="Firecookie version: ${VERSION}${RELEASE}"/>
+    </target>
+
+    <!-- Remove test files from the release directory -->
+    <target name="removeTests" depends="copy">
+
+        <!-- Delete all tests files from the release directory -->
+        <delete dir="${build.dir}/chrome/content/firecookie/tests/"/>
+
+        <!-- Delete testList.html from the release directory -->
+        <delete file="${build.dir}/chrome/content/firecookie/testList.html"/>
+    </target>
+
+    <!-- Create final firecookie.xpi for AMO without test files -->
+    <target name="release" depends="removeTests, build">
     </target>
 
 </project>
