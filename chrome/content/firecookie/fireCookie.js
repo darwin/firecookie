@@ -1737,7 +1737,7 @@ Templates.Rep = domplate(Firebug.Rep,
         // xxxHonza not sure how to do this better if the default Firebug's "Copy"
         // command (cmd_copy) shouldn't be there.
         var popup = $("fbContextMenu");
-        if (popup.firstChild.getAttribute("command") == "cmd_copy")
+        if (popup.firstChild && popup.firstChild.getAttribute("command") == "cmd_copy")
             popup.removeChild(popup.firstChild);
     }
 });
