@@ -10,9 +10,10 @@ locale  firecookie  fr-FR       chrome/locale/fr-FR/
 locale  firecookie  hu-HU       chrome/locale/hu-HU/
 locale  firecookie  it-IT       chrome/locale/it-IT/
 locale  firecookie  ja-JP       chrome/locale/ja-JP/
+locale  firecookie  nl-NL       chrome/locale/nl-NL/
 locale  firecookie  pl-PL       chrome/locale/pl-PL/
 locale  firecookie  pt-BR       chrome/locale/pt-BR/
-locale  firecookie  ro-RO       chrome/locale/ro-RO/
+locale  firecookie  ro          chrome/locale/ro/
 locale  firecookie  ru-RU       chrome/locale/ru-RU/
 locale  firecookie  sv-SE       chrome/locale/sv-SE/
 locale  firecookie  tr-TR       chrome/locale/tr-TR/

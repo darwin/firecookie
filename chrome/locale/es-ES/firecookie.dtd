@@ -19,7 +19,7 @@
 <!ENTITY firecookie.edit.expire.label "Expira:">
 <!ENTITY firecookie.edit.session.label "Sesión">
 <!ENTITY firecookie.edit.secure.label "Cookie segura">
-<!ENTITY firecookie.edit.httponly.label     "HTTP Only">
+<!ENTITY firecookie.edit.httponly.label "HTTP Only">
 <!ENTITY firecookie.Filter "Filtro">
 <!ENTITY firecookie.FilterTooltip "Usa estas opciones para filtrar la lista de cookies">
 <!ENTITY firecookie.filter.byPath "Filtrar Cookies por Ruta">
