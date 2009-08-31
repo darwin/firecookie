@@ -2,8 +2,8 @@
 <!ENTITY firecookie.Create "Crea cookie…">
 <!ENTITY firecookie.ViewAll "Mostra i cookie…">
 <!ENTITY firecookie.ViewAllTooltip "Apre la finestra di gestione dei cookie">
-<!ENTITY firecookie.ViewExceptions "Eccezioni…">
-<!ENTITY firecookie.ViewExceptionsTooltip "Mostra la lista dei siti web permessi/non permessi">
+<!ENTITY firecookie.ViewExceptions "Mostra le eccezioni dei cookie…">
+<!ENTITY firecookie.ViewExceptionsTooltip "Apre la finestra di gestione delle eccezioni dei cookie">
 <!ENTITY firecookie.Tools "Strumenti">
 <!ENTITY firecookie.ToolsTooltip "Strumenti">
 <!ENTITY firecookie.Help "Contenuti della guida">
