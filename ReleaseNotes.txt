@@ -10,6 +10,7 @@ Release Notes for Firecookie 1.0
 == Enhancements ==
 
 == Localization ==
+    * ko-KR localization - contribution by Sewon Kim
 
 
 Release Notes for Firecookie 0.9
