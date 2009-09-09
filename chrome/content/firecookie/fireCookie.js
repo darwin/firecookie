@@ -5,6 +5,8 @@
  * @namespace Holds all functionality related to the Firecookie etension.
  * There are no global objects defined to avoid collisions with other
  * extensions.
+ * 
+ * xxxHonza: Compatibility: context.getName() has been introduced in Firebug 1.4
  */
 FBL.ns(function() { with (FBL) {
 
@@ -230,7 +232,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         {
             if (FBTrace.DBG_COOKIES)
                 FBTrace.sysout("cookies.registerObservers; Observers ALREADY registered for: " +
-                    (context ? context.window.location.href : ""));
+                    (context ? context.getName() : ""));
             return;
         }
 
@@ -244,7 +246,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.ENABLE Cookies monitoring for: " +
-                (context ? context.window.location.href : "") + "\n");
+                (context ? context.getName() : "") + "\n");
     },
 
     unregisterObservers: function(context)
@@ -253,7 +255,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         {
             if (FBTrace.DBG_COOKIES)
                 FBTrace.sysout("cookies.registerObservers; Observers ALREADY un-registered for: " +
-                    (context ? context.window.location.href : ""));
+                    (context ? context.getName() : ""));
             return;
         }
 
@@ -267,7 +269,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.DISABLE Cookies monitoring for: " +
-                (context ? context.window.location.href : "") + "\n");
+                (context ? context.getName() : "") + "\n");
     },
 
     // Helper context
@@ -337,7 +339,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.INIT real context for: " + tabId + ", " +
-                context.window.location.href + "\n");
+                context.getName() + "\n");
 
         // Create sub-context for cookies. 
         // xxxHonza: the cookies object exists within the context even if 
@@ -423,7 +425,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         {
             var tabId = getTabIdForWindow(context.window);
             FBTrace.sysout("cookies.DESTROY context, tabId: " + tabId +
-                ", " + context.window.location.href + "\n");
+                ", " + context.getName() + "\n");
         }
     },
 
@@ -1241,7 +1243,7 @@ FireCookiePanel.prototype = extend(BasePanel,
                 {
                     FBTrace.sysout(
                         "cookies.Cookie context isn't properly initialized - ERROR: " +
-                        this.context.window.location.href);
+                        this.context.getName());
                 }
                 return;
             }
@@ -1359,6 +1361,13 @@ FireCookiePanel.prototype = extend(BasePanel,
                     Firebug.FireCookieModel.disabledPanelPage.show(this);
                 return;
             }
+        }
+
+        if (Firebug.chrome.setGlobalAttribute)
+        {
+            Firebug.chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "true");
+            Firebug.chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext",
+                $STR("firecookie.Break On Cookie"));
         }
     },
 
@@ -1486,6 +1495,29 @@ FireCookiePanel.prototype = extend(BasePanel,
 
         Templates.CookieRow.toggleRow(repCookie.row, true);
         scrollIntoCenterView(repCookie.row);
+    },
+
+    resume: function()
+    {
+        this.context.breakOnCookie = !this.context.breakOnCookie;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.resume; " + this.context.breakOnCookie + ", " + this.context.getName());
+
+        Firebug.Debugger.syncCommands(this.context);
+
+        var chrome = Firebug.chrome;
+        var breakable = Firebug.chrome.getGlobalAttribute("cmd_resumeExecution", "breakable").toString();
+        if (breakable == "true")
+        {
+            chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "false");
+            chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext", $STR("firecookie.Disable Break On Cookie"));
+        }
+        else
+        {
+            chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "true");
+            chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext", $STR("firecookie.Break On Cookie"));
+        }
     }
 }); 
 
@@ -3724,13 +3756,42 @@ var CookieObserver = extend(BaseObserver,
         if (logEvents())
             this.logEvent(new CookieChangedEvent(context, makeCookieObject(cookie),
                 action), context, "cookie");
+
+        this.breakOnCookie(context, action);
+    },
+
+    breakOnCookie: function(context, action)
+    {
+        if (!context.breakOnCookie)
+            return;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.breakOnCookie; " + action);
+
+        context.breakOnCookie = false;
+
+        Firebug.Debugger.halt(function(frame)
+        {
+            for (; frame && frame.isValid; frame = frame.callingFrame)
+            {
+                var fileName = frame.script.fileName;
+                if (fileName &&
+                    fileName.indexOf("chrome://firebug/") != 0 &&
+                    fileName.indexOf("chrome://firecookie/") != 0 &&
+                    fileName.indexOf("/components/firebug-") == -1)
+                    break;
+            }
+
+            if (frame)
+                Firebug.Debugger.onBreak(frame, 3);
+        });
     },
 
     onClear: function(context)
     {
         var panel = context.getPanel(panelName);
         panel.clear();
-        
+
         if (logEvents())
             this.logEvent(new CookieClearedEvent(), context, "cookiesCleared");
     },
