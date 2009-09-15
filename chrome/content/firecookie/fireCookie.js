@@ -2,7 +2,7 @@
 
 /**
  * @author <a href="mailto:odvarko@gmail.com">Jan Odvarko</a>
- * @namespace Holds all functionality related to the Firecookie etension.
+ * @namespace Holds all functionality related to the Firecookie extension.
  * There are no global objects defined to avoid collisions with other
  * extensions.
  * 
@@ -844,6 +844,10 @@ Firebug.FireCookieModel = extend(BaseModule,
         return (now.getTime() / 1000);
     },
 
+    /**
+     * Exports all existing cookies in the browser into a cookies.txt file.
+     * This action is available in the Cookies panel toolbar.
+     */
     onExportAll: function(context)
     {
         try 
@@ -888,6 +892,10 @@ Firebug.FireCookieModel = extend(BaseModule,
         return true;
     },
 
+    /**
+     * Exports cookies for the current site into a cookies.txt file
+     * This action is available in the Cookies panel toolbar.
+     */
     onExportForSite: function(context)
     {
         try 
@@ -1159,7 +1167,7 @@ function fcInternationalize(element, attr, args)
 //-----------------------------------------------------------------------------
 
 /**
- * @panel This class represents Firecookie panel that is displayed within
+ * @panel This class represents the Cookies panel that is displayed within
  * Firebug UI.
  */
 function FireCookiePanel() {}
@@ -2537,7 +2545,7 @@ Templates.CookieRejected = domplate(Templates.Rep,
                 )
             )
         ),
-    
+
     supportsObject: function(object)
     {
         return object instanceof CookieRejectedEvent;
