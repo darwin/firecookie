@@ -4,25 +4,25 @@
 1) Build beta release xpi including tests: $ant build (default)
 2) Build final release xpi for AMO without tests: $ant release
 3) Clean up the release directory: $ant clean
-4) Generate reference doc using JSDoc-toolkit: $ant doc -->
+4) Generate reference doc using jsdoc-toolkit: $ant jsdoc -->
 <project name="fireCookie" basedir="." default="build">
 
     <!-- Directories -->
     <property name="build.dir" value="release"/>
-    <property name="doc.dir" value="docs"/>
+    <property name="doc.dir" value="jsdoc/out"/>
 
-    <!-- xxxHonza: The JS Doc Toolkit should not be hardcoded -->
-    <property name="jsdoctoolkit.dir" value="C:/www/jsdoc-toolkit/jsdoc-toolkit-2.3.0/"/>
-    <property name="jsdoctoolkitant.dir" value="C:/www/jsdoc-toolkit"/>
+    <!-- JS Doc Toolkit -->
+    <property name="jsdoctoolkit.dir" value="./firebug/jsdoc-toolkit/jsdoc-toolkit-2.3.0/"/>
+    <property name="jsdoctoolkitant.dir" value="./firebug/jsdoc-toolkit"/>
 
     <!-- Properties -->
     <property file="ant.properties"/>
 
     <!-- Paths -->
     <path id="jsdoctoolkit">
-        <!-- xxxHonza: Rhino js.jar 1.7.R2 must be used with jsdoctoolkit-ant-task-1.0.1.jar
+        <!-- Rhino js.jar 1.7.R2 must be used with jsdoctoolkit-ant-task-1.0.1.jar
             not the one that is part of jsdoc-toolkit-2.3.0 distribution 
-            this is why subdirectoris of C:/www/jsdoc-toolkit are not specified -->
+            this is why subdirectoris of ./firebug/jsdoc-toolkit are not specified -->
         <fileset dir="${jsdoctoolkitant.dir}" includes="*.jar"/>
     </path>
 
@@ -31,36 +31,15 @@
         classpathref="jsdoctoolkit"
         classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit"/>
 
-    <!-- Build docs for firebug.
-        xxxHonza: This is just a test and will be removed. -->
-    <target name="fbdoc">
-        <jsdoctoolkit jsdochome="${jsdoctoolkit.dir}"
-            template="firebug"
-            outputdir="${doc.dir}">
-            <fileset dir="C:\mozilla-dev\extensions\firebug\branches\firebug1.5">
-                <include name="**/*.js"/>
-            </fileset>
-        </jsdoctoolkit>
-
-        <copy todir="C://www/firecookie/docs">
-            <fileset dir="${doc.dir}"/>
-        </copy>
-    </target>
-
     <!-- Target: Generate Doc --> 
-    <target name="doc">
-        <jsdoctoolkit jsdochome="${jsdoctoolkit.dir}" template="firebug"
-            outputdir="${doc.dir}">
-            <fileset dir="chrome/content/firecookie">
-                <include name="*.js"/>
-            </fileset>
-        </jsdoctoolkit>
+    <target name="jsdoc">
+        <echo message="Generate doc from source files ($svn/jsdoc/out/)."/>
 
-        <!-- Copy files into www directory
-            xxxHonza: this should not be hardcoded -->
-        <copy todir="C://www/firecookie/docs">
-            <fileset dir="${doc.dir}"/>
-        </copy>
+        <!-- Clean the output direcotory -->
+        <delete dir="${doc.dir}"/>
+
+        <jsdoctoolkit jsdochome="${jsdoctoolkit.dir}" template="firebug"
+            outputdir="${doc.dir}" inputdir="."/>
     </target>
 
     <!-- Target: Clean Release directory -->
