@@ -133,21 +133,18 @@ firecookie.export.Export_For_Site_Tooltip / Cookies für %S in die Datei cookies
 // Module Implementation
 //-----------------------------------------------------------------------------
 
-/**
- * FireCookieModel supports activation (enable/disable of the Cookies panel).
- * This new functionality has been introduced in Firebug 1.2 and makes possible
- * to control activity of Firebug panels in order to avoid (performance) expensive 
- * features.
- */
 var BaseModule = Firebug.ActivableModule ? Firebug.ActivableModule : Firebug.Module;
 
 /**
- * @module This class represents the <i>module</i> for Firecookie extension.
+ * @module This class represents a <i>module</i> for Firecookie extension.
+ * The module supports activation (enable/disable of the Cookies panel).
+ * This functionality has been introduced in Firebug 1.2 and makes possible
+ * to control activity of Firebug panels in order to avoid (performance) expensive
+ * features.
  */
 Firebug.FireCookieModel = extend(BaseModule,
 /** @lends Firebug.FireCookieModel */
-{ 
-
+{
     // Set to true if all hooks for monitoring cookies are registered; otherwise false.
     observersRegistered: false,
 
@@ -1206,6 +1203,9 @@ FireCookiePanel.prototype = extend(BasePanel,
         this.refresh();
     },
 
+    /**
+     * Renders list of cookies displayed within the Cookies panel.
+     */
     refresh: function()
     {
         if (!Firebug.FireCookieModel.isEnabled(this.context))
