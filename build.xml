@@ -9,11 +9,11 @@
 
     <!-- Directories -->
     <property name="build.dir" value="release"/>
-    <property name="doc.dir" value="jsdoc/out"/>
 
     <!-- JS Doc Toolkit -->
-    <property name="jsdoctoolkit.dir" value="./firebug/jsdoc-toolkit/jsdoc-toolkit-2.3.0/"/>
-    <property name="jsdoctoolkitant.dir" value="./firebug/jsdoc-toolkit"/>
+    <property name="jsdoc.dir" value="jsdoc/firebug/"/>
+    <property name="jsdoc-toolkit.dir" value="${jsdoc.dir}/jsdoc-toolkit-2.3.0/"/>
+    <property name="jsdoc-output.dir" value="jsdoc/out/"/>
 
     <!-- Properties -->
     <property file="ant.properties"/>
@@ -23,7 +23,7 @@
         <!-- Rhino js.jar 1.7.R2 must be used with jsdoctoolkit-ant-task-1.0.1.jar
             not the one that is part of jsdoc-toolkit-2.3.0 distribution 
             this is why subdirectoris of ./firebug/jsdoc-toolkit are not specified -->
-        <fileset dir="${jsdoctoolkitant.dir}" includes="*.jar"/>
+        <fileset dir="${jsdoc.dir}" includes="*.jar"/>
     </path>
 
     <!-- JS Doc toolkit -->
@@ -36,10 +36,10 @@
         <echo message="Generate doc from source files ($svn/jsdoc/out/)."/>
 
         <!-- Clean the output direcotory -->
-        <delete dir="${doc.dir}"/>
+        <delete dir="${jsdoc-output.dir}"/>
 
-        <jsdoctoolkit jsdochome="${jsdoctoolkit.dir}" template="firebug"
-            outputdir="${doc.dir}" inputdir="."/>
+        <jsdoctoolkit jsdochome="${jsdoc-toolkit.dir}" template="firebug"
+            outputdir="${jsdoc-output.dir}" inputdir="chrome"/>
     </target>
 
     <!-- Target: Clean Release directory -->
