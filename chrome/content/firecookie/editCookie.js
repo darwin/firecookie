@@ -127,6 +127,9 @@ var EditCookie =
         window.close();
     },
 
+    /**
+     * Verify values before the OK button is pressed.
+     */
     checkValues: function()
     {
         var name = this.nameNode.value;
