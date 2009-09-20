@@ -11,7 +11,7 @@
 FBL.ns(function() { with (FBL) {
 
 // Constants
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -131,7 +131,7 @@ firecookie.export.Export_For_Site_Tooltip / Cookies für %S in die Datei cookies
 */
 
 // Module Implementation
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 var BaseModule = Firebug.ActivableModule ? Firebug.ActivableModule : Firebug.Module;
 
@@ -188,6 +188,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         // Localize UI (use firecookie.properties instead of firecookie.dtd)
         // Firebu 1.5 dispatch "internationalizeUI" message so, don't use the name.
         this.fcInternationalizeUI();
+
+        // Register debugger listener for providing cookie-breakpoints.
+        Firebug.Debugger.addListener(this.DebuggerListener);
     },
 
     /**
@@ -207,6 +210,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             netInfoBody.removeListener(this.NetInfoBody);
 
         Firebug.Console.removeListener(this.ConsoleListener);
+        Firebug.Debugger.removeListener(this.DebuggerListener);
     },
 
     fcInternationalizeUI: function()
@@ -346,6 +350,9 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         // Initialize custom path filter for this context
         context.cookies.pathFilter = "/";
+
+        // List of breakpoints.
+        context.cookies.breakpoints = [];
 
         // The temp context isn't created e.g. for empty tabs, chrome pages.
         var tempContext = contexts[tabId];
@@ -1084,7 +1091,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 }); 
 
 // Localization
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * Use this function to translate a string.
@@ -1161,7 +1168,7 @@ function fcInternationalize(element, attr, args)
 }
 
 // Panel Implementation
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @panel This class represents the Cookies panel that is displayed within
@@ -1507,30 +1514,12 @@ FireCookiePanel.prototype = extend(BasePanel,
 
     resume: function()
     {
-        this.context.breakOnCookie = !this.context.breakOnCookie;
-
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.resume; " + this.context.breakOnCookie + ", " + this.context.getName());
-
-        Firebug.Debugger.syncCommands(this.context);
-
-        var chrome = Firebug.chrome;
-        var breakable = Firebug.chrome.getGlobalAttribute("cmd_resumeExecution", "breakable").toString();
-        if (breakable == "true")
-        {
-            chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "false");
-            chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext", $STR("firecookie.Disable Break On Cookie"));
-        }
-        else
-        {
-            chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "true");
-            chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext", $STR("firecookie.Break On Cookie"));
-        }
+        Firebug.HTMLModule.Breakpoints.resume(this.context);
     }
 }); 
 
 // Menu utility
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 var MenuUtils = 
 {
@@ -1578,7 +1567,7 @@ var MenuUtils =
 };
 
 // Cookie Permissions
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @class This class is responsible for managing cookie permisssions.
@@ -1709,7 +1698,7 @@ Firebug.FireCookieModel.Perm = extend(Object,
 
         // This is called through TabWatcher.iterateContexts and
         // "this" isn't passed along
-        var oThis = Firebug.FireCookieModel.Perm;        
+        var oThis = Firebug.FireCookieModel.Perm;
         var location = context.browser.currentURI;
         var value = oThis.getPermission(location);
 
@@ -1762,7 +1751,7 @@ Firebug.FireCookieModel.Perm = extend(Object,
 });
 
 // Templates Helpers
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 // Object with all rep templates.
 var Templates = Firebug.FireCookieModel.Templates = {};
@@ -1783,7 +1772,7 @@ Templates.Rep = domplate(Firebug.Rep,
 });
 
 // Cookie Template (domplate)
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate Represents a domplate template for cookie entry in the cookie list.
@@ -2096,10 +2085,17 @@ Templates.CookieRow = domplate(Templates.Rep,
             });
         }
 
+        var Model = Firebug.FireCookieModel;
+
         // Permissions
-        var permItems = Firebug.FireCookieModel.Perm.getContextMenuItems(cookie, target, context);
+        var permItems = Model.Perm.getContextMenuItems(cookie, target, context);
         if (permItems)
             items = items.concat(permItems);
+
+        // Breakpoints
+        var breakOnItems = Model.Breakpoints.getContextMenuItems(cookie, target, context);
+        if (breakOnItems)
+            items = items.concat(breakOnItems);
 
         return items;
     },
@@ -2369,7 +2365,7 @@ Templates.CookieRow = domplate(Templates.Rep,
 });
 
 // Console Event Templates (domplate)
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate This template is used for displaying cookie-changed events
@@ -2514,7 +2510,7 @@ Templates.CookieChanged = domplate(Templates.Rep,
     }
 });
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate Represents a domplate template for displaying rejected cookies.
@@ -2582,7 +2578,7 @@ Templates.CookieRejected = domplate(Templates.Rep,
     }
 });
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate Represents a domplate template for cookie cleared event that is
@@ -2616,7 +2612,7 @@ Templates.CookieCleared = domplate(Templates.Rep,
 });
 
 // Header Template (domplate)
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate Represents a template for basic cookie list layout. This
@@ -2916,7 +2912,7 @@ Templates.CookieTable = domplate(Templates.Rep,
 });
 
 // Resizable column helper (helper for Templates.CookieTable)
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 var HeaderColumnResizer =
 {
@@ -3110,7 +3106,7 @@ var HeaderColumnResizer =
 };
 
 // Clipboard helper
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @class This class implements clibpoard functionality.
@@ -3234,7 +3230,7 @@ Firebug.FireCookieModel.CookieClipboard = extend(Object,
 // Helper shortcut
 var CookieClipboard = Firebug.FireCookieModel.CookieClipboard;
  
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function insertWrappedText(text, textBox)
 {
@@ -3268,7 +3264,7 @@ function insertWrappedText(text, textBox)
 }
 
 // Cookie object
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents a cookie object that is created as a representation of
@@ -3402,7 +3398,7 @@ Cookie.prototype =
 };
 
 // Cookie Helpers
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function getCookieId(cookie)
 {
@@ -3534,7 +3530,7 @@ function parseSentCookiesFromString(header)
 }
 
 // Cookie Event objects
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * This object represents a "cookie-changed" event (repObject). 
@@ -3569,7 +3565,7 @@ function CookieRejectedEvent(context, uri)
 }
 
 // Base observer
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 var BaseObserver =
 {
@@ -3587,7 +3583,7 @@ var BaseObserver =
 };
 
 // Cookie observer
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @class This class represents an observer (nsIObserver) for cookie-changed
@@ -3738,10 +3734,18 @@ var CookieObserver = extend(BaseObserver,
             return;
 
         if (FBTrace.DBG_COOKIES)
-        {
-            FBTrace.sysout("cookies.onCookieChanged: '" +
-                (cookie ? cookie.name : "null") +
+            FBTrace.sysout("cookies.onCookieChanged: '" + (cookie ? cookie.name : "null") +
                 "', " + action + "\n");
+
+        if (action != "cleared")
+        {
+            // If log into the Console tab is on, create "deleted", "added" and "changed" events.
+            if (logEvents())
+                this.logEvent(new CookieChangedEvent(context, makeCookieObject(cookie),
+                    action), context, "cookie");
+
+            // Break on cookie if "Break On" is activated or if a cookie breakpoint exist.
+            Firebug.FireCookieModel.Breakpoints.breakOnCookie(context, cookie, action);
         }
 
         switch(action)
@@ -3759,40 +3763,6 @@ var CookieObserver = extend(BaseObserver,
             this.onClear(context);
             return;
         }
-
-        // If log into the Console tab is on, create "deleted", "added" and "changed" events.
-        if (logEvents())
-            this.logEvent(new CookieChangedEvent(context, makeCookieObject(cookie),
-                action), context, "cookie");
-
-        this.breakOnCookie(context, action);
-    },
-
-    breakOnCookie: function(context, action)
-    {
-        if (!context.breakOnCookie)
-            return;
-
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.breakOnCookie; " + action);
-
-        context.breakOnCookie = false;
-
-        Firebug.Debugger.halt(function(frame)
-        {
-            for (; frame && frame.isValid; frame = frame.callingFrame)
-            {
-                var fileName = frame.script.fileName;
-                if (fileName &&
-                    fileName.indexOf("chrome://firebug/") != 0 &&
-                    fileName.indexOf("chrome://firecookie/") != 0 &&
-                    fileName.indexOf("/components/firebug-") == -1)
-                    break;
-            }
-
-            if (frame)
-                Firebug.Debugger.onBreak(frame, 3);
-        });
     },
 
     onClear: function(context)
@@ -3954,7 +3924,7 @@ var CookieObserver = extend(BaseObserver,
 
 // Preference observer 
 // Used till the real context isn't available (in initContext), bug if Firebug)
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function CookieTempObserver(tempContext) {
     this.tempContext = tempContext;
@@ -3966,7 +3936,7 @@ CookieTempObserver.prototype = extend(BaseObserver, {
     }
 });
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function TempContext(tabId)
 {
@@ -3980,7 +3950,7 @@ TempContext.prototype.appendCookieEvent = function(subject, topic, data)
 }
 
 // Preference observer
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents an observer for nsPref:changed event dispatched when 
@@ -4006,7 +3976,7 @@ var PrefObserver = extend(BaseObserver,
 });
 
 // Permission observer
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents an observer for perm-changed event that is dispatched
@@ -4029,7 +3999,7 @@ var PermissionObserver = extend(BaseObserver,
 });
 
 // HTTP observer
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents an observer for http-on-modify-request and
@@ -4232,7 +4202,7 @@ var HttpObserver = extend(BaseObserver,
 });
 
 // Debug helpers
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function checkList(panel)
 {
@@ -4263,7 +4233,7 @@ function checkList(panel)
 }
 
 // Window helpers
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function getWindowForRequest(request) 
 {
@@ -4351,7 +4321,7 @@ function safeGetWindow(webProgress)
 }
 
 // Time Helpers
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function now()
 {
@@ -4359,7 +4329,7 @@ function now()
 }
 
 // Array Helpers
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function cloneMap(map)
 {
@@ -4371,7 +4341,7 @@ function cloneMap(map)
 }
 
 // Preference Helpers
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 // This functions are different in 1.05 and 1.2
 // So, this is a stable version.
@@ -4407,7 +4377,7 @@ function logEvents()
 }
 
 // Registration Helpers
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 function registerCookieObserver(observer) {
     observerService.addObserver(observer, "cookie-changed", false);
@@ -4421,7 +4391,7 @@ function unregisterCookieObserver(observer) {
 }
 
 // Support for FBTraceConsole in Firebug 1.3
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 Firebug.FireCookieModel.TraceListener = 
 {
@@ -4451,14 +4421,14 @@ Firebug.FireCookieModel.TraceListener =
 };
 
 // Make following APIs accessible in editCookie.js
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 Firebug.FireCookieModel.Cookie = Cookie;
 Firebug.FireCookieModel.$FC_STR = $FC_STR;
 Firebug.FireCookieModel.$FC_STRF = $FC_STRF;
 
 // Custom info tab within Net panel
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate Represents domplate template for cookie body that is displayed if 
@@ -4574,7 +4544,7 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
 });
 
 // Custom output in the Console panel for: document.cookie
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 Firebug.FireCookieModel.ConsoleListener =
 {
@@ -4608,8 +4578,259 @@ Firebug.FireCookieModel.ConsoleListener =
     }
 };
 
+// Cookie Breakpoints
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * @class Represents {@link Firebug.Debugger} listener. This listener is reponsible for
+ * providing a list of cookie-breakpoints into the Breakpoints side-panel.
+ */
+Firebug.FireCookieModel.DebuggerListener =
+{
+    getBreakpoints: function(context, groups)
+    {
+        var breakpoints = context.cookies.breakpoints;
+        if (!breakpoints.length)
+            return;
+
+        groups.push({name: "cookieBreakpoints", title: $STR("firecookie.Cookie_Breakpoints"),
+            breakpoints: breakpoints});
+    }
+};
+
+Firebug.FireCookieModel.Breakpoint = function(cookie)
+{
+    this.cookie = cookie;
+    this.checked = true;
+};
+
+Firebug.FireCookieModel.BreakpointTemplate = domplate(Firebug.Rep,
+{
+    inspectable: false,
+
+    tag:
+        DIV({"class": "breakpointRow focusRow", _repObject: "$bp",
+            role: "option", "aria-checked": "$bp.checked"},
+            DIV({"class": "breakpointBlockHead", onclick: "$onEnable"},
+                INPUT({"class": "breakpointCheckbox", type: "checkbox",
+                    _checked: "$bp.checked", tabindex : "-1"}),
+                SPAN("$bp|getTitle"),
+                DIV({"class": "breakpointMutationType"}, "$bp|getType"),
+                IMG({"class": "closeButton", src: "blank.gif", onclick: "$onRemove"})
+            ),
+            DIV({"class": "breakpointCode"},
+                SPAN("$bp|getValue")
+            )
+        ),
+
+    getTitle: function(bp)
+    {
+        return bp.cookie.cookie.name;
+    },
+
+    getValue: function(bp)
+    {
+        return bp.cookie.cookie.value;
+    },
+
+    getType: function(bp)
+    {
+        return $FC_STR("Break On Cookie Change");
+    },
+
+    onRemove: function(event)
+    {
+        cancelEvent(event);
+
+        var bpPanel = Firebug.getElementPanel(event.target);
+        var context = bpPanel.context;
+
+        if (hasClass(event.target, "closeButton"))
+        {
+            // Remove from list of breakpoints.
+            var row = getAncestorByClass(event.target, "breakpointRow");
+            Firebug.FireCookieModel.Breakpoints.removeBreakpoint(context, row.repObject);
+
+            // Remove from the UI.
+            bpPanel.noRefresh = true;
+            bpPanel.removeRow(row);
+            bpPanel.noRefresh = false;
+        }
+    },
+
+    onEnable: function(event)
+    {
+        var checkBox = event.target;
+        if (hasClass(checkBox, "breakpointCheckbox"))
+        {
+            var bp = getAncestorByClass(checkBox, "breakpointRow").repObject;
+            bp.checked = checkBox.checked;
+        }
+    },
+
+    supportsObject: function(object)
+    {
+        return object instanceof Firebug.FireCookieModel.Breakpoint;
+    }
+});
+
+Firebug.FireCookieModel.Breakpoints =
+{
+    resume: function(context)
+    {
+        context.breakOnCookie = !context.breakOnCookie;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.resume; " + context.breakOnCookie + ", " + context.getName());
+
+        Firebug.Debugger.syncCommands(context);
+
+        var chrome = Firebug.chrome;
+        var breakable = Firebug.chrome.getGlobalAttribute("cmd_resumeExecution", "breakable").toString();
+        if (breakable == "true")
+        {
+            chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "false");
+            chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext",
+                $STR("firecookie.Disable Break On Cookie"));
+        }
+        else
+        {
+            chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "true");
+            chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext",
+                $STR("firecookie.Break On Cookie"));
+        }
+    },
+
+    breakOnCookie: function(context, cookie, action)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.breakOnCookie; " + action);
+
+        // Break on cookie if the global "Break on" is set.
+        if (context.breakOnCookie)
+        {
+            context.breakOnCookie = false;
+            this.breakNow();
+            return;
+        }
+
+        var breakpoints = context.cookies.breakpoints;
+        if (!breakpoints.length)
+            return;
+
+        var panel = context.getPanel(panelName, true); 
+        var repCookie = panel ? panel.findRepObject(cookie) : null;
+        if (!repCookie)
+            return;
+
+        // Break on cookie breakpoint if it exists.
+        for (var i=0; i<breakpoints.length; i++) {
+            var bp = breakpoints[i];
+            if (bp.checked && bp.cookie == repCookie) {
+                this.breakNow();
+                context.invalidatePanels("breakpoints");
+                break;
+            }
+        }
+
+        // Remove breakpoints associated with removed cookie.
+        if (action == "deleted")
+        {
+            var invalidate = false;
+            for (var i=0; i<breakpoints.length; i++) {
+                if (breakpoints[i].cookie == repCookie) {
+                    breakpoints.splice(i, 1);
+                    i--;
+                }
+            }
+            if (invalidate)
+                context.invalidatePanels("breakpoints");
+        }
+    },
+
+    breakNow: function()
+    {
+        Firebug.Debugger.halt(function(frame)
+        {
+            for (; frame && frame.isValid; frame = frame.callingFrame)
+            {
+                var fileName = frame.script.fileName;
+                if (fileName &&
+                    fileName.indexOf("chrome://firebug/") != 0 &&
+                    fileName.indexOf("chrome://firecookie/") != 0 &&
+                    fileName.indexOf("/components/firebug-") == -1)
+                    break;
+            }
+
+            if (frame)
+                Firebug.Debugger.onBreak(frame, 3);
+        });
+    },
+
+    getBreakpointIndex: function(context, cookie)
+    {
+        var breakpoints = context.cookies.breakpoints;
+        for (var i=0; i<breakpoints.length; i++)
+        {
+            var bp = breakpoints[i];
+            if (bp.cookie == cookie)
+                return i;
+        }
+        return -1;
+    },
+
+    removeBreakpoint: function(context, cookie)
+    {
+        // Break on cookie breakpoint if it exists.
+        var breakpoints = context.cookies.breakpoints;
+        for (var i=0; i<breakpoints.length; i++)
+        {
+            var bp = breakpoints[i];
+            if (bp.checked && bp.cookie == cookie)
+            {
+                breakpoints.splice(i, 1);
+                break;
+            }
+        }
+    },
+
+    getContextMenuItems: function(cookie, target, context)
+    {
+        var items = [];
+        items.push("-");
+
+        var cookieName = cropString(cookie.cookie.name, 40);
+
+        items.push({
+          nol10n: true,
+          tooltiptext: $FC_STRF("firecookie.tooltip.Break On Cookie", [cookieName]),
+          label: $FC_STRF("firecookie.Break On Cookie", [cookieName]),
+          type: "checkbox",
+          checked: this.getBreakpointIndex(context, cookie) >= 0,
+          command: bindFixed(this.onBreakOnCookie, this, context, cookie),
+        });
+
+        return items;
+    },
+
+    onBreakOnCookie: function(context, cookie)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.breakOnCookie; ", context);
+
+        var breakpoints = context.cookies.breakpoints;
+
+        // Remove an existing or create new breakpoint.
+        var index = this.getBreakpointIndex(context, cookie);
+        if (index > 0)
+            breakpoints.splice(index, 1);
+        else
+            breakpoints.push(new Firebug.FireCookieModel.Breakpoint(cookie));
+    }
+}
+
 // Firebug Registration
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 // For backward compatibility with Firebug 1.1
 if (Firebug.ActivableModule)
@@ -4627,10 +4848,13 @@ Firebug.registerRep(
     Templates.CookieCleared         // Console: cookies "cleared" event
 );
 
-//-----------------------------------------------------------------------------
+// Register breakpoint template.
+Firebug.registerRep(Firebug.FireCookieModel.BreakpointTemplate);
+
+//-------------------------------------------------------------------------------------------------
 
 FBTrace.DBG_COOKIES = getPref(FirebugPrefDomain, "DBG_COOKIES");
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 }})
 
