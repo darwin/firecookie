@@ -4,8 +4,8 @@ Addon page: https://addons.mozilla.org/en-US/firefox/addon/6683
 Issue list: http://code.google.com/p/firecookie/issues/list
 Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
 
-Release Notes for Firecookie 1.0
---------------------------------
+Release Notes for Firecookie 1.0 (alpha)
+----------------------------------------
 
 == Enhancements ==
     * Break on Cookie. This feature allows to break JS execution when a cookie
@@ -17,8 +17,8 @@ Release Notes for Firecookie 1.0
 == Bug Fixes ==
     Issue 50: Break on cookie change
 
-Release Notes for Firecookie 0.9
---------------------------------
+Release Notes for Firecookie 0.9.1
+----------------------------------
 
 == Enhancements ==
     * If cookie value is in JSON or XML format there is an additional tab
