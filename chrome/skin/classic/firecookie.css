@@ -138,6 +138,48 @@
 }
 
 /************************************************************************************************/
+/* Breakpoints */
+
+.panelNode-cookies .cookieRowHeader {
+    display: block;
+}
+
+.cookieRowHeader {
+    cursor: pointer;
+    display: none;
+    height: 15px;
+}
+
+/* Display brekpoint disc */
+.cookieRow .cookieRowHeader {
+    background-position: 5px 1px;
+}
+
+.cookieRow[breakpoint="true"] .cookieRowHeader {
+    background-image: url(chrome://firebug/skin/breakpoint.png);
+}
+
+.cookieRow[breakpoint="true"][disabledBreakpoint="true"] .cookieRowHeader {
+    background-image: url(chrome://firebug/skin/breakpointDisabled.png);
+}
+
+.cookieRow:hover .cookieRowHeader {
+    background-color: #F6F6F6;
+}
+
+#cookieBreakpointBar {
+    max-width: 38px;
+}
+
+#colName > .cookieHeaderCellBox {
+    border-left: 0px;
+}
+
+.cookieRow .cookieRowHeader {
+    width: 3px;
+}
+
+/************************************************************************************************/
 
 .cookieRow .cookieNameLabel {
     background-image: url(chrome://firebug/skin/win/twistyClosed.png);

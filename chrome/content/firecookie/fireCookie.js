@@ -6,7 +6,10 @@
  * There are no global objects defined to avoid collisions with other
  * extensions.
  * 
- * xxxHonza: Compatibility: context.getName() has been introduced in Firebug 1.4
+ * xxxHonza, Compatibility:
+ * context.getName() has been introduced in Firebug 1.4
+ * Breakpoints
+ * 
  */
 FBL.ns(function() { with (FBL) {
 
@@ -352,7 +355,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         context.cookies.pathFilter = "/";
 
         // List of breakpoints.
-        context.cookies.breakpoints = [];
+        context.cookies.breakpoints = new CookieBreakpointGroup();
 
         // The temp context isn't created e.g. for empty tabs, chrome pages.
         var tempContext = contexts[tabId];
@@ -375,6 +378,11 @@ Firebug.FireCookieModel = extend(BaseModule,
         // Unregister all observers if the panel is disabled.
         if (!this.isEnabled(context))
             this.unregisterObservers(context);
+
+        // Load existing breakpoints
+        var persistedPanelState = getPersistedState(context, panelName);
+        if (persistedPanelState.breakpoints)
+            context.cookies.breakpoints = persistedPanelState.breakpoints;
     },
 
     reattachContext: function(browser, context)
@@ -1269,7 +1277,7 @@ FireCookiePanel.prototype = extend(BasePanel,
                 var host = activeHosts[hostName];
                 if (!host.rejected)
                     continue;
-                    
+
                 var receivedCookies = host.receivedCookies;
                 if (receivedCookies)
                     cookies = extendArray(cookies, receivedCookies);
@@ -1286,7 +1294,12 @@ FireCookiePanel.prototype = extend(BasePanel,
             {
                 var cookie = cookies[i];
                 cookie.row = row;
-                row.repObject = cookie;
+
+                // Make sure a breakpoint is displayed.
+                var breakpoints = this.context.cookies.breakpoints;
+                if (breakpoints && breakpoints.findBreakpoint(cookie.cookie))
+                    row.setAttribute("breakpoint", "true");
+
                 row = row.nextSibling;
             }
         }
@@ -1787,6 +1800,11 @@ Templates.CookieRow = domplate(Templates.Rep,
             TR({"class": "cookieRow", _repObject: "$cookie", onclick: "$onClickRow",
                 $sessionCookie: "$cookie|isSessionCookie",
                 $rejectedCookie: "$cookie|isRejected"},
+                TD({"class": "cookieCol"},
+                   DIV({"class": "sourceLine cookieRowHeader", onclick: "$onClickRowHeader"},
+                        "&nbsp;"
+                   )
+                ),
                 TD({"class": "cookieNameCol cookieCol"},
                     DIV({"class": "cookieNameLabel cookieLabel"}, "$cookie|getName")
                 ),
@@ -2191,6 +2209,22 @@ Templates.CookieRow = domplate(Templates.Rep,
         }
     },
 
+    onClickRowHeader: function(event)
+    {
+        cancelEvent(event);
+
+        var rowHeader = event.target;
+        if (!hasClass(rowHeader, "cookieRowHeader"))
+            return;
+
+        var row = getAncestorByClass(event.target, "cookieRow");
+        if (!row)
+            return;
+
+        var context = Firebug.getElementPanel(row).context;
+        Breakpoints.onBreakOnCookie(context, row.repObject);
+    },
+
     onClickRow: function(event)
     {
         if (FBTrace.DBG_COOKIES)
@@ -2292,7 +2326,7 @@ Templates.CookieRow = domplate(Templates.Rep,
             panel.table.lastChild.lastChild)[0];
 
         var opened = hasClass(cookie.row, "opened");
-        
+
         cookie.row = row;
         row.repObject = cookie;
 
@@ -2627,6 +2661,9 @@ Templates.CookieTable = domplate(Templates.Rep,
         TABLE({"class": "cookieTable", cellpadding: 0, cellspacing: 0, hiddenCols: ""},
             TBODY(
                 TR({"class": "cookieHeaderRow", onclick: "$onClickHeader"},
+                    TD({id: "cookieBreakpointBar", width: "1%", "class": "cookieHeaderCell"},
+                        "&nbsp;"
+                    ),
                     TD({id: "colName", "class": "cookieHeaderCell alphaValue"},
                         DIV({"class": "cookieHeaderCellBox", title: $FC_STR("firecookie.header.name.tooltip")}, 
                         $FC_STR("firecookie.header.name"))
@@ -3745,7 +3782,7 @@ var CookieObserver = extend(BaseObserver,
                     action), context, "cookie");
 
             // Break on cookie if "Break On" is activated or if a cookie breakpoint exist.
-            Firebug.FireCookieModel.Breakpoints.breakOnCookie(context, cookie, action);
+            Breakpoints.breakOnCookie(context, cookie, action);
         }
 
         switch(action)
@@ -4555,6 +4592,10 @@ Firebug.FireCookieModel.ConsoleListener =
 
     log: function(context, object, className, sourceLink)
     {
+        //xxxHonza: chromebug says it's null sometimes.
+        if (!context)
+            return;
+
         if (object !== context.window.document.cookie)
             return;
 
@@ -4589,18 +4630,17 @@ Firebug.FireCookieModel.DebuggerListener =
 {
     getBreakpoints: function(context, groups)
     {
-        var breakpoints = context.cookies.breakpoints;
-        if (!breakpoints.length)
-            return;
-
-        groups.push({name: "cookieBreakpoints", title: $STR("firecookie.Cookie_Breakpoints"),
-            breakpoints: breakpoints});
+        if (!context.cookies.breakpoints.isEmpty())
+            groups.push(context.cookies.breakpoints);
     }
 };
 
 Firebug.FireCookieModel.Breakpoint = function(cookie)
 {
-    this.cookie = cookie;
+    this.name = cookie.name;
+    this.host = cookie.host;
+    this.path = cookie.path;
+
     this.checked = true;
 };
 
@@ -4625,12 +4665,12 @@ Firebug.FireCookieModel.BreakpointTemplate = domplate(Firebug.Rep,
 
     getTitle: function(bp)
     {
-        return bp.cookie.cookie.name;
+        return bp.name;
     },
 
     getValue: function(bp)
     {
-        return bp.cookie.cookie.value;
+        return bp.host + bp.path;
     },
 
     getType: function(bp)
@@ -4649,7 +4689,7 @@ Firebug.FireCookieModel.BreakpointTemplate = domplate(Firebug.Rep,
         {
             // Remove from list of breakpoints.
             var row = getAncestorByClass(event.target, "breakpointRow");
-            Firebug.FireCookieModel.Breakpoints.removeBreakpoint(context, row.repObject);
+            context.cookies.breakpoints.removeBreakpoint(row.repObject);
 
             // Remove from the UI.
             bpPanel.noRefresh = true;
@@ -4715,36 +4755,23 @@ Firebug.FireCookieModel.Breakpoints =
         }
 
         var breakpoints = context.cookies.breakpoints;
-        if (!breakpoints.length)
+        if (breakpoints.isEmpty())
             return;
 
-        var panel = context.getPanel(panelName, true); 
-        var repCookie = panel ? panel.findRepObject(cookie) : null;
-        if (!repCookie)
+        // Get breakpoint for modified cookie.
+        var bp = breakpoints.findBreakpoint(makeCookieObject(cookie));
+        if (!bp)
             return;
 
         // Break on cookie breakpoint if it exists.
-        for (var i=0; i<breakpoints.length; i++) {
-            var bp = breakpoints[i];
-            if (bp.checked && bp.cookie == repCookie) {
-                this.breakNow();
-                context.invalidatePanels("breakpoints");
-                break;
-            }
-        }
+        if (bp.checked)
+            this.breakNow();
 
-        // Remove breakpoints associated with removed cookie.
+        // Clear breakpoint associated with removed cookie.
         if (action == "deleted")
         {
-            var invalidate = false;
-            for (var i=0; i<breakpoints.length; i++) {
-                if (breakpoints[i].cookie == repCookie) {
-                    breakpoints.splice(i, 1);
-                    i--;
-                }
-            }
-            if (invalidate)
-                context.invalidatePanels("breakpoints");
+            breakpoints.removeBreakpoint(bp);
+            context.invalidatePanels("breakpoints");
         }
     },
 
@@ -4767,33 +4794,6 @@ Firebug.FireCookieModel.Breakpoints =
         });
     },
 
-    getBreakpointIndex: function(context, cookie)
-    {
-        var breakpoints = context.cookies.breakpoints;
-        for (var i=0; i<breakpoints.length; i++)
-        {
-            var bp = breakpoints[i];
-            if (bp.cookie == cookie)
-                return i;
-        }
-        return -1;
-    },
-
-    removeBreakpoint: function(context, cookie)
-    {
-        // Break on cookie breakpoint if it exists.
-        var breakpoints = context.cookies.breakpoints;
-        for (var i=0; i<breakpoints.length; i++)
-        {
-            var bp = breakpoints[i];
-            if (bp.checked && bp.cookie == cookie)
-            {
-                breakpoints.splice(i, 1);
-                break;
-            }
-        }
-    },
-
     getContextMenuItems: function(cookie, target, context)
     {
         var items = [];
@@ -4806,7 +4806,7 @@ Firebug.FireCookieModel.Breakpoints =
           tooltiptext: $FC_STRF("firecookie.tooltip.Break On Cookie", [cookieName]),
           label: $FC_STRF("firecookie.Break On Cookie", [cookieName]),
           type: "checkbox",
-          checked: this.getBreakpointIndex(context, cookie) >= 0,
+          checked: !!context.cookies.breakpoints.findBreakpoint(cookie.cookie),
           command: bindFixed(this.onBreakOnCookie, this, context, cookie),
         });
 
@@ -4820,14 +4820,81 @@ Firebug.FireCookieModel.Breakpoints =
 
         var breakpoints = context.cookies.breakpoints;
 
-        // Remove an existing or create new breakpoint.
-        var index = this.getBreakpointIndex(context, cookie);
-        if (index > 0)
-            breakpoints.splice(index, 1);
+        // Remove an existing or create a new breakpoint.
+        var row = cookie.row;
+        cookie = cookie.cookie;
+        var bp = breakpoints.findBreakpoint(cookie);
+        if (bp)
+        {
+            breakpoints.removeBreakpoint(cookie);
+            row.removeAttribute("breakpoint");
+        }
         else
-            breakpoints.push(new Firebug.FireCookieModel.Breakpoint(cookie));
+        {
+            breakpoints.addBreakpoint(cookie);
+            row.setAttribute("breakpoint", "true");
+        }
     }
 }
+
+var Breakpoints = Firebug.FireCookieModel.Breakpoints;
+
+//-------------------------------------------------------------------------------------------------
+
+function CookieBreakpointGroup() {}
+CookieBreakpointGroup.prototype = extend(new Firebug.Breakpoint.BreakpointGroup(),
+{
+    name: "cookieBreakpoints",
+    title: $STR("firecookie.Cookie Breakpoints"),
+
+    addBreakpoint: function(cookie)
+    {
+        this.breakpoints.push(new Firebug.FireCookieModel.Breakpoint(cookie));
+    },
+
+    removeBreakpoint: function(cookie)
+    {
+        var bp = this.findBreakpoint(cookie);
+        remove(this.breakpoints, bp);
+    },
+
+    matchBreakpoint: function(bp, args)
+    {
+        var cookie = args[0];
+        return (bp.name == cookie.name) &&
+            (bp.host = cookie.host) &&
+            (bp.path = cookie.path);
+    }
+});
+
+//-------------------------------------------------------------------------------------------------
+
+var OBJECTLINK = FirebugReps.OBJECTLINK;
+
+Templates.CookieRep = domplate(Templates.Rep,
+{
+    tag:
+        OBJECTLINK(
+            SPAN({"class": "objectTitle"}, "$object|getTitle")
+        ),
+
+    className: "cookie",
+
+    supportsObject: function(cookie)
+    {
+        return cookie instanceof Cookie;
+    },
+
+    getTitle: function(cookie)
+    {
+        return cookie.cookie.name;
+    },
+
+    getTooltip: function(cookie)
+    {
+        return cookie.cookie.value;
+    }
+});
 
 // Firebug Registration
 //-------------------------------------------------------------------------------------------------
@@ -4841,6 +4908,7 @@ else
 Firebug.registerPanel(FireCookiePanel);
 
 Firebug.registerRep(
+    //Templates.CookieRep,          // Cookie
     Templates.CookieTable,          // Cookie table with list of cookies
     Templates.CookieRow,            // Entry in the cookie table
     Templates.CookieChanged,        // Console: "cookie-changed" event
