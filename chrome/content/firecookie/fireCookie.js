@@ -4779,7 +4779,7 @@ Firebug.FireCookieModel.Breakpoints =
         if (context.breakOnCookie)
         {
             context.breakingCause = {
-                title: $STR("firecookie.Break On Cookie", [cookie.name]),
+                title: $STR("firecookie.Break On Cookie"),
                 message: cropString(unescape(cookie.name + "; " + cookie.value), 200)
             };
             halt = true;
@@ -4841,8 +4841,8 @@ Firebug.FireCookieModel.Breakpoints =
 
         items.push({
           nol10n: true,
-          tooltiptext: $FC_STRF("firecookie.tooltip.Break On Cookie", [cookieName]),
-          label: $FC_STRF("firecookie.Break On Cookie", [cookieName]),
+          tooltiptext: $FC_STRF("firecookie.menu.tooltip.Break On Cookie", [cookieName]),
+          label: $FC_STRF("firecookie.menu.Break On Cookie", [cookieName]),
           type: "checkbox",
           checked: bp != null,
           command: bindFixed(this.onBreakOnCookie, this, context, cookie),
@@ -4851,7 +4851,7 @@ Firebug.FireCookieModel.Breakpoints =
         if (bp)
         {
             items.push(
-                {label: "firecookie.Edit Breakpoint Condition",
+                {label: "firecookie.menu.Edit Breakpoint Condition",
                     command: bindFixed(this.editBreakpointCondition, this, context, cookie) }
             );
         }
