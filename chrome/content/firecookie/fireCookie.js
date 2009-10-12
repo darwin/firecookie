@@ -1210,6 +1210,8 @@ FireCookiePanel.prototype = extend(BasePanel,
         this.onMouseUp = bind(hcr.onMouseUp, hcr);
         this.onMouseOut = bind(hcr.onMouseOut, hcr);
 
+        this.onContextMenu = bind(this.onContextMenu, this);
+
         BasePanel.initialize.apply(this, arguments);
 
         // Just after the initialization, so the this.document member is set.
@@ -1290,16 +1292,12 @@ FireCookiePanel.prototype = extend(BasePanel,
             var header = getElementByClass(this.table, "cookieHeaderRow");
             var tag = Templates.CookieRow.cookieTag;
             var row = tag.insertRows({cookies: cookies}, header)[0];
-            for (var i = 0; i < cookies.length; ++i)
+            for (var i=0; i<cookies.length; i++)
             {
                 var cookie = cookies[i];
                 cookie.row = row;
 
-                // Make sure a breakpoint is displayed.
-                var breakpoints = this.context.cookies.breakpoints;
-                if (breakpoints && breakpoints.findBreakpoint(cookie.cookie))
-                    row.setAttribute("breakpoint", "true");
-
+                Breakpoints.updateBreakpoint(this.context, cookie);
                 row = row.nextSibling;
             }
         }
@@ -1337,6 +1335,8 @@ FireCookiePanel.prototype = extend(BasePanel,
         this.document.addEventListener("mousemove", this.onMouseMove, true);
         this.document.addEventListener("mouseup", this.onMouseUp, true);
         this.document.addEventListener("mouseout", this.onMouseOut, true);
+
+        this.panelNode.addEventListener("contextmenu", this.onContextMenu, false);
     },
 
     destroyNode: function()
@@ -1349,6 +1349,13 @@ FireCookiePanel.prototype = extend(BasePanel,
         this.document.removeEventListener("mousemove", this.onMouseMove, true);
         this.document.removeEventListener("mouseup", this.onMouseUp, true);
         this.document.removeEventListener("mouseout", this.onMouseOut, true);
+
+        this.panelNode.removeEventListener("contextmenu", this.onContextMenu, false);
+    },
+
+    onContextMenu: function(event)
+    {
+        Breakpoints.onContextMenu(this.context, event);
     },
 
     detach: function(oldChrome, newChrome)
@@ -1365,7 +1372,7 @@ FireCookiePanel.prototype = extend(BasePanel,
     {
         if (this.panelNode)
             clearNode(this.panelNode);
-            
+
         this.table = null;
     },
 
@@ -1490,24 +1497,19 @@ FireCookiePanel.prototype = extend(BasePanel,
     {
         var strippedHost = makeStrippedHost(cookie.host);
 
-        var row = getElementByClass(this.panelNode, "cookieRow");
-        while (row)
+        var result = null;
+        this.enumerateCookies(function(rep)
         {
-            var rep = row.repObject;
-            if (rep)
+            if (rep.rawHost == strippedHost &&
+                rep.cookie.name == cookie.name &&
+                rep.cookie.path == cookie.path)
             {
-                if (rep.rawHost == strippedHost &&
-                    rep.cookie.name == cookie.name &&
-                    rep.cookie.path == cookie.path)
-                {
-                    return rep;
-                }
+                result = rep;
+                return true; // break iteration
             }
+        });
 
-            row = row.nextSibling;
-        }
-
-        return null;
+        return result;
     },
 
     supportsObject: function(object)
@@ -1527,8 +1529,31 @@ FireCookiePanel.prototype = extend(BasePanel,
 
     resume: function()
     {
-        Firebug.HTMLModule.Breakpoints.resume(this.context);
-    }
+        Firebug.FireCookieModel.Breakpoints.resume(this.context);
+    },
+
+    enumerateCookies: function(fn)
+    {
+        if (!this.table)
+            return;
+
+        var rows = getElementsByClass(this.table, "cookieRow");
+        for (var i=0; i<rows.length; i++)
+        {
+            var cookie = Firebug.getRepObject(rows[i]);
+            if (!cookie)
+                continue;
+            if (fn(cookie))
+                break;
+        }
+    },
+
+    getEditor: function(target, value)
+    {
+        if (!this.conditionEditor)
+            this.conditionEditor = new Firebug.FireCookieModel.ConditionEditor(this.document);
+        return this.conditionEditor;
+    },
 }); 
 
 // Menu utility
@@ -2331,13 +2356,15 @@ Templates.CookieRow = domplate(Templates.Rep,
         row.repObject = cookie;
 
         if (nextSibling && row.nextSibling != nextSibling)
-        {   
+        {
             parent.removeChild(cookie.row);
             parent.insertBefore(row, nextSibling);
         }
 
         if (opened)
             setClass(row, "opened");
+
+        Breakpoints.updateBreakpoint(context, cookie);
     },
 
     updateInfo: function(cookieInfoBody, cookie, context)
@@ -4635,15 +4662,6 @@ Firebug.FireCookieModel.DebuggerListener =
     }
 };
 
-Firebug.FireCookieModel.Breakpoint = function(cookie)
-{
-    this.name = cookie.name;
-    this.host = cookie.host;
-    this.path = cookie.path;
-
-    this.checked = true;
-};
-
 Firebug.FireCookieModel.BreakpointTemplate = domplate(Firebug.Rep,
 {
     inspectable: false,
@@ -4701,11 +4719,20 @@ Firebug.FireCookieModel.BreakpointTemplate = domplate(Firebug.Rep,
     onEnable: function(event)
     {
         var checkBox = event.target;
-        if (hasClass(checkBox, "breakpointCheckbox"))
-        {
-            var bp = getAncestorByClass(checkBox, "breakpointRow").repObject;
-            bp.checked = checkBox.checked;
-        }
+        if (!hasClass(checkBox, "breakpointCheckbox"))
+            return;
+
+        var bp = getAncestorByClass(checkBox, "breakpointRow").repObject;
+        bp.checked = checkBox.checked;
+
+        var bpPanel = Firebug.getElementPanel(checkBox);
+        var cookiePanel = bpPanel.context.getPanel(panelName, true);
+        if (!cookiePanel)
+            return;
+
+        var cookie = cookiePanel.findRepObject(bp);
+        if (cookie)
+            cookie.row.setAttribute("disabledBreakpoint", bp.checked ? "false" : "true");
     },
 
     supportsObject: function(object)
@@ -4746,26 +4773,36 @@ Firebug.FireCookieModel.Breakpoints =
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.breakOnCookie; " + action);
 
+        var halt = false;
+
         // Break on cookie if the global "Break on" is set.
         if (context.breakOnCookie)
         {
-            context.breakOnCookie = false;
-            this.breakNow();
-            return;
+            context.breakingCause = {
+                title: $STR("firecookie.Break On Cookie", [cookie.name]),
+                message: cropString(unescape(cookie.name + "; " + cookie.value), 200)
+            };
+            halt = true;
         }
 
-        var breakpoints = context.cookies.breakpoints;
-        if (breakpoints.isEmpty())
+        // If there is an enabled breakpoint and with condition == true, let's break.
+        var bp = context.cookies.breakpoints.findBreakpoint(makeCookieObject(cookie));
+        if (bp && bp.checked)
+        {
+            if (bp.condition)
+                halt = bp.evaluateCondition(context, cookie);
+            else
+                halt = true;
+        }
+
+        if (!halt)
             return;
 
-        // Get breakpoint for modified cookie.
-        var bp = breakpoints.findBreakpoint(makeCookieObject(cookie));
-        if (!bp)
-            return;
+        // Even if the execution was stopped at breakpoint reset the global
+        // breakOnXHR flag.
+        context.breakOnXHR = false;
 
-        // Break on cookie breakpoint if it exists.
-        if (bp.checked)
-            this.breakNow();
+        this.breakNow();
 
         // Clear breakpoint associated with removed cookie.
         if (action == "deleted")
@@ -4800,15 +4837,24 @@ Firebug.FireCookieModel.Breakpoints =
         items.push("-");
 
         var cookieName = cropString(cookie.cookie.name, 40);
+        var bp = context.cookies.breakpoints.findBreakpoint(cookie.cookie);
 
         items.push({
           nol10n: true,
           tooltiptext: $FC_STRF("firecookie.tooltip.Break On Cookie", [cookieName]),
           label: $FC_STRF("firecookie.Break On Cookie", [cookieName]),
           type: "checkbox",
-          checked: !!context.cookies.breakpoints.findBreakpoint(cookie.cookie),
+          checked: bp != null,
           command: bindFixed(this.onBreakOnCookie, this, context, cookie),
         });
+
+        if (bp)
+        {
+            items.push(
+                {label: "firecookie.Edit Breakpoint Condition",
+                    command: bindFixed(this.editBreakpointCondition, this, context, cookie) }
+            );
+        }
 
         return items;
     },
@@ -4828,16 +4874,83 @@ Firebug.FireCookieModel.Breakpoints =
         {
             breakpoints.removeBreakpoint(cookie);
             row.removeAttribute("breakpoint");
+            row.removeAttribute("disabledBreakpoint");
         }
         else
         {
             breakpoints.addBreakpoint(cookie);
             row.setAttribute("breakpoint", "true");
         }
-    }
+    },
+
+    updateBreakpoint: function(context, cookie)
+    {
+        // Make sure a breakpoint is displayed.
+        var bp = context.cookies.breakpoints.findBreakpoint(cookie.cookie)
+        if (!bp)
+            return;
+
+        var row = cookie.row;
+        row.setAttribute("breakpoint", "true");
+        row.setAttribute("disabledBreakpoint", bp.checked ? "false" : "true");
+    },
+
+    onContextMenu: function(context, event)
+    {
+        if (!hasClass(event.target, "sourceLine"))
+            return;
+
+        var row = getAncestorByClass(event.target, "cookieRow");
+        if (!row)
+            return;
+
+        var cookie = row.repObject;
+        var bp = context.cookies.breakpoints.findBreakpoint(cookie.cookie);
+        if (!bp)
+            return;
+
+        this.editBreakpointCondition(context, cookie);
+        cancelEvent(event);
+    },
+
+    editBreakpointCondition: function(context, cookie)
+    {
+        var bp = context.cookies.breakpoints.findBreakpoint(cookie.cookie);
+        if (!bp)
+            return;
+
+        var condition = bp ? bp.condition : "";
+
+        var panel = context.getPanel(panelName);
+        panel.selectedSourceBox = cookie.row;
+        Firebug.Editor.startEditing(cookie.row, condition);
+    },
 }
 
 var Breakpoints = Firebug.FireCookieModel.Breakpoints;
+
+//-------------------------------------------------------------------------------------------------
+
+Firebug.FireCookieModel.ConditionEditor = function(doc)
+{
+    Firebug.Breakpoint.ConditionEditor.apply(this, arguments);
+}
+
+Firebug.FireCookieModel.ConditionEditor.prototype =
+    domplate(Firebug.Breakpoint.ConditionEditor.prototype,
+{
+    endEditing: function(target, value, cancel)
+    {
+        if (cancel)
+            return;
+
+        var cookie = target.repObject;
+        var panel = Firebug.getElementPanel(target);
+        var bp = panel.context.cookies.breakpoints.findBreakpoint(cookie.cookie);
+        if (bp)
+            bp.condition = value;
+    }
+});
 
 //-------------------------------------------------------------------------------------------------
 
@@ -4866,6 +4979,47 @@ CookieBreakpointGroup.prototype = extend(new Firebug.Breakpoint.BreakpointGroup(
             (bp.path = cookie.path);
     }
 });
+
+/**
+ * @domplate Template for cookie breakpoint displayed in the Breakpoints side
+ * panel.
+ */
+Firebug.FireCookieModel.Breakpoint = function(cookie)
+{
+    this.name = cookie.name;
+    this.host = cookie.host;
+    this.path = cookie.path;
+
+    this.condition = "";
+    this.checked = true;
+};
+
+Firebug.FireCookieModel.Breakpoint.prototype =
+{
+    evaluateCondition: function(context, cookie)
+    {
+        try
+        {
+            var scope = {};
+            scope["value"] = cookie.value;
+            scope["cookie"] = makeCookieObject(cookie);
+
+            // xxxHonza: Firebug.CommandLine.evaluate should be reused if possible.
+            var sandbox = new Components.utils.Sandbox(context.window);
+            sandbox.scope = scope;
+
+            var expr = "with (scope) {" + this.condition + "}";
+            return Components.utils.evalInSandbox(expr, sandbox);
+        }
+        catch (err)
+        {
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.evaluateCondition; EXCEPTION", err);
+        }
+
+        return false;
+    }
+}
 
 //-------------------------------------------------------------------------------------------------
 
