@@ -3660,6 +3660,9 @@ var CookieObserver = extend(BaseObserver,
     // nsIObserver
     observe: function(aSubject, aTopic, aData) 
     {
+        if (!Firebug.FireCookieModel.isAlwaysEnabled())
+            return;
+
         try {
             if (aTopic == "cookie-changed") {
                 aSubject = aSubject ? aSubject.QueryInterface(nsICookie2) : null;
@@ -4443,13 +4446,21 @@ function logEvents()
 // Registration Helpers
 //-------------------------------------------------------------------------------------------------
 
-function registerCookieObserver(observer) {
+function registerCookieObserver(observer)
+{
+    if (FBTrace.DBG_COOKIES)
+        FBTrace.sysout("cookies.registerCookieObserver");
+
     observerService.addObserver(observer, "cookie-changed", false);
     observerService.addObserver(observer, "cookie-rejected", false);
     return observer;
 }
 
-function unregisterCookieObserver(observer) {
+function unregisterCookieObserver(observer)
+{
+    if (FBTrace.DBG_COOKIES)
+        FBTrace.sysout("cookies.unregisterCookieObserver");
+
     observerService.removeObserver(observer, "cookie-changed");
     observerService.removeObserver(observer, "cookie-rejected");
 }
