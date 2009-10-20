@@ -9,7 +9,7 @@
  * xxxHonza, Compatibility:
  * context.getName() has been introduced in Firebug 1.4
  * Breakpoints
- * 
+ * xxxHonza: Firecookie 1.0 should be compatible with Firebug 1.4 only.
  */
 FBL.ns(function() { with (FBL) {
 
@@ -56,6 +56,7 @@ const showRejectedCookies = "firecookie.showRejectedCookies";
 const defaultExpireTime = "firecookie.defaultExpireTime";
 const lastSortedColumn = "firecookie.lastSortedColumn";
 const hiddenColsPref = "firecookie.hiddenColumns";
+const removeConfirmation = "firecookie.removeConfirmation";
 
 // Services
 const cookieManager = CCSV("@mozilla.org/cookiemanager;1", "nsICookieManager2");
@@ -68,6 +69,7 @@ const appInfo = CCSV("@mozilla.org/xre/app-info;1", "nsIXULAppInfo");
 const versionChecker = CCSV("@mozilla.org/xpcom/version-comparator;1", "nsIVersionComparator");
 const ioService = CCSV("@mozilla.org/network/io-service;1", "nsIIOService");
 const dateFormat = CCSV("@mozilla.org/intl/scriptabledateformat;1", "nsIScriptableDateFormat");
+const prompts = CCSV("@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
 
 // Preferences
 const PrefService = Cc["@mozilla.org/preferences-service;1"];
@@ -731,9 +733,18 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     onRemoveAll: function(context)
     {
-        var parent = context.chrome.window;
-        if (!parent.confirm($FC_STR("firecookie.confirm.removeall")))
-            return;
+        if (getPref(FirebugPrefDomain, removeConfirmation))
+        {
+            var check = {value: false};
+            if (!prompts.confirmCheck(context.chrome.window, "Firecookie",
+                $FC_STR("firecookie.confirm.removeall"),
+                $FC_STR("firecookie.msg.Do not show this message again"), check))
+                return;
+
+            // Update delete confirmation option according to the value
+            // of the dialog's "do not show again" checkbox.
+            setPref(FirebugPrefDomain, removeConfirmation, !check.value)
+        }
 
         var panel = context.getPanel(panelName, true);
         if (!panel)
@@ -1416,11 +1427,12 @@ FireCookiePanel.prototype = extend(BasePanel,
         return [
             MenuUtils.optionAllowGlobally(context, "firecookie.AllowGlobally",
                 networkPrefDomain, cookieBehaviorPref),
-            "-",
             /*MenuUtils.optionMenu(context, "firecookie.clearWhenDeny",
                 FirebugPrefDomain, clearWhenDeny),*/
             MenuUtils.optionMenu(context, "firecookie.LogEvents",
-                FirebugPrefDomain, logEventsPref)
+                FirebugPrefDomain, logEventsPref),
+            MenuUtils.optionMenu(context, "firecookie.Confirm cookie removal",
+                FirebugPrefDomain, removeConfirmation)
         ];
     },
 
@@ -2866,9 +2878,14 @@ Templates.CookieTable = domplate(Templates.Rep,
         var visibleColCount = 0;
 
         var header = getAncestorByClass(target, "cookieHeaderRow");
-        for (var i=0; i<header.childNodes.length; i++)
+
+        // Skip the first column for breakpoints.
+        var columns = cloneArray(header.childNodes);
+        columns.shift();
+
+        for (var i=0; i<columns.length; i++)
         {
-            var column = header.childNodes[i];
+            var column = columns[i];
             var visible = (hiddenCols.indexOf(column.id) == -1);
 
             items.push({
@@ -2892,7 +2909,7 @@ Templates.CookieTable = domplate(Templates.Rep,
 
         items.push("-");
         items.push({
-            label: $STR("net.header.Reset_Header"),
+            label: $STR("net.header.Reset Header"),
             nol10n: true, 
             command: bindFixed(this.onResetColumns, this, context)
         });
