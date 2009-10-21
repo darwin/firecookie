@@ -13,8 +13,8 @@
  */
 FBL.ns(function() { with (FBL) {
 
+// ************************************************************************************************
 // Constants
-//-------------------------------------------------------------------------------------------------
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -135,8 +135,8 @@ firecookie.export.Export_All_Cookies_Tooltip / Alle Browser-Cookies in die Datei
 firecookie.export.Export_For_Site_Tooltip / Cookies für %S in die Datei cookies.txt exportieren
 */
 
+// ************************************************************************************************
 // Module Implementation
-//-------------------------------------------------------------------------------------------------
 
 var BaseModule = Firebug.ActivableModule ? Firebug.ActivableModule : Firebug.Module;
 
@@ -1109,8 +1109,8 @@ Firebug.FireCookieModel = extend(BaseModule,
     },
 }); 
 
+// ************************************************************************************************
 // Localization
-//-------------------------------------------------------------------------------------------------
 
 /**
  * Use this function to translate a string.
@@ -1186,8 +1186,8 @@ function fcInternationalize(element, attr, args)
     element.setAttribute(attr, localized);
 }
 
+// ************************************************************************************************
 // Panel Implementation
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @panel This class represents the Cookies panel that is displayed within
@@ -1586,8 +1586,8 @@ FireCookiePanel.prototype = extend(BasePanel,
     },
 }); 
 
+// ************************************************************************************************
 // Menu utility
-//-------------------------------------------------------------------------------------------------
 
 var MenuUtils = 
 {
@@ -1634,8 +1634,8 @@ var MenuUtils =
     }
 };
 
+// ************************************************************************************************
 // Cookie Permissions
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @class This class is responsible for managing cookie permisssions.
@@ -1818,8 +1818,8 @@ Firebug.FireCookieModel.Perm = extend(Object,
     }
 });
 
+// ************************************************************************************************
 // Templates Helpers
-//-------------------------------------------------------------------------------------------------
 
 // Object with all rep templates.
 var Templates = Firebug.FireCookieModel.Templates = {};
@@ -1839,8 +1839,8 @@ Templates.Rep = domplate(Firebug.Rep,
     }
 });
 
+// ************************************************************************************************
 // Cookie Template (domplate)
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate Represents a domplate template for cookie entry in the cookie list.
@@ -2455,8 +2455,8 @@ Templates.CookieRow = domplate(Templates.Rep,
     }
 });
 
+// ************************************************************************************************
 // Console Event Templates (domplate)
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate This template is used for displaying cookie-changed events
@@ -2601,7 +2601,7 @@ Templates.CookieChanged = domplate(Templates.Rep,
     }
 });
 
-//-------------------------------------------------------------------------------------------------
+// ************************************************************************************************
 
 /**
  * @domplate Represents a domplate template for displaying rejected cookies.
@@ -2669,7 +2669,7 @@ Templates.CookieRejected = domplate(Templates.Rep,
     }
 });
 
-//-------------------------------------------------------------------------------------------------
+// ************************************************************************************************
 
 /**
  * @domplate Represents a domplate template for cookie cleared event that is
@@ -2702,8 +2702,8 @@ Templates.CookieCleared = domplate(Templates.Rep,
     }
 });
 
+// ************************************************************************************************
 // Header Template (domplate)
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate Represents a template for basic cookie list layout. This
@@ -3010,8 +3010,8 @@ Templates.CookieTable = domplate(Templates.Rep,
     }
 });
 
+// ************************************************************************************************
 // Resizable column helper (helper for Templates.CookieTable)
-//-------------------------------------------------------------------------------------------------
 
 var HeaderColumnResizer =
 {
@@ -3204,8 +3204,8 @@ var HeaderColumnResizer =
     }
 };
 
+// ************************************************************************************************
 // Clipboard helper
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @class This class implements clibpoard functionality.
@@ -3328,8 +3328,8 @@ Firebug.FireCookieModel.CookieClipboard = extend(Object,
 
 // Helper shortcut
 var CookieClipboard = Firebug.FireCookieModel.CookieClipboard;
- 
-//-------------------------------------------------------------------------------------------------
+
+// ************************************************************************************************
 
 function insertWrappedText(text, textBox)
 {
@@ -3362,8 +3362,8 @@ function insertWrappedText(text, textBox)
     textBox.innerHTML = html.join("");
 }
 
+// ************************************************************************************************
 // Cookie object
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents a cookie object that is created as a representation of
@@ -3496,8 +3496,8 @@ Cookie.prototype =
     }
 };
 
+// ************************************************************************************************
 // Cookie Helpers
-//-------------------------------------------------------------------------------------------------
 
 function getCookieId(cookie)
 {
@@ -3628,8 +3628,8 @@ function parseSentCookiesFromString(header)
     return cookies;
 }
 
+// ************************************************************************************************
 // Cookie Event objects
-//-------------------------------------------------------------------------------------------------
 
 /**
  * This object represents a "cookie-changed" event (repObject). 
@@ -3663,8 +3663,8 @@ function CookieRejectedEvent(context, uri)
     this.uri = uri;
 }
 
+// ************************************************************************************************
 // Base observer
-//-------------------------------------------------------------------------------------------------
 
 var BaseObserver =
 {
@@ -3681,8 +3681,8 @@ var BaseObserver =
     }
 };
 
+// ************************************************************************************************
 // Cookie observer
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @class This class represents an observer (nsIObserver) for cookie-changed
@@ -4024,9 +4024,9 @@ var CookieObserver = extend(BaseObserver,
     }
 });
 
+// ************************************************************************************************
 // Preference observer 
 // Used till the real context isn't available (in initContext), bug if Firebug)
-//-------------------------------------------------------------------------------------------------
 
 function CookieTempObserver(tempContext) {
     this.tempContext = tempContext;
@@ -4038,7 +4038,7 @@ CookieTempObserver.prototype = extend(BaseObserver, {
     }
 });
 
-//-------------------------------------------------------------------------------------------------
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 function TempContext(tabId)
 {
@@ -4051,8 +4051,8 @@ TempContext.prototype.appendCookieEvent = function(subject, topic, data)
     this.events.push({subject:subject, topic:topic, data:data});
 }
 
+// ************************************************************************************************
 // Preference observer
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents an observer for nsPref:changed event dispatched when 
@@ -4077,8 +4077,8 @@ var PrefObserver = extend(BaseObserver,
     }
 });
 
+// ************************************************************************************************
 // Permission observer
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents an observer for perm-changed event that is dispatched
@@ -4100,8 +4100,8 @@ var PermissionObserver = extend(BaseObserver,
     }
 });
 
+// ************************************************************************************************
 // HTTP observer
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents an observer for http-on-modify-request and
@@ -4303,8 +4303,8 @@ var HttpObserver = extend(BaseObserver,
     }
 });
 
+// ************************************************************************************************
 // Debug helpers
-//-------------------------------------------------------------------------------------------------
 
 function checkList(panel)
 {
@@ -4334,8 +4334,8 @@ function checkList(panel)
     return null;
 }
 
+// ************************************************************************************************
 // Window helpers
-//-------------------------------------------------------------------------------------------------
 
 function getWindowForRequest(request) 
 {
@@ -4422,16 +4422,16 @@ function safeGetWindow(webProgress)
     }
 }
 
+// ************************************************************************************************
 // Time Helpers
-//-------------------------------------------------------------------------------------------------
 
 function now()
 {
     return (new Date()).getTime();
 }
 
+// ************************************************************************************************
 // Array Helpers
-//-------------------------------------------------------------------------------------------------
 
 function cloneMap(map)
 {
@@ -4442,8 +4442,8 @@ function cloneMap(map)
     return newMap;
 }
 
+// ************************************************************************************************
 // Preference Helpers
-//-------------------------------------------------------------------------------------------------
 
 // This functions are different in 1.05 and 1.2
 // So, this is a stable version.
@@ -4478,8 +4478,8 @@ function logEvents()
     return getPref(FirebugPrefDomain, "firecookie.logEvents");
 }
 
+// ************************************************************************************************
 // Registration Helpers
-//-------------------------------------------------------------------------------------------------
 
 function registerCookieObserver(observer)
 {
@@ -4500,8 +4500,8 @@ function unregisterCookieObserver(observer)
     observerService.removeObserver(observer, "cookie-rejected");
 }
 
+// ************************************************************************************************
 // Support for FBTraceConsole in Firebug 1.3
-//-------------------------------------------------------------------------------------------------
 
 Firebug.FireCookieModel.TraceListener = 
 {
@@ -4530,15 +4530,15 @@ Firebug.FireCookieModel.TraceListener =
     }
 };
 
+// ************************************************************************************************
 // Make following APIs accessible in editCookie.js
-//-------------------------------------------------------------------------------------------------
 
 Firebug.FireCookieModel.Cookie = Cookie;
 Firebug.FireCookieModel.$FC_STR = $FC_STR;
 Firebug.FireCookieModel.$FC_STRF = $FC_STRF;
 
+// ************************************************************************************************
 // Custom info tab within Net panel
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @domplate Represents domplate template for cookie body that is displayed if 
@@ -4653,8 +4653,8 @@ Firebug.FireCookieModel.NetInfoBody = domplate(Firebug.Rep,
     }
 });
 
+// ************************************************************************************************
 // Custom output in the Console panel for: document.cookie
-//-------------------------------------------------------------------------------------------------
 
 Firebug.FireCookieModel.ConsoleListener =
 {
@@ -4692,8 +4692,8 @@ Firebug.FireCookieModel.ConsoleListener =
     }
 };
 
+// ************************************************************************************************
 // Cookie Breakpoints
-//-------------------------------------------------------------------------------------------------
 
 /**
  * @class Represents {@link Firebug.Debugger} listener. This listener is reponsible for
@@ -4961,7 +4961,7 @@ Firebug.FireCookieModel.Breakpoints =
 
 var Breakpoints = Firebug.FireCookieModel.Breakpoints;
 
-//-------------------------------------------------------------------------------------------------
+// ************************************************************************************************
 
 Firebug.FireCookieModel.ConditionEditor = function(doc)
 {
@@ -4984,7 +4984,7 @@ Firebug.FireCookieModel.ConditionEditor.prototype =
     }
 });
 
-//-------------------------------------------------------------------------------------------------
+// ************************************************************************************************
 
 function CookieBreakpointGroup() {}
 CookieBreakpointGroup.prototype = extend(new Firebug.Breakpoint.BreakpointGroup(),
@@ -5053,10 +5053,11 @@ Firebug.FireCookieModel.Breakpoint.prototype =
     }
 }
 
-//-------------------------------------------------------------------------------------------------
+// ************************************************************************************************
 
 var OBJECTLINK = FirebugReps.OBJECTLINK;
 
+// xxxHonza: TODO
 Templates.CookieRep = domplate(Templates.Rep,
 {
     tag:
@@ -5082,8 +5083,8 @@ Templates.CookieRep = domplate(Templates.Rep,
     }
 });
 
+// ************************************************************************************************
 // Firebug Registration
-//-------------------------------------------------------------------------------------------------
 
 // For backward compatibility with Firebug 1.1
 if (Firebug.ActivableModule)
@@ -5105,10 +5106,10 @@ Firebug.registerRep(
 // Register breakpoint template.
 Firebug.registerRep(Firebug.FireCookieModel.BreakpointTemplate);
 
-//-------------------------------------------------------------------------------------------------
+// ************************************************************************************************
 
 FBTrace.DBG_COOKIES = getPref(FirebugPrefDomain, "DBG_COOKIES");
 
-//-------------------------------------------------------------------------------------------------
+// ************************************************************************************************
 }})
 
