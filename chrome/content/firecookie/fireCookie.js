@@ -1204,6 +1204,7 @@ FireCookiePanel.prototype = extend(BasePanel,
     name: panelName,
     title: $FC_STR("firecookie.Panel"),
     searchable: true,
+    breakable: true,
 
     initialize: function(context, doc)
     {
@@ -1539,11 +1540,6 @@ FireCookiePanel.prototype = extend(BasePanel,
         scrollIntoCenterView(repCookie.row);
     },
 
-    resume: function()
-    {
-        Firebug.FireCookieModel.Breakpoints.resume(this.context);
-    },
-
     enumerateCookies: function(fn)
     {
         if (!this.table)
@@ -1565,6 +1561,28 @@ FireCookiePanel.prototype = extend(BasePanel,
         if (!this.conditionEditor)
             this.conditionEditor = new Firebug.FireCookieModel.ConditionEditor(this.document);
         return this.conditionEditor;
+    },
+
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    // Support for Break On Next
+
+    breakOnNext: function(breaking)
+    {
+        this.context.breakOnCookie = breaking;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.breakOnNext; " + context.breakOnCookie + ", " + context.getName());
+    },
+
+    shouldBreakOnNext: function()
+    {
+        return this.context.breakOnCookie;
+    },
+
+    getBreakOnNextTooltip: function(enabled)
+    {
+        return (enabled ? $STR("firecookie.Disable Break On Cookie") :
+            $STR("firecookie.Break On Cookie"));
     },
 }); 
 
@@ -4782,31 +4800,6 @@ Firebug.FireCookieModel.BreakpointTemplate = domplate(Firebug.Rep,
 
 Firebug.FireCookieModel.Breakpoints =
 {
-    resume: function(context)
-    {
-        context.breakOnCookie = !context.breakOnCookie;
-
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.resume; " + context.breakOnCookie + ", " + context.getName());
-
-        Firebug.Debugger.syncCommands(context);
-
-        var chrome = Firebug.chrome;
-        var breakable = Firebug.chrome.getGlobalAttribute("cmd_resumeExecution", "breakable").toString();
-        if (breakable == "true")
-        {
-            chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "false");
-            chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext",
-                $STR("firecookie.Disable Break On Cookie"));
-        }
-        else
-        {
-            chrome.setGlobalAttribute("cmd_resumeExecution", "breakable", "true");
-            chrome.setGlobalAttribute("cmd_resumeExecution", "tooltiptext",
-                $STR("firecookie.Break On Cookie"));
-        }
-    },
-
     breakOnCookie: function(context, cookie, action)
     {
         if (FBTrace.DBG_COOKIES)
@@ -4838,8 +4831,8 @@ Firebug.FireCookieModel.Breakpoints =
             return;
 
         // Even if the execution was stopped at breakpoint reset the global
-        // breakOnXHR flag.
-        context.breakOnXHR = false;
+        // breakOnCookie flag.
+        context.breakOnCookie = false;
 
         this.breakNow();
 
@@ -4879,12 +4872,12 @@ Firebug.FireCookieModel.Breakpoints =
         var bp = context.cookies.breakpoints.findBreakpoint(cookie.cookie);
 
         items.push({
-          nol10n: true,
-          tooltiptext: $FC_STRF("firecookie.menu.tooltip.Break On Cookie", [cookieName]),
-          label: $FC_STRF("firecookie.menu.Break On Cookie", [cookieName]),
-          type: "checkbox",
-          checked: bp != null,
-          command: bindFixed(this.onBreakOnCookie, this, context, cookie),
+            nol10n: true,
+            tooltiptext: $FC_STRF("firecookie.menu.tooltip.Break On Cookie", [cookieName]),
+            label: $FC_STRF("firecookie.menu.Break On Cookie", [cookieName]),
+            type: "checkbox",
+            checked: bp != null,
+            command: bindFixed(this.onBreakOnCookie, this, context, cookie),
         });
 
         if (bp)
