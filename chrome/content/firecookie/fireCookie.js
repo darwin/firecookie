@@ -2142,7 +2142,6 @@ Templates.CookieRow = domplate(Templates.Rep,
         if (!rejected)
         {
             items.push("-");
-
             items.push({
               label: $FC_STR("firecookie.Delete"),
               nol10n: true,
@@ -2150,11 +2149,16 @@ Templates.CookieRow = domplate(Templates.Rep,
             });
 
             items.push("-");
-
             items.push({
               label: $FC_STR("firecookie.Edit"),
               nol10n: true,
               command: bindFixed(this.onEdit, this, cookie)
+            });
+
+            items.push({
+              label: $FC_STR("firecookie.Clear Value"),
+              nol10n: true,
+              command: bindFixed(this.onClearValue, this, cookie)
             });
         }
 
@@ -2246,6 +2250,16 @@ Templates.CookieRow = domplate(Templates.Rep,
         return parent.openDialog("chrome://firecookie/content/editCookie.xul",
             "_blank", "chrome,centerscreen,resizable=yes,modal=yes",
             params);
+    },
+
+    onClearValue: function(cookie)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onClearValue;", cookie);
+
+        var newCookie = new Firebug.FireCookieModel.Cookie(cookie.cookie);
+        newCookie.cookie.rawValue = "";
+        Firebug.FireCookieModel.createCookie(newCookie);
     },
 
     // Event handlers
