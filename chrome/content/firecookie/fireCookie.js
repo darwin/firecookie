@@ -2155,11 +2155,14 @@ Templates.CookieRow = domplate(Templates.Rep,
               command: bindFixed(this.onEdit, this, cookie)
             });
 
-            items.push({
-              label: $FC_STR("firecookie.Clear Value"),
-              nol10n: true,
-              command: bindFixed(this.onClearValue, this, cookie)
-            });
+            if (cookie.cookie.rawValue)
+            {
+                items.push({
+                  label: $FC_STR("firecookie.Clear Value"),
+                  nol10n: true,
+                  command: bindFixed(this.onClearValue, this, cookie)
+                });
+            }
         }
 
         var Model = Firebug.FireCookieModel;
