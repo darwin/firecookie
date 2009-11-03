@@ -4980,6 +4980,22 @@ var Breakpoints = Firebug.FireCookieModel.Breakpoints;
 
 // ************************************************************************************************
 
+// xxxHonza: Backward compatibility with Firebug 1.4
+// The question is whether Firecookie 1.0 should be compatible with Firebug 1.4
+if (!Firebug.Breakpoint)
+    Firebug.Breakpoint = {};
+
+if (!Firebug.Breakpoint.ConditionEditor)
+    Firebug.Breakpoint.ConditionEditor = {};
+
+if (!Firebug.Breakpoint.ConditionEditor)
+    Firebug.Breakpoint.ConditionEditor = {};
+
+if (!Firebug.Breakpoint.BreakpointGroup)
+    Firebug.Breakpoint.BreakpointGroup = function() {};
+
+// ************************************************************************************************
+
 Firebug.FireCookieModel.ConditionEditor = function(doc)
 {
     Firebug.Breakpoint.ConditionEditor.apply(this, arguments);
