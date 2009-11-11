@@ -358,6 +358,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         // List of breakpoints.
         context.cookies.breakpoints = new CookieBreakpointGroup();
+        context.cookies.breakpoints.load(context);
 
         // The temp context isn't created e.g. for empty tabs, chrome pages.
         var tempContext = contexts[tabId];
@@ -380,11 +381,6 @@ Firebug.FireCookieModel = extend(BaseModule,
         // Unregister all observers if the panel is disabled.
         if (!this.isEnabled(context))
             this.unregisterObservers(context);
-
-        // Load existing breakpoints
-        var persistedPanelState = getPersistedState(context, panelName);
-        if (persistedPanelState.breakpoints)
-            context.cookies.breakpoints = persistedPanelState.breakpoints;
     },
 
     reattachContext: function(browser, context)
@@ -429,6 +425,8 @@ Firebug.FireCookieModel = extend(BaseModule,
     destroyContext: function(context) 
     {
         BaseModule.destroyContext.apply(this, arguments);
+
+        context.cookies.breakpoints.store(context);
 
         for (var p in context.cookies)
             delete context.cookies[p];
@@ -5019,7 +5017,11 @@ Firebug.FireCookieModel.ConditionEditor.prototype =
 
 // ************************************************************************************************
 
-function CookieBreakpointGroup() {}
+function CookieBreakpointGroup()
+{
+    this.breakpoints = [];
+}
+
 CookieBreakpointGroup.prototype = extend(new Firebug.Breakpoint.BreakpointGroup(),
 {
     name: "cookieBreakpoints",
@@ -5042,6 +5044,20 @@ CookieBreakpointGroup.prototype = extend(new Firebug.Breakpoint.BreakpointGroup(
         return (bp.name == cookie.name) &&
             (bp.host = cookie.host) &&
             (bp.path = cookie.path);
+    },
+
+    // Persistence
+    load: function(context)
+    {
+        var panelState = getPersistedState(context, panelName);
+        if (panelState.breakpoints)
+            this.breakpoints = panelState.breakpoints;
+    },
+
+    store: function(context)
+    {
+        var panelState = getPersistedState(context, panelName);
+        panelState.breakpoints = this.breakpoints;
     }
 });
 
