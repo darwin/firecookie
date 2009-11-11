@@ -4874,7 +4874,14 @@ Firebug.FireCookieModel.Breakpoints =
             }
 
             if (frame)
+            {
                 Firebug.Debugger.onBreak(frame, 3);
+            }
+            else
+            {
+                if (FBTrace.DBG_COOKIES)
+                    FBTrace.sysout("cookies.breakNow; NO FRAME");
+            }
         });
     },
 
