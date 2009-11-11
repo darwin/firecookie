@@ -5073,6 +5073,9 @@ Firebug.FireCookieModel.Breakpoint = function(cookie)
 
     this.condition = "";
     this.checked = true;
+
+    this.onEvaluateFails = bind(this.onEvaluateFails, this);
+    this.onEvaluateSucceeds =  bind(this.onEvaluateSucceeds, this);
 };
 
 Firebug.FireCookieModel.Breakpoint.prototype =
@@ -5085,12 +5088,21 @@ Firebug.FireCookieModel.Breakpoint.prototype =
             scope["value"] = cookie.value;
             scope["cookie"] = makeCookieObject(cookie);
 
-            // xxxHonza: Firebug.CommandLine.evaluate should be reused if possible.
-            var sandbox = new Components.utils.Sandbox(context.window);
-            sandbox.scope = scope;
+            // The callbacks will set this if the condition is true or if the eval faults.
+            delete context.breakingCause;
 
-            var expr = "with (scope) {" + this.condition + "}";
-            return Components.utils.evalInSandbox(expr, sandbox);
+            // Construct expression to evaluate.
+            var expr = "(function (){var scope = " + JSON.stringify(scope) +
+                "; with (scope) { return " + this.condition + ";}})();"
+
+            // Evaluate condition using Firebug's command line.
+            var rc = Firebug.CommandLine.evaluate(expr, context, null, context.window,
+                this.onEvaluateSucceeds, this.onEvaluateFails);
+
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.evaluateCondition; rc " + rc, {expr: expr, scope: scope});
+
+            return !!context.breakingCause;
         }
         catch (err)
         {
@@ -5099,6 +5111,33 @@ Firebug.FireCookieModel.Breakpoint.prototype =
         }
 
         return false;
+    },
+
+    onEvaluateSucceeds: function(result, context)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onEvaluateSucceeds; " + result, result);
+
+        // Don't set the breakingCause if the breakpoint condition is evaluated to false.
+        if (!result)
+            return;
+
+        context.breakingCause = {
+            title: $STR("firecookie.Break On Cookie"),
+            message: cropString(unescape(this.name + "; " + this.condition + "; "), 200)
+        };
+    },
+
+    onEvaluateFails: function(result, context)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onEvaluateFails; " + result, result);
+
+        context.breakingCause = {
+            title: $STR("firecookie.Break On Cookie"),
+            message: $STR("firecookie.Breakpoint condition evaluation fails"),
+            prevValue: this.condition, newValue:result
+        };
     }
 }
 
