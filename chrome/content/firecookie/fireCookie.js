@@ -4821,9 +4821,25 @@ Firebug.FireCookieModel.Breakpoints =
             FBTrace.sysout("cookies.breakOnCookie; " + action);
 
         var halt = false;
+        var conditionIsFalse = false;
 
-        // Break on cookie if the global "Break on" is set.
-        if (context.breakOnCookie)
+        // If there is an enabled breakpoint with condition:
+        // 1) break if the condition is evaluated to true.
+        var bp = context.cookies.breakpoints.findBreakpoint(makeCookieObject(cookie));
+        if (bp && bp.checked)
+        {
+            halt = true;
+            if (bp.condition)
+            {
+                halt = bp.evaluateCondition(context, cookie);
+                conditionIsFalse = !halt;
+            }
+        }
+
+        // 2) If break on next flag is set and there is no condition evaluated to false,
+        // break with "break on next" breaking cause (this new breaking cause can override
+        // an existing one that is set when evaluating a breakpoint condition).
+        if (context.breakOnCookie && !conditionIsFalse)
         {
             context.breakingCause = {
                 title: $STR("firecookie.Break On Cookie"),
@@ -4832,16 +4848,7 @@ Firebug.FireCookieModel.Breakpoints =
             halt = true;
         }
 
-        // If there is an enabled breakpoint and with condition == true, let's break.
-        var bp = context.cookies.breakpoints.findBreakpoint(makeCookieObject(cookie));
-        if (bp && bp.checked)
-        {
-            if (bp.condition)
-                halt = bp.evaluateCondition(context, cookie);
-            else
-                halt = true;
-        }
-
+        // Ignore if there is no reason to break.
         if (!halt)
             return;
 
