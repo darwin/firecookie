@@ -4856,7 +4856,7 @@ Firebug.FireCookieModel.Breakpoints =
         // breakOnCookie flag.
         context.breakOnCookie = false;
 
-        this.breakNow();
+        this.breakNow(context);
 
         // Clear breakpoint associated with removed cookie.
         if (action == "deleted")
@@ -4866,8 +4866,14 @@ Firebug.FireCookieModel.Breakpoints =
         }
     },
 
-    breakNow: function()
+    breakNow: function(context)
     {
+        if (Firebug.Breakpoint && Firebug.Breakpoint.breakNow)
+        {
+            Firebug.Breakpoint.breakNow(context.getPanel(panelName, true));
+            return;
+        }
+
         Firebug.Debugger.halt(function(frame)
         {
             for (; frame && frame.isValid; frame = frame.callingFrame)
