@@ -35,14 +35,23 @@
     <em:translator>markh (nl-NL)</em:translator>
     <em:translator>Sewon Kim (ko-KR)</em:translator>
 
-    <!-- Firefox -->
+    <!-- Any suitably modern toolkit application -->
+    <em:targetApplication>
+      <Description>
+        <em:id>toolkit@mozilla.org</em:id>
+        <em:minVersion>1.9.0.*</em:minVersion>
+        <em:maxVersion>1.9.3.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+    <!-- Firefox
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>2.0</em:minVersion>
         <em:maxVersion>3.6.*</em:maxVersion>
       </Description>
-    </em:targetApplication>
+    </em:targetApplication> -->
 
     <!-- Firebug xxxHonza: see Issue 17, Comment #3
     <em:requires>
