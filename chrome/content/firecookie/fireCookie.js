@@ -1894,7 +1894,8 @@ Templates.CookieRow = domplate(Templates.Rep,
 
     bodyRow:
         TR({"class": "cookieInfoRow"},
-            TD({"class": "cookieInfoCol", colspan: 9})
+            TD({"class": "sourceLine cookieRowHeader"}),
+            TD({"class": "cookieInfoCol", colspan: 8})
         ),
 
     bodyTag:
@@ -2322,7 +2323,8 @@ Templates.CookieRow = domplate(Templates.Rep,
         if (hasClass(row, "opened"))
         {
             var bodyRow = this.bodyRow.insertRows({}, row)[0];
-            var cookieInfo = this.bodyTag.replace({cookie: row.repObject}, bodyRow.firstChild);
+            var bodyCol = getElementByClass(bodyRow, "cookieInfoCol");
+            var cookieInfo = this.bodyTag.replace({cookie: row.repObject}, bodyCol);
 
             // If JSON or XML tabs are availabel select them by default.
             if (this.selectTabByName(cookieInfo, "Json"))
