@@ -176,10 +176,6 @@
     border-left: 0px;
 }
 
-.cookieRow .cookieRowHeader {
-    width: 3px;
-}
-
 /************************************************************************************************/
 
 .cookieRow .cookieNameLabel {
@@ -404,6 +400,18 @@
 
 .cookieInfoRow .cookieRowHeader {
     display: table-cell;
+}
+
+/************************************************************************************************/
+
+/* Hide breakpoint column within the net panel info body */
+.netInfoCookiesText .cookieInfoRow .cookieRowHeader {
+    display: none;
+}
+
+/* Don't intend cookie label when displayed within the net panel info body */
+.netInfoCookiesText .cookieNameLabel {
+    margin-left: 0px;
 }
 
 /************************************************************************************************/
