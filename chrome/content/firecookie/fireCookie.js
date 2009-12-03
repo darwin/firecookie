@@ -4870,10 +4870,13 @@ Firebug.FireCookieModel.Breakpoints =
 
     breakNow: function(context)
     {
-        if (Firebug.Breakpoint && Firebug.Breakpoint.breakNow)
+        if (Firebug.Breakpoint && Firebug.Breakpoint.updatePanelTab)
         {
-            Firebug.Breakpoint.breakNow(context.getPanel(panelName, true));
-            return;
+            var panel = context.getPanel(panelName, true);
+            Firebug.Breakpoint.updatePanelTab(panel, false);
+
+            // Don't utilize Firebug.Breakpoint.breakNow since the code doesn't
+            // exclude firecookie files from the stack (chrome://firecookie/)
         }
 
         Firebug.Debugger.halt(function(frame)
