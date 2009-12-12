@@ -6,10 +6,9 @@
  * There are no global objects defined to avoid collisions with other
  * extensions.
  * 
- * xxxHonza, Compatibility:
- * context.getName() has been introduced in Firebug 1.4
- * Breakpoints
- * xxxHonza: Firecookie 1.0 should be compatible with Firebug 1.4 only.
+ * Compatibility:
+ * 1) context.getName() has been introduced in Firebug 1.4. But this is only
+ *    used for tracing.
  */
 FBL.ns(function() { with (FBL) {
 
@@ -4905,6 +4904,10 @@ Firebug.FireCookieModel.Breakpoints =
 
     getContextMenuItems: function(cookie, target, context)
     {
+        // Firebug 1.5 is needed for breakpoint support.
+        if (!Firebug.Breakpoint)
+            return;
+
         var items = [];
         items.push("-");
 
@@ -4933,6 +4936,14 @@ Firebug.FireCookieModel.Breakpoints =
 
     onBreakOnCookie: function(context, cookie)
     {
+        // Support for breakpoints needs Firebug 1.5
+        if (!Firebug.Breakpoint)
+        {
+            if (FBTrace.DBG_COOKIES)
+                FBTrace.sysout("cookies.breakOnCookie; You need Firebug 1.5 to create a breakpoint");
+            return;
+        }
+
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.breakOnCookie; ", context);
 
@@ -5002,22 +5013,20 @@ Firebug.FireCookieModel.Breakpoints =
 var Breakpoints = Firebug.FireCookieModel.Breakpoints;
 
 // ************************************************************************************************
+// Backward compatibility with Firebug 1.4
+// The entire breakOnNext support was implemented in 1.5
 
-// xxxHonza: Backward compatibility with Firebug 1.4
-// The question is whether Firecookie 1.0 should be compatible with Firebug 1.4
-if (!Firebug.Breakpoint)
-    Firebug.Breakpoint = {};
-
-if (!Firebug.Breakpoint.ConditionEditor)
-    Firebug.Breakpoint.ConditionEditor = {};
-
-if (!Firebug.Breakpoint.ConditionEditor)
-    Firebug.Breakpoint.ConditionEditor = {};
-
-if (!Firebug.Breakpoint.BreakpointGroup)
-    Firebug.Breakpoint.BreakpointGroup = function() {};
+// Fake object to allow proper parsing of the JavaScript below. Real breakpoint functionality
+// is of course disabled.
+var Firebug_Breakpoint = Firebug.Breakpoint ? Firebug.Breakpoint : {
+    ConditionEditor: function() {},
+    BreakpointGroup: function() {
+        this.findBreakpoint = function() {}
+    },
+};
 
 // ************************************************************************************************
+// Editor for Cookie breakpoint condition.
 
 Firebug.FireCookieModel.ConditionEditor = function(doc)
 {
@@ -5025,7 +5034,7 @@ Firebug.FireCookieModel.ConditionEditor = function(doc)
 }
 
 Firebug.FireCookieModel.ConditionEditor.prototype =
-    domplate(Firebug.Breakpoint.ConditionEditor.prototype,
+    domplate(Firebug_Breakpoint.ConditionEditor.prototype,
 {
     endEditing: function(target, value, cancel)
     {
@@ -5047,7 +5056,7 @@ function CookieBreakpointGroup()
     this.breakpoints = [];
 }
 
-CookieBreakpointGroup.prototype = extend(new Firebug.Breakpoint.BreakpointGroup(),
+CookieBreakpointGroup.prototype = extend(new Firebug_Breakpoint.BreakpointGroup(),
 {
     name: "cookieBreakpoints",
     title: $STR("firecookie.Cookie Breakpoints"),
