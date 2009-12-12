@@ -122,18 +122,6 @@ if (typeof FBTrace == "undefined")
 if (Firebug.registerStringBundle)
     Firebug.registerStringBundle("chrome://firecookie/locale/firecookie.properties");
 
-/*
-[b]English variable / German translation[/b]
-firecookie.console.cleared / Geleert
-firecookie.info.rawdatatab.Raw_Data / Rohdaten
-firecookie.SystemPages / Systemseiten
-firecookie.LocalFiles / Lokale Dateien
-firecookie.netinfo.Sent_Cookies / Versendete Cookies
-firecookie.Path_Filter / Pfadfilter
-firecookie.export.Export_All_Cookies_Tooltip / Alle Browser-Cookies in die Datei cookies.txt exportieren
-firecookie.export.Export_For_Site_Tooltip / Cookies für %S in die Datei cookies.txt exportieren
-*/
-
 // ************************************************************************************************
 // JSON native support is introduced in Firefox 3.5
 // It's used for cookie clipboard and also evaluating breakpoint conditions.
