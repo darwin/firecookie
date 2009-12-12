@@ -135,6 +135,28 @@ firecookie.export.Export_For_Site_Tooltip / Cookies für %S in die Datei cookies
 */
 
 // ************************************************************************************************
+// JSON native support is introduced in Firefox 3.5
+// It's used for cookie clipboard and also evaluating breakpoint conditions.
+
+// Create fake object to avoid exceptions.
+if (!this.JSON)
+{
+    this.JSON = {
+        parse: function()
+        {
+            if (FBTrace.DBG_COOKIES || FBTrace.DBG_ERRORS)
+                FBTrace.sysout("cookies.JSON; Use Firefox 3.5+ with native JSON support");
+        },
+
+        stringify: function()
+        {
+            if (FBTrace.DBG_COOKIES || FBTrace.DBG_ERRORS)
+                FBTrace.sysout("cookies.JSON; Use Firefox 3.5+ with native JSON support");
+        }
+    }
+}
+
+// ************************************************************************************************
 // Module Implementation
 
 var BaseModule = Firebug.ActivableModule ? Firebug.ActivableModule : Firebug.Module;
@@ -3560,7 +3582,7 @@ function parseFromJSON(json)
     try
     {
         // Parse JSON string. In case of Firefox 3.5 the native support is used,
-        // otherwise a parser implemented in json.js is the option.
+        // otherwise the cookie clipboard doesn't work.
         return JSON.parse(json);
     }
     catch (err)
@@ -4939,7 +4961,7 @@ Firebug.FireCookieModel.Breakpoints =
         // Support for breakpoints needs Firebug 1.5
         if (!Firebug.Breakpoint)
         {
-            if (FBTrace.DBG_COOKIES)
+            if (FBTrace.DBG_COOKIES || FBTrace.DBG_ERRORS)
                 FBTrace.sysout("cookies.breakOnCookie; You need Firebug 1.5 to create a breakpoint");
             return;
         }
@@ -5125,7 +5147,9 @@ Firebug.FireCookieModel.Breakpoint.prototype =
             // The callbacks will set this if the condition is true or if the eval faults.
             delete context.breakingCause;
 
-            // Construct expression to evaluate.
+            // Construct expression to evaluate. Native JSON support is available since
+            // Firefox 3.5 and breakpoints since Firebug 1.5, which supports min Fx 3.5
+            // So, all is good.
             var expr = "(function (){var scope = " + JSON.stringify(scope) +
                 "; with (scope) { return " + this.condition + ";}})();"
 
