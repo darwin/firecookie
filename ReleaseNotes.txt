@@ -3,20 +3,26 @@ Home page: http://www.janodvarko.cz/firecookie
 Addon page: https://addons.mozilla.org/en-US/firefox/addon/6683
 Issue list: http://code.google.com/p/firecookie/issues/list
 Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
+Source docs: http://www.janodvarko.cz/firecookie/docs/
 
-Release Notes for Firecookie 1.0 (alpha)
-----------------------------------------
+Release Notes for Firecookie 1.0
+--------------------------------
 
 == Enhancements ==
     * Break on Cookie. This feature allows to break JS execution when a cookie
       is modified, added or removed (issue 50).
+    * Conditional Cookie breakpoints.
 
 == Localization ==
     * ko-KR localization - contribution by Sewon Kim
 
 == Bug Fixes ==
     Issue 50: Break on cookie change
-
+    Issue 1996 (From FB List): Cookies are displayed in console even if disabled when 'Log Daten in Konsole anzeigen' was checked when activated
+    Issue 52: Enhance "Remove Cookies" Functionality
+    Issue 53: Add Option to Clear Cookie Value (Not Delete Cookie Entirely) to Cookies Panel Right-Click Menu
+    Issue 56: FireCookie spamming the Firebug Console even when disabled for a page
+ 
 Release Notes for Firecookie 0.9.1
 ----------------------------------
 
