@@ -416,6 +416,12 @@
 
 /************************************************************************************************/
 
+.disabledPanelBox .descImage-cookies {
+    background-image: url(chrome://firecookie/skin/activation-menu-cookies.png);
+}
+
+/************************************************************************************************/
+
 .DBG_NET {
     color: SeaShell;
 }
