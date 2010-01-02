@@ -1984,7 +1984,7 @@ Templates.CookieRow = domplate(Templates.Rep,
         if (cookie.cookie.expires == undefined)
             return "";
 
-        // The first character is space so, if the table is sorted accoroding 
+        // The first character is space so, if the table is sorted according
         // to this column, all "Session" cookies are displayed at the begining.
         if (cookie.cookie.expires == 0)
             return " " + $FC_STR("firecookie.Session");
