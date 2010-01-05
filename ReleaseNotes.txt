@@ -7,6 +7,7 @@ Source docs: http://www.janodvarko.cz/firecookie/docs/
 
 Release Notes for Firecookie 1.0
 --------------------------------
+Firefox 2.0 - 3.7a1pre
 
 == Enhancements ==
     * Break on Cookie. This feature allows to break JS execution when a cookie
