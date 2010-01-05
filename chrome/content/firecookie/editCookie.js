@@ -14,8 +14,6 @@ const windowMediator = CCSV("@mozilla.org/appshell/window-mediator;1", "nsIWindo
 
 //-----------------------------------------------------------------------------
 
-var FBTrace = { sysout: function() {} };
-
 /**
  * @dialog Edit cookie dialog implementation. This dialog is used to create a new cookie
  * and edit an existing cookies.
@@ -26,7 +24,6 @@ var EditCookie =
 
     onLoad: function()
     {
-        this.initFBTrace();
         this.createDateTimeField();
 
         var params = window.arguments[0];
@@ -63,10 +60,6 @@ var EditCookie =
         else
         {
             this.sessionNode.checked = true;
-
-            if (FBTrace.DBG_COOKIES)
-                FBTrace.sysout("cookies.EditCookie.onLoad; default expire time: " +
-                    this.expireNode.value);
 
             // Set default value for expire time (current time + some time, see prefs 
             // defaultInterval) so, the cookie doesn't disappear if the session box 
@@ -224,23 +217,6 @@ var EditCookie =
     getChromeWindow: function()
     {
         return windowMediator.getMostRecentWindow("navigator:browser");
-    },
-
-    initFBTrace: function()
-    {
-        try
-        {
-            // Get tracing service from firebug. Notice that this service doesn't
-            // have to necessarily exist. The wrapped object is used here to access
-            // sysout method implemeted by the service. Firebug doesn't define new
-            // IDL files and so methods are accessed through wrappedJSObject.
-            FBTrace = Cc["@joehewitt.com/firebug-trace-service;1"]
-                .getService(Ci.nsISupports)
-                .wrappedJSObject.getTracer("extensions.firebug");
-        }
-        catch (err)
-        {
-        }
     }
 }
 
