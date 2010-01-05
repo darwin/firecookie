@@ -1904,7 +1904,7 @@ Templates.CookieRow = domplate(Templates.Rep,
     bodyRow:
         TR({"class": "cookieInfoRow"},
             TD({"class": "sourceLine cookieRowHeader"}),
-            TD({"class": "cookieInfoCol", colspan: 8})
+            TD({"class": "cookieInfoCol", colspan: 10})
         ),
 
     bodyTag:
