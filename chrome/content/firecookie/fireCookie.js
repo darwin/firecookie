@@ -1427,6 +1427,7 @@ FireCookiePanel.prototype = extend(BasePanel,
 
     hide: function()
     {
+        this.showToolbarButtons("fbCookieButtons", false);
     },
 
     // Options menu
