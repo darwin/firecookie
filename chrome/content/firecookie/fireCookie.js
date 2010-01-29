@@ -435,6 +435,17 @@ Firebug.FireCookieModel = extend(BaseModule,
     {
         BaseModule.destroyContext.apply(this, arguments);
 
+        if (!context.cookies)
+        {
+            if (FBTrace.DBG_COOKIES)
+            {
+                var tabId = getTabIdForWindow(context.window);
+                FBTrace.sysout("cookies.DESTROY context ERROR: No context.cookies available, tabId: " +
+                    tabId + ", " + context.getName());
+            }
+            return;
+        }
+
         context.cookies.breakpoints.store(context);
 
         for (var p in context.cookies)
@@ -446,7 +457,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         {
             var tabId = getTabIdForWindow(context.window);
             FBTrace.sysout("cookies.DESTROY context, tabId: " + tabId +
-                ", " + context.getName() + "\n");
+                ", " + context.getName());
         }
     },
 
@@ -2336,7 +2347,7 @@ Templates.CookieRow = domplate(Templates.Rep,
             var bodyCol = getElementByClass(bodyRow, "cookieInfoCol");
             var cookieInfo = this.bodyTag.replace({cookie: row.repObject}, bodyCol);
 
-            // If JSON or XML tabs are availabel select them by default.
+            // If JSON or XML tabs are available select them by default.
             if (this.selectTabByName(cookieInfo, "Json"))
                 return;
 
@@ -2475,9 +2486,42 @@ Templates.CookieRow = domplate(Templates.Rep,
                 var docElem = cookie.getXmlValue();
                 if (docElem) {
                     var tag = Firebug.HTMLPanel.CompleteElement.getNodeTag(docElem);
-                    tag.append({object: docElem}, valueBox);
+                    tag.replace({object: docElem}, valueBox);
                 }
             }
+        }
+    },
+
+    updateTabs: function(cookieInfoBody, cookie, context)
+    {
+        // Iterate over all info-tabs and update visibility.
+        var cookieInfoTabs = getElementByClass(cookieInfoBody, "cookieInfoTabs");
+        var tab = cookieInfoTabs.firstChild;
+        while (tab)
+        {
+            var view = tab.getAttribute("view");
+            var hideTabCallback = Templates.CookieRow["hide" + view + "Tab"];
+            if (hideTabCallback)
+            {
+                if (hideTabCallback(cookie))
+                    setClass(tab, "collapsed");
+                else
+                    removeClass(tab, "collapsed");
+            }
+
+            tab = tab.nextSibling;
+        }
+
+        // If the selected tab was collapsed, make sure another one is selected.
+        if (hasClass(cookieInfoBody.selectedTab, "collapsed"))
+        {
+            if (this.selectTabByName(cookieInfoBody, "Json"))
+                return;
+
+            if (this.selectTabByName(cookieInfoBody, "Xml"))
+                return;
+
+            this.selectTabByName(cookieInfoBody, "Value");
         }
     }
 });
@@ -4003,19 +4047,34 @@ var CookieObserver = extend(BaseObserver,
         repCookie.cookie = makeCookieObject(cookie);
         repCookie.rawHost = makeStrippedHost(cookie.host);
 
+        // These are helpers so, the XML and JSON cookies don't have to be parsed
+        // again and again. But we need to reset them if the value is changed.
+        repCookie.json = null;
+        repCookie.xml = null;
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onUpdateCookie: " + cookie.name, repCookie);
+
         var row = repCookie.row;
         var rowTemplate = Templates.CookieRow;
 
         if (hasClass(row, "opened"))
         {
             var cookieInfoBody = getElementByClass(row.nextSibling, "cookieInfoBody");
+
+            // Invalidate content of all tabs.
             cookieInfoBody.valuePresented = false;
             cookieInfoBody.rawValuePresented = false;
+            cookieInfoBody.xmlPresented = false;
+            cookieInfoBody.jsonPresented = false;
+
+            // Update tabs visibility and content of the selected tab.
+            rowTemplate.updateTabs(cookieInfoBody, repCookie, context);
             rowTemplate.updateInfo(cookieInfoBody, repCookie, context);
         }
 
         rowTemplate.updateRow(repCookie, context);
-        
+
         if (FBTrace.DBG_COOKIES)
             checkList(panel);
     },
@@ -4335,7 +4394,7 @@ var HttpObserver = extend(BaseObserver,
 
 function checkList(panel)
 {
-    if (!FBTrace.DBG_COOKIES) 
+    if (!FBTrace.DBG_COOKIES)
         return;
 
     if (!panel || !this.panelNode)
