@@ -177,6 +177,15 @@
 }
 
 /************************************************************************************************/
+/* Break on Next*/
+
+/* panel badges */
+#fbBreakOnNextButton[panelName="cookies"] #fbBreakOnImageCookies {
+    visibility: visible;
+    padding-right: 2px;
+}
+
+/************************************************************************************************/
 
 .cookieRow .cookieNameLabel {
     background-image: url(chrome://firebug/skin/win/twistyClosed.png);

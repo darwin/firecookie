@@ -205,6 +205,18 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         // Register debugger listener for providing cookie-breakpoints.
         Firebug.Debugger.addListener(this.DebuggerListener);
+
+        // Dynamically overlay Break on Next button in FB 1.5.1
+        // There is a small decoration coming from each panel.
+        var bonStack = $("fbBreakOnNextButtonStack");
+        if (bonStack)
+        {
+            var image = document.createElement("image");
+            image.setAttribute("id", "fbBreakOnImageCookies");
+            image.setAttribute("class", "fbBreakOnImage");
+            image.setAttribute("src", "chrome://firecookie/skin/breakOnCookieSingle.png");
+            bonStack.appendChild(image);
+        }
     },
 
     /**
