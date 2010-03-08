@@ -5,12 +5,21 @@ Issue list: http://code.google.com/p/firecookie/issues/list
 Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
 Source docs: http://www.janodvarko.cz/firecookie/docs/
 
-Release Notes for Firecookie 1.1 (in progress)
+Release Notes for Firecookie 1.1 (in development)
 --------------------------------
 Firefox 2.0 - 3.7a1pre
 
 == Bug Fixes ==
-    * Issue 58:JSON $ XML tab dosn't refresh correctly
+    * Issue 58: JSON $ XML tab dosn't refresh correctly
+    * Issue 59: Add "Remove Session Cookies" option (feature request)
+
+== Enhancements ==
+    * Remove all session cookies (issue 59). It's now possible to remove all session
+      cookies (displayed in the Cookies panel) only.
+      See Cookies -> Remove Session Cookies menu action.
+      This new action also uses a confirmation dialog (that allows to check "Do not show this
+      message again".) Similarly to the one used for "Remove Cookies".
+      These dialogs are independent to each other.
 
 
 Release Notes for Firecookie 1.0
