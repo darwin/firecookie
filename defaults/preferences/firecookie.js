@@ -11,6 +11,7 @@ pref("extensions.firebug.firecookie.defaultExpireTime", 3600);
 pref("extensions.firebug.firecookie.lastSortedColumn", "");
 pref("extensions.firebug.firecookie.hiddenColumns", "colStatus");
 pref("extensions.firebug.firecookie.removeConfirmation", true);
+pref("extensions.firebug.firecookie.removeSessionConfirmation", true);
 
 // Activation
 pref("extensions.firebug.cookies.enableSites", false);

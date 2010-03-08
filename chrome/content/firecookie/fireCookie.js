@@ -56,6 +56,7 @@ const defaultExpireTime = "firecookie.defaultExpireTime";
 const lastSortedColumn = "firecookie.lastSortedColumn";
 const hiddenColsPref = "firecookie.hiddenColumns";
 const removeConfirmation = "firecookie.removeConfirmation";
+const removeSessionConfirmation = "firecookie.removeSessionConfirmation";
 
 // Services
 const cookieManager = CCSV("@mozilla.org/cookiemanager;1", "nsICookieManager2");
@@ -200,7 +201,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         Firebug.Console.addListener(this.ConsoleListener);
 
         // Localize UI (use firecookie.properties instead of firecookie.dtd)
-        // Firebu 1.5 dispatch "internationalizeUI" message so, don't use the name.
+        // Since Firebug 1.5 there is a "internationalizeUI" message dispatched to modules so,
+        // don't use the name to avoid collision.
+        // Firebug 1.5+ extension should use standard "internationalizeUI" method.
         this.fcInternationalizeUI();
 
         // Register debugger listener for providing cookie-breakpoints.
@@ -251,6 +254,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         fcInternationalize("fcExportAll", "label");
         fcInternationalize("fcExportAll", "tooltiptext");
         fcInternationalize("fcExportForSite", "label");
+        fcInternationalize("fcRemoveAllSession", "label");
     },
 
     registerObservers: function(context)
@@ -761,21 +765,14 @@ Firebug.FireCookieModel = extend(BaseModule,
         return true;
     },
 
-    onRemoveAll: function(context)
+    onRemoveAllSessionShowTooltip: function(tooltip, context)
     {
-        if (getPref(FirebugPrefDomain, removeConfirmation))
-        {
-            var check = {value: false};
-            if (!prompts.confirmCheck(context.chrome.window, "Firecookie",
-                $FC_STR("firecookie.confirm.removeall"),
-                $FC_STR("firecookie.msg.Do not show this message again"), check))
-                return;
+        tooltip.label = $FC_STR("firecookie.removeallsession.tooltip");
+        return true;
+    },
 
-            // Update delete confirmation option according to the value
-            // of the dialog's "do not show again" checkbox.
-            setPref(FirebugPrefDomain, removeConfirmation, !check.value)
-        }
-
+    onRemoveAllShared: function(context, sessionOnly)
+    {
         var panel = context.getPanel(panelName, true);
         if (!panel)
             return;
@@ -788,13 +785,24 @@ Firebug.FireCookieModel = extend(BaseModule,
         // cookies are removed.
         var searching = hasClass(panel.panelNode, "searching");
         var row = getElementByClass(panel.panelNode, "cookieRow");
-        while (row) 
+        while (row)
         {
             if (!searching || hasClass(row, "matched"))
             {
                 var cookie = row.repObject;
+
+                // Some entries within the Cookies panel don't represent a cookie.
                 if (cookie)
-                    cookies.push(cookie);
+                {
+                    // If sessionOnly flag is true, only session cookies will be removed.
+                    if (sessionOnly)
+                    {
+                        if (!cookie.cookie.expires)
+                            cookies.push(cookie);
+                    }
+                    else
+                        cookies.push(cookie);
+                }
             }
 
             row = row.nextSibling;
@@ -802,6 +810,42 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         for (var i=0; i<cookies.length; i++)
             Templates.CookieRow.onRemove(cookies[i]);
+    },
+
+    onRemoveAll: function(context)
+    {
+        if (getPref(FirebugPrefDomain, removeConfirmation))
+        {
+            var check = {value: false};
+            if (!prompts.confirmCheck(context.chrome.window, "Firecookie",
+                $FC_STR("firecookie.confirm.removeall"),
+                $FC_STR("firecookie.msg.Do not show this message again"), check))
+                return;
+
+            // Update 'Remove Cookies' confirmation option according to the value
+            // of the dialog's "do not show again" checkbox.
+            setPref(FirebugPrefDomain, removeConfirmation, !check.value)
+        }
+
+        Firebug.FireCookieModel.onRemoveAllShared(context, false);
+    },
+
+    onRemoveAllSession: function(context)
+    {
+        if (getPref(FirebugPrefDomain, removeSessionConfirmation))
+        {
+            var check = {value: false};
+            if (!prompts.confirmCheck(context.chrome.window, "Firecookie",
+                $FC_STR("firecookie.confirm.removeallsession"),
+                $FC_STR("firecookie.msg.Do not show this message again"), check))
+                return;
+
+            // Update 'Remove Session Cookies' confirmation option according to the value
+            // of the dialog's "do not show again" checkbox.
+            setPref(FirebugPrefDomain, removeSessionConfirmation, !check.value)
+        }
+
+        Firebug.FireCookieModel.onRemoveAllShared(context, true);
     },
 
     onCreateCookieShowTooltip: function(tooltip, context)

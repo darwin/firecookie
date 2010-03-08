@@ -5,12 +5,15 @@
 <?xml-stylesheet href="chrome://firecookie/skin/editCookie.css" type="text/css"?>
 <?xml-stylesheet href="chrome://firecookie/content/editCookie.css" type="text/css"?>
 
+<!-- DTD entities for localization - OBSOLETE.
+  All translated sttings should be part of firecookie.properties file and translattion
+  made within Firebug.FireCookieModel.fcInternationalizeUI() method -->
 <!DOCTYPE window [
 <!ENTITY % firecookieDTD SYSTEM "chrome://firecookie/locale/firecookie.dtd">
 %firecookieDTD;
 ]>
 
-<dialog id="fcEditCookieDlg" 
+<dialog id="fcEditCookieDlg"
         windowtype="Browser:CookieEditor"
         title="&firecookie.edit.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
