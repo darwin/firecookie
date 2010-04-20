@@ -263,7 +263,7 @@
 .cookieExpiresLabel,
 .cookieValueLabel {
     padding: 1px 0 2px 0 !important;
-    width: 100%;
+    /*width: 100%; See issue 63*/
 }
 
 .cookieDomainLabel {
