@@ -434,7 +434,8 @@ Firebug.FireCookieModel = extend(BaseModule,
         // node element. (it's properly set once the page is reloaded, but no the first time)
         // The Firebug.getElementPanel method doesn't work then. 
         // This is fixed in Firebug 1.2 (the ownerPanel is set in Initialize & reattach methods)
-        panel.panelNode.ownerPanel = panel;
+        if (panel)
+            panel.panelNode.ownerPanel = panel;
 
         // Refresh panel. From some reason, if FB UI is detached, all event 
         // listeners (e.g. onClick handlers registered in domplate template) 
@@ -4256,7 +4257,7 @@ var HttpObserver = extend(BaseObserver,
     // nsIObserver
     observe: function(aSubject, aTopic, aData) 
     {
-        try  {
+        try {
             aSubject = aSubject.QueryInterface(nsIHttpChannel);
             if (aTopic == "http-on-modify-request") {
                 this.onModifyRequest(aSubject);
@@ -4296,7 +4297,7 @@ var HttpObserver = extend(BaseObserver,
         // the real FB context when it's created (see initContext).
         if ((request.loadFlags & nsIHttpChannel.LOAD_DOCUMENT_URI) &&
             (request.loadGroup && request.loadGroup.groupObserver) &&
-            (name == origName) && (win == win.parent))
+            (name == origName) && (win && win == win.parent))
         {
             if (FBTrace.DBG_COOKIES && contexts[tabId])
                 FBTrace.sysout("cookies.!!! Temporary context exists for: " + tabId + "\n");
@@ -5332,6 +5333,63 @@ Templates.CookieRep = domplate(Templates.Rep,
         return cookie.cookie.value;
     }
 });
+
+// ************************************************************************************************
+// Firebug Compatibility
+
+// Firebug version number (float) for backward compatiability issues.
+var FirebugVersion = (function initializeFirebugVersion()
+{
+    try
+    {
+        // The expected format is "1.6" or "1.6.1", these are converted to a float
+        // 1.6 respective 1.61
+        var version = Firebug.version;
+        var parts = version.split(".");
+        version = parts[0] + ".";
+        for (var i=1; i<parts.length; i++)
+            version += parts[i];
+        return parseFloat(version);
+    }
+    catch (err)
+    {
+        if (FBTrace.DBG_COOKIES || FBTrace.DBG_ERRORS)
+            FBTrace.sysout("cookies.initializeFirebugVersion; EXCEPTION " + err, err);
+
+        // Guess Fierbug version according to the Firefox version.
+        if (versionChecker.compare(appInfo.version, "3.6*") >= 0)
+            return 1.6;
+        else if (versionChecker.compare(appInfo.version, "3.5*") >= 0)
+            return 1.5;
+        else
+            return 1.4;
+    }
+})();
+
+/**
+ * Compare expected Firebug version with the current Firebug installed.
+ * @param {Object} expectedVersion Expected version of Firebug.
+ * @returns
+ * -1 the current version is smaller 
+ *  0 the current version is the same
+ *  1 the current version is bigger
+ *  
+ *  @example:
+ *  if (compareFirebugVersion("1.6") >= 0)
+ *  {
+ *      // execute code for Firebug 1.6+
+ *  }
+ */
+function compareFirebugVersion(expectedVersion)
+{
+    expectedVersion = parseFloat(expectedVersion);
+    if (FirebugVersion > expectedVersion)
+        return 1;
+    else if (FirebugVersion < expectedVersion)
+        return -1;
+
+    return 0;
+}
 
 // ************************************************************************************************
 // Firebug Registration
