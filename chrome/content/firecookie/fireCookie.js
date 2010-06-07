@@ -589,7 +589,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         cookieManager.remove(host, name, path, false);
     },
 
-    // Support for ActivableModule
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    // Support for ActivableModule 1.3 - 1.5
+
     onPanelActivate: function(context, init, activatedPanelName)
     {
         if (activatedPanelName != panelName)
@@ -632,6 +634,61 @@ Firebug.FireCookieModel = extend(BaseModule,
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.onLastPanelDeactivate");
     },
+
+    onEnabled: function(context)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onEnabled; " + context.getName());
+
+        this.registerObservers(context);
+    },
+
+    onDisabled: function(context)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onDisabled; " + context.getName());
+
+        this.unregisterObservers(context);
+    },
+
+    onEnablePrefChange: function(pref)
+    {
+        BaseModule.onEnablePrefChange.apply(this, arguments);
+
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.onEnablePrefChange; " + this.isAlwaysEnabled());
+    },
+
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    // Support for ActivableModule 1.6
+
+    /**
+     * It's just here to exists (calling base class only)
+     */
+    isEnabled: function(context)
+    {
+        // For backward compatibility with Firebug 1.1. ActivableModule has been
+        // introduced in Firebug 1.2.
+        if (!Firebug.ActivableModule)
+            return true;
+
+        return BaseModule.isEnabled.apply(this, arguments);
+    },
+
+    /**
+     * Called when an observer (e.g. panel) is added/removed into/from the model.
+     * This is the moment when the model needs to decide whether to activate.
+     */
+    onObserverChange: function(observer)
+    {
+        if (this.hasObservers())
+            TabWatcher.iterateContexts(Firebug.FireCookieModel.registerObservers);
+        else
+            TabWatcher.iterateContexts(Firebug.FireCookieModel.unregisterObservers);
+    },
+
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    // Firebug suspend and resume
 
     onSuspendFirebug: function(context)
     {
@@ -677,39 +734,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             FBTrace.sysout("cookies.onResumeFirebug");
     },
 
-    onEnabled: function(context)
-    {
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.onEnabled; " + context.getName());
-
-        this.registerObservers(context);
-    },
-
-    onDisabled: function(context)
-    {
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.onDisabled; " + context.getName());
-
-        this.unregisterObservers(context);
-    },
-
-    isEnabled: function(context)
-    {
-        // For backward compatibility with Firebug 1.1. ActivableModule has been
-        // introduced in Firebug 1.2.
-        if (!Firebug.ActivableModule)
-            return true;
-
-        return BaseModule.isEnabled.apply(this, arguments);
-    },
-
-    onEnablePrefChange: function(pref)
-    {
-        BaseModule.onEnablePrefChange.apply(this, arguments);
-
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.onEnablePrefChange; " + this.isAlwaysEnabled());
-    },
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     getMenuLabel: function(option, location)
     {
@@ -1469,7 +1494,10 @@ FireCookiePanel.prototype = extend(BasePanel,
         Firebug.FireCookieModel.Perm.updatePermButton(this.context);
 
         // For backward compatibility with Firebug 1.1
-        if (Firebug.ActivableModule)
+        //
+        // Firebug 1.6 removes Firebug.DisabledPanelPage, simplifies the activation
+        // and the following code is not necessary any more.
+        if (Firebug.ActivableModule && Firebug.DisabledPanelPage)
         {
             var shouldShow = Firebug.FireCookieModel.isEnabled(this.context);
             this.showToolbarButtons("fbCookieButtons", shouldShow);
@@ -1659,6 +1687,20 @@ FireCookiePanel.prototype = extend(BasePanel,
     {
         return (enabled ? $STR("firecookie.Disable Break On Cookie") :
             $STR("firecookie.Break On Cookie"));
+    },
+
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    // Panel Activation
+
+    onActivationChanged: function(enable)
+    {
+        if (FBTrace.DBG_COOKIES || FBTrace.DBG_ACTIVATION)
+            FBTrace.sysout("firecookie.FireCookiePanel.onActivationChanged; " + enable);
+
+        if (enable)
+            Firebug.FireCookieModel.addObserver(this);
+        else
+            Firebug.FireCookieModel.removeObserver(this);
     },
 }); 
 
