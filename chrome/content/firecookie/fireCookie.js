@@ -418,6 +418,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         if (!context)
             return;
 
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.reattachContext: " + context.getName());
+
         this.Perm.updatePermButton(context, chrome);
 
         // xxxHonza the panel is created here, it's overhead.
@@ -427,7 +430,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         var panel = context.getPanel(panelName);
 
         // Add styles into the panel HTML document.
-        if (browser.detached)
+        // browser.detached is not set now.
+        // Issue 64: Firecookie table format breaks when switching to detatched window mode
+        //if (browser.detached)
             this.addStyleSheet(panel);
 
         // From some reason, Firebug doesn't set the ownerPanel to the panel
@@ -439,7 +444,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         // Refresh panel. From some reason, if FB UI is detached, all event 
         // listeners (e.g. onClick handlers registered in domplate template) 
-        // are somwhos damaged and not called. 
+        // are somehow damaged and not called. 
         // Workaround - if the panel is refreshed event handlers work.
         //
         // See bug http://code.google.com/p/fbug/issues/detail?id=724, console
