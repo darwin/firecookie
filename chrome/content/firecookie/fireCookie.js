@@ -3564,7 +3564,7 @@ Cookie.prototype =
             (expires ? "; expires=" + expires.toGMTString() : "") +
             ((this.cookie.path) ? "; path=" + this.cookie.path : "; path=/") +
             (noDomain ? "" : ((this.cookie.host) ? "; domain=" + this.cookie.host : "")) +
-            ((this.cookie.secure) ? "; secure" : "") + 
+            ((this.cookie.isSecure) ? "; Secure" : "") + 
             ((this.cookie.isHttpOnly) ? "; HttpOnly" : "");
     },
 
@@ -3577,7 +3577,7 @@ Cookie.prototype =
             path: (this.cookie.path ? this.cookie.path : "/"),
             host: this.cookie.host,
             isHttpOnly: (this.cookie.isHttpOnly),
-            isSecure: (this.cookie.secure)
+            isSecure: (this.cookie.isSecure)
         });
     },
 
