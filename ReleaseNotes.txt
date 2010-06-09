@@ -14,6 +14,7 @@ Firefox 2.0 - 3.7a1pre
     * Issue 59: Add "Remove Session Cookies" option (feature request)
     * Issue 63: Use only one line for cookie logs in the Console panel (if enough horizontal space)
     * Issue 64: Firecookie table format breaks when switching to detatched window mode
+    * Issue 65: "Secure" flag not being applied [cookie.toString() seems to drop it]
 
 == Enhancements ==
     * Remove all session cookies (issue 59). It's now possible to remove all session
