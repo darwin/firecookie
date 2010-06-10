@@ -7,8 +7,11 @@
  * extensions.
  * 
  * Compatibility:
+ * - The official minimum required Firebug version is 1.4
+ * 
  * 1) context.getName() has been introduced in Firebug 1.4. But this is only
  *    used for tracing.
+ * 2) getWindowForRequest & getTabIdForWindow are now expected to exists (Firebug 1.3).
  */
 FBL.ns(function() { with (FBL) {
 
@@ -366,7 +369,7 @@ Firebug.FireCookieModel = extend(BaseModule,
      */
     initContext: function(context)
     {
-        var tabId = getTabIdForWindow(context.window);
+        var tabId = Firebug.getTabIdForWindow(context.window);
 
         if (FBTrace.DBG_COOKIES)
             FBTrace.sysout("cookies.INIT real context for: " + tabId + ", " +
@@ -461,7 +464,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         {
             if (FBTrace.DBG_COOKIES)
             {
-                var tabId = getTabIdForWindow(context.window);
+                var tabId = Firebug.getTabIdForWindow(context.window);
                 FBTrace.sysout("cookies.DESTROY context ERROR: No context.cookies available, tabId: " +
                     tabId + ", " + context.getName());
             }
@@ -477,7 +480,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         if (FBTrace.DBG_COOKIES)
         {
-            var tabId = getTabIdForWindow(context.window);
+            var tabId = Firebug.getTabIdForWindow(context.window);
             FBTrace.sysout("cookies.DESTROY context, tabId: " + tabId +
                 ", " + context.getName());
         }
@@ -542,7 +545,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         if (FBTrace.DBG_COOKIES)
         {
-            var tabId = getTabIdForWindow(view);
+            var tabId = Firebug.getTabIdForWindow(view);
             FBTrace.sysout("cookies.On before unload tab:  " + tabId + "\n");
 
             if (contexts[tabId])
@@ -4321,8 +4324,8 @@ var HttpObserver = extend(BaseObserver,
     {
         var name = request.URI.spec;
         var origName = request.originalURI.spec;
-        var tabId = getTabIdForRequest(request);
         var win = getWindowForRequest(request);
+        var tabId = Firebug.getTabIdForWindow(win);
 
         // Firebus's natures is to display information for a tab. So, if there
         // is no tab associated then end.
@@ -4396,7 +4399,8 @@ var HttpObserver = extend(BaseObserver,
 
     onExamineResponse: function(request)
     {
-        var tabId = getTabIdForRequest(request);
+        var win = getWindowForRequest(request);
+        var tabId = Firebug.getTabIdForWindow(win);
         if (!tabId)
             return;
 
@@ -4423,7 +4427,6 @@ var HttpObserver = extend(BaseObserver,
         // Try to get the context from the contexts array first. The TabWatacher
         // could return context for the previous page in this tab.
         var context = contexts[tabId];
-        var win = getWindowForRequest(request);
         context = context ? context : TabWatcher.getContextByWindow(win);
 
         // The context doesn't have to exist due to the activation support.
@@ -4522,94 +4525,6 @@ function checkList(panel)
     }
 
     return null;
-}
-
-// ************************************************************************************************
-// Window helpers
-
-function getWindowForRequest(request) 
-{
-    var webProgress = getRequestWebProgress(request);
-    return webProgress ? safeGetWindow(webProgress) : null;
-}
-
-function getTabIdForRequest(request) 
-{
-    try {
-        if (request.notificationCallbacks) 
-        {
-            var interfaceRequestor = request.notificationCallbacks.QueryInterface(
-                nsIInterfaceRequestor);
-
-            try {
-                var win = interfaceRequestor.getInterface(nsIDOMWindow);
-                var tabId = getTabIdForWindow(win);
-                if (tabId)  
-                    return tabId;
-            } 
-            catch (err) { }
-        }
-
-        var progress = getRequestWebProgress(request);
-        var win = safeGetWindow(progress);
-        return getTabIdForWindow(win);
-    }
-    catch (err) {
-        ERROR(err);
-    }
-
-    return null;
-}
-
-function getTabIdForWindow(aWindow)
-{
-    aWindow = getRootWindow(aWindow);
-
-    if (!aWindow || !tabBrowser.getBrowserIndexForDocument)
-        return null;
-
-    try {
-        var targetDoc = aWindow.document;
-
-        var tab = null;
-        var targetBrowserIndex = tabBrowser.getBrowserIndexForDocument(targetDoc);
-
-        if (targetBrowserIndex != -1)
-        {
-            tab = tabBrowser.tabContainer.childNodes[targetBrowserIndex];
-            return tab.linkedPanel;
-        }
-    } catch (ex) {}
-
-    return null;
-}
-
-function getRequestWebProgress(request)
-{
-    try
-    {
-        if (request.notificationCallbacks)
-            return request.notificationCallbacks.getInterface(nsIWebProgress);
-    } catch (exc) {}
-
-    try
-    {
-        if (request.loadGroup && request.loadGroup.groupObserver)
-            return QI(request.loadGroup.groupObserver, nsIWebProgress);
-    } catch (exc) {}
-
-    return null;
-}
-
-function safeGetWindow(webProgress)
-{
-    try {
-        if (webProgress)
-            return webProgress.DOMWindow;
-    }
-    catch (ex) {
-        return null;
-    }
 }
 
 // ************************************************************************************************
