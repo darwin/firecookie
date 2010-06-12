@@ -45,6 +45,50 @@ this.getCookieByName = function(panelNode, cookieName)
 };
 
 /**
+ * Expands specified cookie.
+ *
+ * @param {Object} panelNode Cookie panel node returned e.g. by {@link FBTestFirebug.selectPanel} method.
+ * @param {Object} cookieName Name of the cookie to be expanded
+ * @param {Object} infoTab Name of the tab to be selected (Value, RawValue, Json, Xml).
+ * @returns If a default <i>infoTab</i> is specified the return value is content of the tab,
+ *      (for example <i>cookieInfoValueText</i> element). If no tab is specified the info
+ *      row element (created just after cookie row with class <i>cookieInfoRow</i>) is returned.
+ */
+this.expandCookie = function(panelNode, cookieName, infoTab)
+{
+    var row = this.getCookieRowByName(panelNode, cookieName);
+    if (!row)
+        FBTest.ok(row, cookieName + " must exist.");
+
+    FBTest.click(row);
+
+    var cookieInfo = row.nextSibling;
+    if (!FW.FBL.hasClass(cookieInfo, "cookieInfoRow"))
+        FBTest.ok(false, "Cookie info row doesn't have proper class");
+
+    if (!infoTab)
+        return cookieInfo;
+
+    FBTestFirebug.expandElements(cookieInfo, "cookieInfo" + infoTab + "Tab");
+    return cookieInfo.querySelector(".cookieInfo" + infoTab + "Text");
+};
+
+/**
+ * Verifies content of specified tab for given cookie.
+ * 
+ * @param {Object} panelNode Cookie panel node.
+ * @param {Object} cookieName Name of the cookie under inspection.
+ * @param {Object} tabName Name of the tab under inspection (Value, RawValue, Json, Xml)
+ * @param {Object} expected Expected value (can be regular expression)
+ */
+this.verifyCookieTabContent = function(panelNode, cookieName, tabName, expected)
+{
+    var info = this.expandCookie(panelNode, cookieName, tabName);
+    FBTest.compare(expected, info ? info.textContent : "",
+        "Expected " + tabName + " value must be displayed for " + cookieName);
+}
+
+/**
  * Remove specified cookie by name.
  * @param {String} Name of the cookie to be removed.
  */
