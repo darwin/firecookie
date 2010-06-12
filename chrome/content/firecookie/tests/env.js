@@ -19,7 +19,7 @@ var winWatcher = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
 
 this.enableCookiePanel = function(callback)
 {
-    FBTestFirebug.updateModelState(FW.Firebug.FireCookieModel, callback, true);
+    FBTestFirebug.setPanelState(FW.Firebug.FireCookieModel, "cookies", callback, true);
 };
 
 this.getCookieRowByName = function(panelNode, cookieName)

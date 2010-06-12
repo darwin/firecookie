@@ -3,21 +3,6 @@ function runTest()
     FBTest.sysout("cookies.test.issue18; START");
     FBTest.loadScript("env.js", this);
 
-    // Server side handler.
-    FBTest.registerPathHandler("/issue18.php", function (metadata, response) 
-    {
-        FBTest.sysout("cookies.test.issue18; Server side handler executed.");
-        response.setHeader("Set-Cookie", 
-            "TestCookie=1 %2B 2 = 3; " +
-            "expires=Wed, 01-Jan-2020 00:00:00 GMT; " +
-            "path=/dir; " +
-            "HttpOnly", 
-            false);
-        response.write("<html><head><title>Cookie Entry</title></head><body>" +
-            "<h1>Issue 18: Unescape cookie values</h1>" +
-            "</body></html>");
-    });
-
     FBTestFirebug.openNewTab(basePath + "issue18/issue18.php", function(win)
     {
         // Open Firebug UI and enable Net panel.
