@@ -23,21 +23,33 @@ var serverURI = "http://www.janodvarko.cz/firecookie/tests/";
 
 /**
  * List of registered tests.
- * @param: {String} category    Name of the category where the test belongs to.
+ * @param: {String} group       Name of the group where the test belongs to.
  * @param: {String} uri         Relative location of the test file.
  * @param: {String} desc        Test description.
+ * @param: {String} category    Test category, this can be set to:
+ *                              "passes": (default) - a test must pass, otherwise it's a blocking bug.
+ *                              "fails": - it's not blocking bug if the test fails.
+ * @param: {String} testPage    Relative location of the test page [optional]. This is useful for manual
+ *                              opening of the test page from FBTest console (context menu "Open Test Page").
+ * @param: {String} os          Target OS [optional]. Used to specify target OS where the test
+ *                              should be applied. Can be combination of following: win|mac|linux
+ *                              (separated by '|'). If not specified, the test is intended for all.
+ *                              Test, which is not targeted for the current OS is marked as "fails".
  */
 var testList = [
-    {group: "General", uri: "cookiePanel.js",     desc: "Existence of cookie panel", testPage: "general/cookiePanel.php" },
-    {group: "General", uri: "cookieEntry.js",     desc: "Existence of cookie entry", testPage: "general/cookieEntry.php" },
-    {group: "General", uri: "cookieValues.js",    desc: "Check displayed cookie values", testPage: "general/cookieValues.php" },
-    {group: "General", uri: "cookieClipboard.js", desc: "Clipboard (copy and paste)", testPage: "general/cookieClipboard.php" },
-    {group: "Issues",  uri: "issue18.js",         desc: "Issue 18: Unescape cookie values", testPage: "issue18/issue18.php" },
-    {group: "Issues",  uri: "issue34.js",         desc: "firecookie 0.8 cookies with .domain.com the first period gets erased on editing any attribute", testPage: "issue34/issue34.php" },
-    {group: "Issues",  uri: "issue23.js",         desc: "httpOnly cookies", testPage: "issue23/issue23.php" },
-    {group: "Issues",  uri: "issue25.js",         desc: "Changing expire time to Session deletes cookie", testPage: "issue25/issue25.php" },
-    /*{group: "Issues",  uri: "issue13.js",         desc: "When switching the tabs i got popup asking what to do with a long running script" },*/
-    {group: "Issues",  uri: "issue38.js",         desc: "Notify that third-party cookies aren't accepted", testPage: "issue38/issue38.php" },
+    {group: "General", uri: "cookiePanel.js",       desc: "Existence of cookie panel", testPage: "general/cookiePanel.php" },
+    {group: "General", uri: "cookieEntry.js",       desc: "Existence of cookie entry", testPage: "general/cookieEntry.php" },
+    {group: "General", uri: "cookieValues.js",      desc: "Check displayed cookie values", testPage: "general/cookieValues.php" },
+    {group: "General", uri: "cookieClipboard.js",   desc: "Clipboard (copy and paste)", testPage: "general/cookieClipboard.php" },
+    {group: "General", uri: "cookieBreakOnNext.js", desc: "Break on Cookie change", testPage: "general/breakOnNext.php" },
+    {group: "Issues",  uri: "issue18.js",           desc: "Issue 18: Unescape cookie values", testPage: "issue18/issue18.php" },
+    {group: "Issues",  uri: "issue34.js",           desc: "firecookie 0.8 cookies with .domain.com the first period gets erased on editing any attribute", testPage: "issue34/issue34.php" },
+    {group: "Issues",  uri: "issue23.js",           desc: "httpOnly cookies", testPage: "issue23/issue23.php" },
+    {group: "Issues",  uri: "issue25.js",           desc: "Changing expire time to Session deletes cookie", testPage: "issue25/issue25.php" },
+    {group: "Issues",  uri: "issue38.js",           desc: "Notify that third-party cookies aren't accepted", testPage: "issue38/issue38.php" },
+    {group: "Issues",  uri: "issue44.js",           desc: "JSON Cookies view", testPage: "issue44/issue44.php" },
+    {group: "Issues",  uri: "issue54.js",           desc: "urlencoding of cookies value", testPage: "issue54/issue54.php" },
+    {group: "Issues",  uri: "issue60.js",           desc: "\"[\" and \"]\" characters get badly encoded on cookie name upon editing", testPage: "issue60/issue60.php" },
 ];
 </script>
 </body>
