@@ -10,7 +10,7 @@ function runTest()
             var panelNode = FBTestFirebug.selectPanel("cookies").panelNode;
             var cookie = FBTestFireCookie.getCookieByName(panelNode, "TestCookie38");
 
-            // TODO
+            // TODO xxxHonza
 
             editCookie(cookie);
 
@@ -25,7 +25,7 @@ function editCookie(cookie)
     if (!cookie)
         return;
 
-    // TODO
+    // TODO xxxHonza
 
     // Open editCookie.xul dialog and edit the value.
     FBTest.sysout("cookies.test.issue38; let's edit an existing cookie");

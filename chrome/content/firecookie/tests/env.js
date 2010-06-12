@@ -3,25 +3,32 @@
 var FBTestFireCookie = FBTest.FireCookie = {};
 
 // Performed in every test when this file is loaded.
-Components.classes["@mozilla.org/cookiemanager;1"]
-    .getService(Components.interfaces.nsICookieManager).removeAll();
+Components.classes["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager).removeAll();
 
 (function() {
 
 // ************************************************************************************************
 // Constants
 
-var winWatcher = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
-    .getService(Components.interfaces.nsIWindowWatcher);
+var winWatcher = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher);
 
 // ************************************************************************************************
 // Firecookie testing APIs
 
+/**
+ * Enables Cookies panel
+ * @param {Function} callback Executed as soon as the panel is enabled.
+ */
 this.enableCookiePanel = function(callback)
 {
     FBTestFirebug.setPanelState(FW.Firebug.FireCookieModel, "cookies", callback, true);
 };
 
+/**
+ * Returns <TR> element that represents specified cookie in the Cookies panel.
+ * @param {Element} panelNode Cookies panel node.
+ * @param {String} cookieName Name of the cookie under inspection.
+ */
 this.getCookieRowByName = function(panelNode, cookieName)
 {
     var cookieRows = FW.FBL.getElementsByClass(panelNode, "cookieRow");
@@ -38,6 +45,11 @@ this.getCookieRowByName = function(panelNode, cookieName)
     return null;
 };
 
+/**
+ * Returns cookie object (the repObject) according to the specified name.
+ * @param {Element} panelNode Cookies panel node.
+ * @param {String} cookieName Name of the cookie under inspection.
+ */
 this.getCookieByName = function(panelNode, cookieName)
 {
     var row = this.getCookieRowByName(panelNode, cookieName);
@@ -47,9 +59,9 @@ this.getCookieByName = function(panelNode, cookieName)
 /**
  * Expands specified cookie.
  *
- * @param {Object} panelNode Cookie panel node returned e.g. by {@link FBTestFirebug.selectPanel} method.
- * @param {Object} cookieName Name of the cookie to be expanded
- * @param {Object} infoTab Name of the tab to be selected (Value, RawValue, Json, Xml).
+ * @param {Element} panelNode Cookie panel node returned e.g. by {@link FBTestFirebug.selectPanel} method.
+ * @param {String} cookieName Name of the cookie to be expanded
+ * @param {String} infoTab Name of the tab to be selected (Value, RawValue, Json, Xml).
  * @returns If a default <i>infoTab</i> is specified the return value is content of the tab,
  *      (for example <i>cookieInfoValueText</i> element). If no tab is specified the info
  *      row element (created just after cookie row with class <i>cookieInfoRow</i>) is returned.
@@ -78,9 +90,9 @@ this.expandCookie = function(panelNode, cookieName, infoTab)
 /**
  * Verifies content of specified tab for given cookie.
  * 
- * @param {Object} panelNode Cookie panel node.
- * @param {Object} cookieName Name of the cookie under inspection.
- * @param {Object} tabName Name of the tab under inspection (Value, RawValue, Json, Xml)
+ * @param {Element} panelNode Cookie panel node.
+ * @param {String} cookieName Name of the cookie under inspection.
+ * @param {String} tabName Name of the tab under inspection (Value, RawValue, Json, Xml)
  * @param {Object} expected Expected value (can be regular expression)
  */
 this.verifyInfoTabContent = function(panelNode, cookieName, tabName, expected)
@@ -104,7 +116,7 @@ this.removeCookie = function(host, name, path)
  * after its closed. Use callback to close the dialog.
  * 
  * @param {Object} cookie Cookie beeing edited
- * @param {Object} callback Callback for dialog manipulation.
+ * @param {Function} callback Callback for dialog manipulation.
  */
 this.editCookie = function(cookie, callback)
 {
@@ -130,6 +142,17 @@ this.editCookie = function(cookie, callback)
     winWatcher.registerNotification(watcherObserver);
     return FW.Firebug.FireCookieModel.Templates.CookieRow.onEdit(cookie);
 };
+
+/**
+ * Click on a button within the test case page.
+ * @param {Object} win
+ * @param {Object} buttonId
+ */
+this.clickTestButton = function(win, buttonId)
+{
+    var win = FW.FBL.unwrapObject(win);
+    FBTest.click(win.document.getElementById(buttonId));
+}
 
 // ************************************************************************************************
 }).apply(FBTest.FireCookie);
