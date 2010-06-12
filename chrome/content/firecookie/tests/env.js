@@ -60,7 +60,9 @@ this.expandCookie = function(panelNode, cookieName, infoTab)
     if (!row)
         FBTest.ok(row, cookieName + " must exist.");
 
-    FBTest.click(row);
+    // Expand only if not already expanded
+    if (!FW.FBL.hasClass(row, "opened"))
+        FBTest.click(row);
 
     var cookieInfo = row.nextSibling;
     if (!FW.FBL.hasClass(cookieInfo, "cookieInfoRow"))
@@ -81,7 +83,7 @@ this.expandCookie = function(panelNode, cookieName, infoTab)
  * @param {Object} tabName Name of the tab under inspection (Value, RawValue, Json, Xml)
  * @param {Object} expected Expected value (can be regular expression)
  */
-this.verifyCookieTabContent = function(panelNode, cookieName, tabName, expected)
+this.verifyInfoTabContent = function(panelNode, cookieName, tabName, expected)
 {
     var info = this.expandCookie(panelNode, cookieName, tabName);
     FBTest.compare(expected, info ? info.textContent : "",
