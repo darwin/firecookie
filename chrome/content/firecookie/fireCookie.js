@@ -4965,6 +4965,9 @@ Firebug.FireCookieModel.Breakpoints =
 
             // Don't utilize Firebug.Breakpoint.breakNow since the code doesn't
             // exclude firecookie files from the stack (chrome://firecookie/)
+            // Firebug.Debugger.breakNowURLPrefix must be changed to: "chrome://",
+            //Firebug.Breakpoint.breakNow(context.getPanel(panelName, true));
+            //return;
         }
 
         Firebug.Debugger.halt(function(frame)
