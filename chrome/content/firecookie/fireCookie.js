@@ -496,6 +496,16 @@ Firebug.FireCookieModel = extend(BaseModule,
         var styleSheet = createStyleSheet(doc, "chrome://firecookie/skin/firecookie.css");
         styleSheet.setAttribute("id", "fcStyles");
         addStyleSheet(doc, styleSheet);
+
+        // Firebug 1.6 introduces another panel for console preview on other panels
+        // The allows to use command line in other panels too.
+        var preview = Firebug.chrome.$("fbCommandPreviewBrowser");
+        if (preview)
+        {
+            doc = preview.contentDocument;
+            if (!$("fcStyles", doc))
+                addStyleSheet(doc, styleSheet.cloneNode(true));
+        }
     },
 
     updateOption: function(name, value)
