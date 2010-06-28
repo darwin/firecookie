@@ -5409,6 +5409,10 @@ Firebug.registerRep(
 // Register breakpoint template.
 Firebug.registerRep(Firebug.FireCookieModel.BreakpointTemplate);
 
+// This APIs doesn't exist yet, but yeah it should! (the second parameter is optional).
+if (Firebug.registerStylesheet)
+    Firebug.registerStylesheet("chrome://firecookie/skin/firecookie.css", "fcStyles");
+
 // ************************************************************************************************
 
 FBTrace.DBG_COOKIES = getPref(FirebugPrefDomain, "DBG_COOKIES");
