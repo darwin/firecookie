@@ -76,6 +76,28 @@ var EditCookie =
 
         // Update expire date-time picker.
         this.onSession();
+
+        // Translate all string in the UI.
+        this.fcInternationalizeUI();
+    },
+
+    fcInternationalizeUI: function()
+    {
+        var elements = ["fcEditCookieDlg", "fcNameLabel", "fcIsDomainLabel", "fcPathLabel",
+            "fcExpireLabel", "fcSession", "fcValueLabel", "fcSecure", "fcHttpOnly"];
+
+        for (var i=0; i<elements.length; i++)
+        {
+            var element = $(elements[i]);
+            if (element.hasAttribute("title"))
+                Firebug.FireCookieModel.fcInternationalize(element, "title");
+
+            if (element.hasAttribute("label"))
+                Firebug.FireCookieModel.fcInternationalize(element, "label");
+
+            if (element.hasAttribute("value"))
+                Firebug.FireCookieModel.fcInternationalize(element, "value");
+        }
     },
 
     onOK: function()

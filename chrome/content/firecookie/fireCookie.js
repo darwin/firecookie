@@ -247,17 +247,20 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     fcInternationalizeUI: function()
     {
-        // Filter menu
-        //fcInternationalize("fcCustomPathFilter", "label");
+        var elements = ["fcCookiesMenu", "fcExportAll", "fcExportForSite", "fcRemoveAllSession",
+            "fcRemoveAll", "fcCreate", "fcCookieViewAll", "fcCookieViewExceptions",
+            "fcCookieHelp", "fcCookieAbout", "fcToolsMenu", "fcFilterMenu", "fcFilterByPath",
+            "fcShowRejectedCookies"];
 
-        // Cookies menu
-        fcInternationalize("fcCookiesMenu", "label");
+        for (var i=0; i<elements.length; i++)
+        {
+            var element = Firebug.chrome.$(elements[i]);
+            if (element.hasAttribute("label"))
+                fcInternationalize(element, "label");
 
-        // Export menu items
-        fcInternationalize("fcExportAll", "label");
-        fcInternationalize("fcExportAll", "tooltiptext");
-        fcInternationalize("fcExportForSite", "label");
-        fcInternationalize("fcRemoveAllSession", "label");
+            if (element.hasAttribute("tooltiptext"))
+                fcInternationalize(element, "tooltiptext");
+        }
     },
 
     registerObservers: function(context)
@@ -444,6 +447,9 @@ Firebug.FireCookieModel = extend(BaseModule,
         // This is fixed in Firebug 1.2 (the ownerPanel is set in Initialize & reattach methods)
         if (panel)
             panel.panelNode.ownerPanel = panel;
+
+        // Translate also in the new window.
+        this.fcInternationalizeUI();
 
         // Refresh panel. From some reason, if FB UI is detached, all event 
         // listeners (e.g. onClick handlers registered in domplate template) 
@@ -1135,7 +1141,7 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     onFilterPanelApply: function(context)
     {
-        var parentMenu = $("fcFilterMenu");
+        var parentMenu = $("fcFilterMenuPopup");
         var filterPanel = $("fcCustomPathFilterPanel");
 
         if (FBTrace.DBG_COOKIES)
@@ -1294,15 +1300,15 @@ function $FC_STR_BRAND(name)
 
 function fcInternationalize(element, attr, args)
 {
-    if (typeof(element) == "string")
-        element = document.getElementById(element);
-
     var xulString = element.getAttribute(attr);
     var localized = args ? $FC_STRF(xulString, args) : $FC_STR(xulString);
 
     // Set localized value of the attribute.
     element.setAttribute(attr, localized);
 }
+
+// To make it available also in the editCookie.js scope
+Firebug.FireCookieModel.fcInternationalize = fcInternationalize;
 
 // ************************************************************************************************
 // Panel Implementation

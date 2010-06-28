@@ -4,14 +4,6 @@
 <?xml-stylesheet href="chrome://firecookie/skin/firecookie.css"?>
 <?xml-stylesheet href="chrome://firecookie/content/fireCookie.css"?>
 
-<!-- DTD entities for localization - OBSOLETE.
-  All translated sttings should be part of firecookie.properties file and translattion
-  made within Firebug.FireCookieModel.fcInternationalizeUI() method -->
-<!DOCTYPE window [
-<!ENTITY % firecookieDTD SYSTEM "chrome://firecookie/locale/firecookie.dtd">
-%firecookieDTD;
-]>
-
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <script src="chrome://firecookie/content/fireCookie.js" type="application/x-javascript"/>
 
@@ -46,7 +38,7 @@
                         <tooltip id="fcCreateCookieTooltip"
                             onpopupshowing="return Firebug.FireCookieModel.onCreateCookieShowTooltip(this, FirebugContext)"/>
                         <menuitem id="fcCreate"
-                            label="&firecookie.Create;"
+                            label="firecookie.Create"
                             tooltip="fcCreateCookieTooltip" command="cmd_cookieCreate"/>
                         <menuseparator/>
 
@@ -54,7 +46,7 @@
                         <tooltip id="fcRemoveAllTooltip"
                             onpopupshowing="return Firebug.FireCookieModel.onRemoveAllShowTooltip(this, FirebugContext)"/>
                         <menuitem id="fcRemoveAll"
-                            label="&firecookie.RemoveAll;"
+                            label="firecookie.RemoveAll"
                             tooltip="fcRemoveAllTooltip" command="cmd_cookieRemoveAll"/>
 
                         <!-- Remove all session cookies -->
@@ -67,28 +59,32 @@
 
                         <!-- Export cookies -->
                         <menuitem id="fcExportAll"
-                            label="firecookie.export.Export_All_Cookies"
-                            tooltiptext="firecookie.export.Export_All_Cookies_Tooltip"
+                            label="firecookie.export.Export All Cookies"
+                            tooltiptext="firecookie.export.Export All Cookies Tooltip"
                             command="cmd_cookieExportAll"/>
                         <tooltip id="fcExportForSiteTooltip"
                             onpopupshowing="return Firebug.FireCookieModel.onExportForSiteShowTooltip(this, FirebugContext)"/>
                         <menuitem id="fcExportForSite"
-                            label="firecookie.export.Export_For_Site"
+                            label="firecookie.export.Export For Site"
                             tooltip="fcExportForSiteTooltip" command="cmd_cookieExportForSite"/>
                     </menupopup>
                 </toolbarbutton>
 
                 <!-- Filter cookies -->
-                <toolbarbutton label="&firecookie.Filter;" type="menu" tooltiptext="&firecookie.FilterTooltip;">
-                    <menupopup id="fcFilterMenu"
-                               onpopupshowing="return Firebug.FireCookieModel.onFilterPopupShowing(this)">
-                        <menuitem id="fcFilterByPath" type="checkbox" value="firecookie.filterByPath"
-                            label="&firecookie.filter.byPath;"
-                            tooltiptext="&firecookie.filter.byPathTooltip;"
+                <toolbarbutton id="fcFilterMenu" type="menu"
+                    label="firecookie.Filter"
+                    tooltiptext="firecookie.FilterTooltip">
+                    <menupopup id="fcFilterMenuPopup"
+                            onpopupshowing="return Firebug.FireCookieModel.onFilterPopupShowing(this)">
+                        <menuitem id="fcFilterByPath" type="checkbox"
+                            value="firecookie.filterByPath"
+                            label="firecookie.filter.byPath"
+                            tooltiptext="firecookie.filter.byPathTooltip"
                             command="cmd_cookieFilterByPath"/>
-                        <menuitem id="fcShowRejectedCookies" type="checkbox" value="firecookie.showRejectedCookies"
-                            label="&firecookie.filter.showRejectedCookies;"
-                            tooltiptext="&firecookie.filter.showRejectedCookiesTooltip;"
+                        <menuitem id="fcShowRejectedCookies" type="checkbox"
+                            value="firecookie.showRejectedCookies"
+                            label="firecookie.filter.showRejectedCookies"
+                            tooltiptext="firecookie.filter.showRejectedCookiesTooltip"
                             command="cmd_cookieShowRejectedCookies"/>
                         <!--<menuseparator/>
                         <menu id="fcCustomPathFilter" label="firecookie.Path Filter">
@@ -104,6 +100,7 @@
                 <!-- Cookie permissions -->
                 <tooltip id="fcPermTooltip"
                     onpopupshowing="return Firebug.FireCookieModel.Perm.onTooltipShowing(this, FirebugContext)"/>
+
                 <toolbarbutton id="fcPerm" type="menu" tooltip="fcPermTooltip">
                     <menupopup id="fcPermMenuPopup"
                         oncommand="return Firebug.FireCookieModel.Perm.onCommand(event, FirebugContext, null)"
@@ -118,18 +115,28 @@
                 <toolbarseparator/>
 
                 <!-- Tools -->
-                <toolbarbutton label="&firecookie.Tools;" type="menu" tooltiptext="&firecookie.ToolsTooltip;">
+                <toolbarbutton id="fcToolsMenu" type="menu"
+                    label="firecookie.Tools"
+                    tooltiptext="firecookie.ToolsTooltip">
                     <menupopup>
-                        <menuitem label="&firecookie.ViewAll;" command="cmd_cookieViewAll"
-                            tooltiptext="&firecookie.ViewAllTooltip;"/>
-                        <menuitem label="&firecookie.ViewExceptions;" command="cmd_cookieViewExceptions"
-                            tooltiptext="&firecookie.ViewExceptionsTooltip;"/>
+                        <menuitem id="fcCookieViewAll"
+                            command="cmd_cookieViewAll"
+                            label="firecookie.ViewAll"
+                            tooltiptext="firecookie.ViewAllTooltip"/>
+                        <menuitem id="fcCookieViewExceptions"
+                            command="cmd_cookieViewExceptions"
+                            label="firecookie.ViewExceptions"
+                            tooltiptext="firecookie.ViewExceptionsTooltip"/>
                         <menuseparator/>
-                        <menuitem label="&firecookie.Help;" command="cmd_cookieHelp"
-                            tooltiptext="&firecookie.HelpTooltip;"/>
+                        <menuitem id="fcCookieHelp"
+                            command="cmd_cookieHelp"
+                            label="firecookie.Help"
+                            tooltiptext="firecookie.HelpTooltip"/>
                         <menuseparator/>
-                        <menuitem label="&firecookie.About;" command="cmd_cookieAbout"
-                            tooltiptext="&firecookie.AboutTooltip;"/>
+                        <menuitem id="fcCookieAbout"
+                            command="cmd_cookieAbout"
+                            label="firecookie.About"
+                            tooltiptext="firecookie.AboutTooltip"/>
                     </menupopup>
                 </toolbarbutton>
             </hbox>
