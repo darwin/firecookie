@@ -2,15 +2,15 @@ content firecookie  chrome/content/firecookie/
 skin    firecookie  classic/1.0 chrome/skin/classic/
 
 locale  firecookie  cs-CZ       chrome/locale/cs-CZ/
-locale  firecookie  de-DE       chrome/locale/de-DE/
+locale  firecookie  de          chrome/locale/de/
 locale  firecookie  en-US       chrome/locale/en-US/
 locale  firecookie  es-AR       chrome/locale/es-AR/
 locale  firecookie  es-ES       chrome/locale/es-ES/
-locale  firecookie  fr-FR       chrome/locale/fr-FR/
+locale  firecookie  fr          chrome/locale/fr/
 locale  firecookie  hu-HU       chrome/locale/hu-HU/
 locale  firecookie  it-IT       chrome/locale/it-IT/
 locale  firecookie  ja-JP       chrome/locale/ja-JP/
-locale  firecookie  nl-NL       chrome/locale/nl-NL/
+locale  firecookie  nl          chrome/locale/nl/
 locale  firecookie  pl-PL       chrome/locale/pl-PL/
 locale  firecookie  ko-KR       chrome/locale/ko-KR/
 locale  firecookie  pt-BR       chrome/locale/pt-BR/
