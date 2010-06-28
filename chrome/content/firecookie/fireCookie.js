@@ -225,6 +225,14 @@ Firebug.FireCookieModel = extend(BaseModule,
         }
     },
 
+    initializeUI: function()
+    {
+        BaseModule.initializeUI.apply(this, arguments);
+
+        // Append the styleesheet to a new console popup panel introduced in Firebug 1.6
+        this.addStyleSheet(null);
+    },
+
     /**
      * Peforms clean up when Firebug is destroyed.
      * Called by the framework when Firebug is closed for an existing Firefox window.
@@ -494,24 +502,25 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     addStyleSheet: function(panel)
     {
-        // Make sure the stylesheet isn't appended twice.
-        var doc = panel.document;
-        if ($("fcStyles", doc))
-            return;
+        function privateAppend(doc)
+        {
+            // Make sure the stylesheet isn't appended twice.
+            if (!$("fcStyles", doc))
+            {
+                var styleSheet = createStyleSheet(doc, "chrome://firecookie/skin/firecookie.css");
+                styleSheet.setAttribute("id", "fcStyles");
+                addStyleSheet(doc, styleSheet);
+            }
+        }
 
-        var styleSheet = createStyleSheet(doc, "chrome://firecookie/skin/firecookie.css");
-        styleSheet.setAttribute("id", "fcStyles");
-        addStyleSheet(doc, styleSheet);
+        if (panel)
+            privateAppend(panel.document)
 
         // Firebug 1.6 introduces another panel for console preview on other panels
         // The allows to use command line in other panels too.
         var preview = Firebug.chrome.$("fbCommandPreviewBrowser");
         if (preview)
-        {
-            doc = preview.contentDocument;
-            if (!$("fcStyles", doc))
-                addStyleSheet(doc, styleSheet.cloneNode(true));
-        }
+            privateAppend(preview.contentDocument);
     },
 
     updateOption: function(name, value)
