@@ -24,6 +24,9 @@ Firefox 2.0 - 3.7a1pre
       message again".) Similarly to the one used for "Remove Cookies".
       These dialogs are independent to each other.
 
+== Localization ==
+    * All strings are now localized using firecookie.properties file. There are no DTD strings
+      any more. DTD strings are not scriptable, which makes hard to use them in dynamic env.
 
 Release Notes for Firecookie 1.0
 --------------------------------
@@ -43,7 +46,7 @@ Firefox 2.0 - 3.7a1pre
     Issue 52: Enhance "Remove Cookies" Functionality
     Issue 53: Add Option to Clear Cookie Value (Not Delete Cookie Entirely) to Cookies Panel Right-Click Menu
     Issue 56: FireCookie spamming the Firebug Console even when disabled for a page
- 
+
 Release Notes for Firecookie 0.9.1
 ----------------------------------
 
