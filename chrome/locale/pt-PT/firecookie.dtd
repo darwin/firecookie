@@ -1,0 +1,28 @@
+<!ENTITY firecookie.RemoveAll "Remover Cookies">
+<!ENTITY firecookie.Create "Criar Cookie">
+<!ENTITY firecookie.ViewAll "Exibir Todas as Cookies...">
+<!ENTITY firecookie.ViewAllTooltip "Abrir o Gestor de Cookies">
+<!ENTITY firecookie.ViewExceptions "Permissões dos Sítios Web...">
+<!ENTITY firecookie.ViewExceptionsTooltip "Ver lista de sítios Web permitidos ou proibidos">
+<!ENTITY firecookie.Tools "Ferramentas">
+<!ENTITY firecookie.ToolsTooltip "Ferramentas">
+<!ENTITY firecookie.Help "Ajuda">
+<!ENTITY firecookie.HelpTooltip "Ajuda para o Firecookie">
+<!ENTITY firecookie.About "Sobre...">
+<!ENTITY firecookie.AboutTooltip "Sobre o Firecookie">
+<!ENTITY firecookie.edit.title "Editar Cookie">
+<!ENTITY firecookie.edit.group.title "Detalhes da Cookie">
+<!ENTITY firecookie.edit.name.label "Nome:">
+<!ENTITY firecookie.edit.value.label "Valor:">
+<!ENTITY firecookie.edit.domain.label "Servidor:">
+<!ENTITY firecookie.edit.path.label "Caminho:">
+<!ENTITY firecookie.edit.expire.label "Expira:">
+<!ENTITY firecookie.edit.session.label "Sessão">
+<!ENTITY firecookie.edit.secure.label "Cookie Segura">
+<!ENTITY firecookie.edit.httponly.label "Apenas HTTP">
+<!ENTITY firecookie.Filter "Filtro">
+<!ENTITY firecookie.FilterTooltip "Usar opções fornecidas para filtrar a lista de cookies.">
+<!ENTITY firecookie.filter.byPath "Filtrar Cookies Pelo Caminho Corrente">
+<!ENTITY firecookie.filter.byPathTooltip "Exibir apenas cookies que correspondam ao caminho corrente.">
+<!ENTITY firecookie.filter.showRejectedCookies "Exibir Cookies Rejeitadas">
+<!ENTITY firecookie.filter.showRejectedCookiesTooltip "Exibir na lista até as cookies rejeitadas">
