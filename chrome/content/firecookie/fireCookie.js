@@ -502,6 +502,10 @@ Firebug.FireCookieModel = extend(BaseModule,
 
     addStyleSheet: function(panel)
     {
+        // Use registration function instead (introduced in Firebug 1.6)
+        if (Firebug.registerStylesheet)
+            return;
+
         function privateAppend(doc)
         {
             // Make sure the stylesheet isn't appended twice.
@@ -5409,9 +5413,9 @@ Firebug.registerRep(
 // Register breakpoint template.
 Firebug.registerRep(Firebug.FireCookieModel.BreakpointTemplate);
 
-// This APIs doesn't exist yet, but yeah it should! (the second parameter is optional).
+// Register stylesheet in Firebug. This method is introduced in Firebug 1.6
 if (Firebug.registerStylesheet)
-    Firebug.registerStylesheet("chrome://firecookie/skin/firecookie.css", "fcStyles");
+    Firebug.registerStylesheet("chrome://firecookie/skin/firecookie.css");
 
 // ************************************************************************************************
 
