@@ -2,7 +2,7 @@ content firecookie  chrome/content/firecookie/
 skin    firecookie  classic/1.0 chrome/skin/classic/
 
 locale  firecookie  ca-AD       chrome/locale/ca-AD/
-locale  firecookie  cs-CZ       chrome/locale/cs-CZ/
+locale  firecookie  cs          chrome/locale/cs/
 locale  firecookie  de          chrome/locale/de/
 locale  firecookie  en-US       chrome/locale/en-US/
 locale  firecookie  es-AR       chrome/locale/es-AR/
