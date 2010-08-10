@@ -1,7 +1,6 @@
 function runTest()
 {
     FBTest.sysout("cookies.test.cookieClipboard; START");
-    FBTest.loadScript("env.js", this);
 
     FBTestFirebug.openNewTab(basePath + "general/cookieClipboard.php", function(win)
     {

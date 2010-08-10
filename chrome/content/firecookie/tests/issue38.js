@@ -1,7 +1,6 @@
 function runTest()
 {
     FBTest.sysout("cookies.test.issue38; START");
-    FBTest.loadScript("env.js", this);
 
     FBTestFirebug.openNewTab(basePath + "issue38/issue38.php", function(win)
     {

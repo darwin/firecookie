@@ -1,7 +1,6 @@
 function runTest()
 {
     FBTest.sysout("cookies.test.breakOnNext; START");
-    FBTest.loadScript("env.js", this);
 
     FBTestFirebug.openNewTab(basePath + "general/breakOnNext.php", function(win)
     {

@@ -22,6 +22,12 @@ var driverBaseURI = "chrome://firecookie/content/tests/";
 var serverURI = "http://www.janodvarko.cz/firecookie/tests/";
 
 /**
+ * List of additional script files for Firecookie tests
+ * (relative path to driverBaseURI).
+ */
+var testIncludes = ["env.js"];
+
+/**
  * List of registered tests.
  * @param: {String} group       Name of the group where the test belongs to.
  * @param: {String} uri         Relative location of the test file.

@@ -3,11 +3,9 @@ var currentBaseURI = null;
 function runTest()
 {
     FBTest.sysout("cookies.test.issue23; START");
-    FBTest.loadScript("env.js", this);
 
     currentBaseURI = FW.FBL.makeURI(basePath);
 
-    FBTestFireCookie.removeCookie(currentBaseURI.host, "TestCookie23", "/");
     FBTestFirebug.clearCache();
 
     FBTestFirebug.openNewTab(basePath + "issue23/issue23.php", function(win)

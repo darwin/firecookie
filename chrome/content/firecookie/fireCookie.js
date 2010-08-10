@@ -1228,7 +1228,7 @@ Firebug.FireCookieModel = extend(BaseModule,
             parent.openDialog("chrome://browser/content/cookieviewer/CookieExceptions.xul",
                 "_blank", "chrome,resizable=yes", params);
         } 
-        else 
+        else
         {
             var params = {  
                 blockVisible   : true,
@@ -1244,6 +1244,18 @@ Firebug.FireCookieModel = extend(BaseModule,
                 "_blank","chrome,resizable=yes", params);
         }
     },
+
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    // FBTest
+
+    // Expose our test list to the FBTest console for automated testing.
+    onGetTestList: function(testLists)
+    {
+        testLists.push({
+            extension: "Firecookie",
+            testListURL: "chrome://firecookie/content/testList.html"
+        });
+    }
 }); 
 
 // ************************************************************************************************
