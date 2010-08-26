@@ -4629,21 +4629,40 @@ function logEvents()
 
 function registerCookieObserver(observer)
 {
+    if (observer.registered)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.registerCookieObserver ERROR; already registered");
+        return;
+    }
+
     if (FBTrace.DBG_COOKIES)
         FBTrace.sysout("cookies.registerCookieObserver");
 
     observerService.addObserver(observer, "cookie-changed", false);
     observerService.addObserver(observer, "cookie-rejected", false);
+
+    observer.registered = true;
+
     return observer;
 }
 
 function unregisterCookieObserver(observer)
 {
+    if (!observer.registered)
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.unregisterCookieObserver ERROR; not registered");
+        return;
+    }
+
     if (FBTrace.DBG_COOKIES)
         FBTrace.sysout("cookies.unregisterCookieObserver");
 
     observerService.removeObserver(observer, "cookie-changed");
     observerService.removeObserver(observer, "cookie-rejected");
+
+    observer.registered = false;
 }
 
 // ************************************************************************************************
