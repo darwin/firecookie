@@ -4630,11 +4630,7 @@ function logEvents()
 function registerCookieObserver(observer)
 {
     if (observer.registered)
-    {
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.registerCookieObserver ERROR; already registered");
         return;
-    }
 
     if (FBTrace.DBG_COOKIES)
         FBTrace.sysout("cookies.registerCookieObserver");
@@ -4650,11 +4646,7 @@ function registerCookieObserver(observer)
 function unregisterCookieObserver(observer)
 {
     if (!observer.registered)
-    {
-        if (FBTrace.DBG_COOKIES)
-            FBTrace.sysout("cookies.unregisterCookieObserver ERROR; not registered");
         return;
-    }
 
     if (FBTrace.DBG_COOKIES)
         FBTrace.sysout("cookies.unregisterCookieObserver");
