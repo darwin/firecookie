@@ -144,14 +144,28 @@
     display: block;
 }
 
-.cookieRowHeader {
+/* This is the breakpoint column */
+.cookieDebugCol {
+    border-right: 1px solid #CCCCCC;
+    background-color: #EEEEEE;
     cursor: pointer;
-    display: none;
-    height: 15px;
+}
+
+.cookieDebugCol .sourceLine {
+    border-right: none;
+}
+
+/* When mouse is hovering over a cookie row, the breakpoint/debug column is highlighted. */
+.cookieRow:hover > .cookieDebugCol,
+.cookieRow:hover > .cookieDebugCol > .cookieRowHeader {
+    background-color: #F6F6F6;
+}
+
+.cookieRowHeader {
     margin-right: 0 !important;
 }
 
-/* Display brekpoint disc */
+/* Display breakpoint disc */
 .cookieRow .cookieRowHeader {
     background-position: 5px 1px;
 }
@@ -162,10 +176,6 @@
 
 .cookieRow[breakpoint="true"][disabledBreakpoint="true"] .cookieRowHeader {
     background-image: url(chrome://firebug/skin/breakpointDisabled.png);
-}
-
-.cookieRow:hover .cookieRowHeader {
-    background-color: #F6F6F6;
 }
 
 #cookieBreakpointBar {
@@ -250,7 +260,7 @@
     padding-top: 1px;
     font-weight: bold;
     min-width: 70px;
-    margin-left: 10px;
+    margin-left: 5px;
 }
 
 .cookieNameCol > .cookieNameLabel {
@@ -414,13 +424,15 @@
 /************************************************************************************************/
 
 /* Hide breakpoint column within the net panel info body */
-.netInfoCookiesText .cookieInfoRow .cookieRowHeader {
+.netInfoCookiesText .cookieInfoRow .cookieRowHeader,
+.netInfoCookiesText .cookieDebugCol {
     display: none;
 }
 
-/* Don't intend cookie label when displayed within the net panel info body */
-.netInfoCookiesText .cookieNameLabel {
-    margin-left: 0px;
+/* Hide breakpoint column within the console panel (when logging document.cookie) */
+.documentCookieBody .cookieInfoRow .cookieRowHeader,
+.documentCookieBody .cookieDebugCol {
+    display: none;
 }
 
 /************************************************************************************************/
@@ -430,7 +442,3 @@
 }
 
 /************************************************************************************************/
-
-.DBG_NET {
-    color: SeaShell;
-}

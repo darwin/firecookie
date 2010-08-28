@@ -2022,7 +2022,7 @@ Templates.CookieRow = domplate(Templates.Rep,
             TR({"class": "cookieRow", _repObject: "$cookie", onclick: "$onClickRow",
                 $sessionCookie: "$cookie|isSessionCookie",
                 $rejectedCookie: "$cookie|isRejected"},
-                TD({"class": "cookieCol"},
+                TD({"class": "cookieDebugCol cookieCol"},
                    DIV({"class": "sourceLine cookieRowHeader", onclick: "$onClickRowHeader"},
                         "&nbsp;"
                    )
