@@ -4,10 +4,11 @@ Addon page: https://addons.mozilla.org/en-US/firefox/addon/6683
 Issue list: http://code.google.com/p/firecookie/issues/list
 Localization: http://www.babelzilla.org/forum/index.php?showtopic=4494
 Source docs: http://www.janodvarko.cz/firecookie/docs/
+Releases: http://www.janodvarko.com/firecookie/archive/
 
 Release Notes for Firecookie 1.1 (in development)
 --------------------------------
-Firefox 2.0 - 3.7a1pre
+Firefox 2.0 - 4.0
 
 == Bug Fixes ==
     * Issue 58: JSON $ XML tab dosn't refresh correctly
@@ -15,6 +16,8 @@ Firefox 2.0 - 3.7a1pre
     * Issue 63: Use only one line for cookie logs in the Console panel (if enough horizontal space)
     * Issue 64: Firecookie table format breaks when switching to detatched window mode
     * Issue 65: "Secure" flag not being applied [cookie.toString() seems to drop it]
+    * Issue 62: What does a red highlighted cookie mean?
+    * Issue 70: Cookie actions are duplicated
 
 == Enhancements ==
     * Remove all session cookies (issue 59). It's now possible to remove all session
@@ -27,6 +30,7 @@ Firefox 2.0 - 3.7a1pre
 == Localization ==
     * All strings are now localized using firecookie.properties file. There are no DTD strings
       any more. DTD strings are not scriptable, which makes hard to use them in dynamic env.
+      Also missing DTD string causes a fatal error when loading the extension.
 
 Release Notes for Firecookie 1.0
 --------------------------------
