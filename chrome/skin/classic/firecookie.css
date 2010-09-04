@@ -68,6 +68,13 @@
 }
 
 /************************************************************************************************/
+/* Console filtering */
+
+.panelNode.hideType-cookies .logRow-cookie {
+    display: none !important;
+}
+
+/************************************************************************************************/
 /* Header for cookie list */
 
 .cookieHeaderRow {

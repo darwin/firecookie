@@ -25,9 +25,21 @@
         <command id="cmd_cookieExportForSite" oncommand="Firebug.FireCookieModel.onExportForSite(FirebugContext)"/>
     </commandset>
 
-    <!-- Cookies toolbar -->
+    <!-- Firebug toolbar -->
     <toolbar id="fbToolbar" align="center">
         <hbox id="fbToolbarInner" insertbefore="fbDetachButton" flex="1" align="center">
+
+            <!-- Console toolbar -->
+            <hbox id="fbConsoleButtons">
+                <toolbarbutton id="fbConsoleFilter-cookies"
+                    label="firecookie.console.Cookies" type="radio"
+                    group="firebugConsoleFilter" class="toolbar-text-button"
+                    tooltiptext="firecookie.console.Filter By Cookies"
+                    oncommand="Firebug.Console.onToggleFilter(Firebug.currentContext, 'cookies')"
+                    collapsed="true"/>
+            </hbox>
+
+            <!-- Cookies toolbar -->
             <hbox id="fbCookieButtons" insertafter="fbNetButtons" collapsed="true">
 
                 <!-- The BON button is displayed as the first one without a separator. -->

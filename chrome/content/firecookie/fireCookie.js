@@ -231,6 +231,10 @@ Firebug.FireCookieModel = extend(BaseModule,
 
         // Append the styleesheet to a new console popup panel introduced in Firebug 1.6
         this.addStyleSheet(null);
+
+        // Console filter is available since Firebug 1.6
+        if (compareFirebugVersion("1.6") >= 0)
+            collapse(Firebug.chrome.$("fbConsoleFilter-cookies"), false);
     },
 
     /**
@@ -258,7 +262,7 @@ Firebug.FireCookieModel = extend(BaseModule,
         var elements = ["fcCookiesMenu", "fcExportAll", "fcExportForSite", "fcRemoveAllSession",
             "fcRemoveAll", "fcCreate", "fcCookieViewAll", "fcCookieViewExceptions",
             "fcCookieHelp", "fcCookieAbout", "fcToolsMenu", "fcFilterMenu", "fcFilterByPath",
-            "fcShowRejectedCookies"];
+            "fcShowRejectedCookies", "fbConsoleFilter-cookies"];
 
         for (var i=0; i<elements.length; i++)
         {
@@ -534,6 +538,32 @@ Firebug.FireCookieModel = extend(BaseModule,
         }
         else if (name == "firecookie.LogEvents")
         {
+        }
+        else if (name == "consoleFilterTypes")
+        {
+            this.updateConsoleFilter();
+        }
+    },
+
+    updateConsoleFilter: function()
+    {
+        if (FBTrace.DBG_COOKIES)
+            FBTrace.sysout("cookies.updateConsoleFilter;");
+
+        var panelNode = Firebug.currentContext.getPanel("console").panelNode;
+        var className = "hideType-cookies";
+        var filterTypes = Firebug.consoleFilterTypes;
+
+        setClass(panelNode, className);
+
+        var positiveFilters = ["all", "cookies"];
+        for (var i=0; i<positiveFilters.length; i++)
+        {
+            if (filterTypes.indexOf(positiveFilters[i]) >= 0)
+            {
+                removeClass(panelNode, className);
+                break;
+            }
         }
     },
 

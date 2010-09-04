@@ -18,6 +18,7 @@ Firefox 2.0 - 4.0
     * Issue 65: "Secure" flag not being applied [cookie.toString() seems to drop it]
     * Issue 62: What does a red highlighted cookie mean?
     * Issue 70: Cookie actions are duplicated
+    * Issue 73: Allow to filter firecookie from console
 
 == Enhancements ==
     * Remove all session cookies (issue 59). It's now possible to remove all session
