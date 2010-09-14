@@ -1404,6 +1404,7 @@ FireCookiePanel.prototype = extend(BasePanel,
     title: $FC_STR("firecookie.Panel"),
     searchable: true,
     breakable: true,
+    order: 200, // Place just after the Net panel.
 
     initialize: function(context, doc)
     {
