@@ -1612,6 +1612,10 @@ FireCookiePanel.prototype = extend(BasePanel,
                 return;
             }
         }
+        else
+        {
+            this.showToolbarButtons("fbCookieButtons", true); 
+        }
 
         if (Firebug.chrome.setGlobalAttribute)
         {
